@@ -8,8 +8,11 @@ import java.util.*;
 import java.util.concurrent.*;
 import android.view.Window.*;
 import java.io.*;
-import okhttp3.*;
 import android.util.*;
+import android.content.*;
+import com.lzy.okgo.callback.*;
+import com.lzy.okgo.model.*;
+import com.google.gson.*;
 
 public class Signup extends Activity
 {
@@ -22,11 +25,7 @@ public class Signup extends Activity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		Config config = Config.get(this);
-		//config.settings.server = "https://lance-chatroom2.herokuapp.com/";
-		config.settings.theme = R.style.AppTheme2;
-		config.save();
-		setTheme(config.settings.theme);
+		setTheme(Config.get(this).settings.theme);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.signup);
 		
@@ -38,27 +37,49 @@ public class Signup extends Activity
 		btn.setOnClickListener(new Button.OnClickListener(){
 				@Override
 				public void onClick(View p1){
-					//Toast.makeText(Signup.this, "TODO: Sign up " + String.valueOf(text_username.getText()), Toast.LENGTH_SHORT).show();
 					AlertDialog.Builder builder = new AlertDialog.Builder(Signup.this);
 					builder.setMessage("Please wait...");
 					builder.setCancelable(false);
 					dialog = builder.create();
 					dialog.show();
-					HashMap<String, String> data = new HashMap<String, String>();
-					data.put(CommunicationService.USERNAME, text_username.getText().toString());
-					data.put(CommunicationService.EMAIL, text_email.getText().toString());
-					data.put(CommunicationService.PASSWORD, text_password.getText().toString());
-					data.put(CommunicationService.NAME, text_username.getText().toString());
-					CommunicationService.getComm(Signup.this).post(CommunicationService.SIGNUP, data, new okhttp3.Callback() {
+					ContentValues parames = new ContentValues();
+					parames.put(Communication.USERNAME, text_username.getText().toString());
+					parames.put(Communication.EMAIL, text_email.getText().toString());
+					parames.put(Communication.PASSWORD, text_password.getText().toString());
+					parames.put(Communication.NAME, text_username.getText().toString());
+					Communication.getComm(Signup.this).post(Communication.SIGNUP, parames, 
+						new StringCallback() {
 							@Override
-							public void onFailure(Call p1, IOException p2)
-							{
-								
+							public void onSuccess(Response<String> response) {
+								dialog.hide();
+								ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
+								if (result.code == 0)
+								{
+									AlertDialog.Builder build = new AlertDialog.Builder(Signup.this);
+									build.setMessage("Sign up successfully.");
+									build.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface p1, int p2) {
+												Signup.this.finish();
+											}
+										});
+									build.show();
+								}
+								else
+								{
+									AlertDialog.Builder build = new AlertDialog.Builder(Signup.this);
+									build.setMessage(result.message + " (Code: " + result.code + ")");
+									build.setPositiveButton("OK", null);
+									build.show();
+								}
 							}
 							@Override
-							public void onResponse(Call p1, Response p2) throws IOException
-							{
-								
+							public void onError(Response<String> response) {
+								dialog.hide();
+								AlertDialog.Builder build = new AlertDialog.Builder(Signup.this);
+								build.setMessage("Connection Errors.");
+								build.setPositiveButton("OK", null);
+								build.show();
 							}
 						});
 				}
@@ -68,7 +89,7 @@ public class Signup extends Activity
 	@Override
 	protected void onDestroy()
 	{
-		dialog.dismiss();
+		//dialog.dismiss();
 		super.onDestroy();
 	}
 }

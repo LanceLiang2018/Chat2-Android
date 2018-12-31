@@ -17,6 +17,9 @@ import android.graphics.*;
 import android.graphics.drawable.*;
 //import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import com.lzy.okgo.callback.*;
+import com.lzy.okgo.model.*;
+import com.google.gson.*;
 //import android.support.v7.app.*;
 //import lance.liang.chat2.
 
@@ -35,8 +38,6 @@ public class Chat extends AppCompatActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		setTheme(Config.get(this).settings.theme);
-		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-		
 		super.onCreate(savedInstanceState);
 		
 		Bundle bundle = getIntent().getExtras();
@@ -65,13 +66,9 @@ public class Chat extends AppCompatActivity
 		list_message = (ListView)findViewById(R.id.chatListView);
 		srl = (SwipeRefreshLayout)findViewById(R.id.chatSwipeRefreshLayout);
 		
-		for (int i=1; i<100; i++)
-			data.add(new ItemBeanChat(0, "Lance", "12:00", "A short message.", 
-									  "https://avatars0.githubusercontent.com/u/41908064?s=460&v=4"));
-		
-		Collections.reverse(data);
-		
 		adp = new ChatAdapter(this, data);
+		
+		Refresh();
 		
 		list_message.setAdapter(adp);
 		
@@ -81,12 +78,35 @@ public class Chat extends AppCompatActivity
 				public void onRefresh()
 				{
 					Toast.makeText(Chat.this, "Refreshing...", Toast.LENGTH_SHORT).show();
-					adp.insert(new ItemBeanChat(0, "Lance", "12:00", "Refreshed.", 
-												"https://avatars0.githubusercontent.com/u/41908064?s=460&v=4"));
-					//adp.add("Ref...");
+					adp.insert_back(new ItemBeanChat(0, "Lance", "12:00", "Refreshed.", 
+													 "https://avatars0.githubusercontent.com/u/41908064?s=460&v=4"));
 					adp.notifyDataSetChanged();
 					//adp.notifyDataSetInvalidated();
 					srl.setRefreshing(false);
+				}
+			});
+	}
+	
+	public void Refresh()
+	{
+		ContentValues parames = new ContentValues();
+		parames.put("auth", Config.get(this).user.auth);
+		parames.put("gid", gid);
+		parames.put("limit", "30");
+		Communication.getComm(this).post(Communication.GET_MESSAGE, parames,
+			new StringCallback() {
+				@Override
+				public void onSuccess(Response<String> response) {
+					Toast.makeText(Chat.this, response.body().toString(), Toast.LENGTH_LONG);
+//					ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
+//					if (result.code == 0) {
+//						for (ResultData.Data.Message message: result.data.message) {
+//							adp.insert_back(new ItemBeanChat(0, message.username, "" + message.send_time, message.text, message.head));
+//							adp.notifyDataSetChanged();
+//						}
+//					} else {
+//						Log.e("Chat 2", result.message + "(Code: " + result.code + ")");
+//					}
 				}
 			});
 	}

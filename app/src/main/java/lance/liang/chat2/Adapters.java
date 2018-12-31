@@ -7,7 +7,7 @@ import com.bumptech.glide.*;
 
 class MainAdapter extends BaseAdapter
 {
-	private List<ItemBeanMain> list;
+	public List<ItemBeanMain> list;
 	private LayoutInflater inflater;
 
 	MainAdapter(Context context, List<ItemBeanMain> ilist) {
@@ -29,6 +29,10 @@ class MainAdapter extends BaseAdapter
 	public long getItemId(int p1) {
 		return p1;
 	}
+	
+	public void insert(ItemBeanMain data) {
+		list.add(data);
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -43,7 +47,7 @@ class MainAdapter extends BaseAdapter
 
 class ChatAdapter extends BaseAdapter
 {
-	private List<ItemBeanChat> list;
+	public List<ItemBeanChat> list;
 	private LayoutInflater inflater;
 
 	ChatAdapter(Context context, List<ItemBeanChat> ilist) {
@@ -68,6 +72,10 @@ class ChatAdapter extends BaseAdapter
 	
 	public void insert(ItemBeanChat data) {
 		list.add(data);
+	}
+	
+	public void insert_back(ItemBeanChat data) {
+		list.add(0, data);
 	}
 
 	@Override
