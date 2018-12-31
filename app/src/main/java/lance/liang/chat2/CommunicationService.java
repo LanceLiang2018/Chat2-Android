@@ -48,23 +48,21 @@ public class CommunicationService
 	EMAIL = "email",
 	NAME = "name";
 
-	CommunicationService(String url)
+	CommunicationService(Context context)
 	{
-		this.SERVER = url;
+		init(context);
+	}
+	
+	private void init(Context context)
+	{
+		this.SERVER = Config.get(context).settings.server;
 	}
 
-	CommunicationService()
-	{}
-
-	public static CommunicationService getComm()
+	public static CommunicationService getComm(Context context)
 	{
-		return new CommunicationService();
+		return new CommunicationService(context);
 	}
-	public static CommunicationService getComm(String url)
-	{
-		return new CommunicationService(url);
-	}
-
+	
 	public static boolean isOnline(Activity act)
 	{
 		ConnectivityManager conn = (ConnectivityManager)act.getSystemService(Context.CONNECTIVITY_SERVICE);

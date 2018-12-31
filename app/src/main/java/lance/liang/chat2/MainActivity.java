@@ -20,18 +20,13 @@ public class MainActivity extends AppCompatActivity {
 	private ListView list;
 	private ListView left;
 	private MainAdapter adp;
-	private Config config = new Config(this);
-	private CommunicationService comm;
 	List<ItemBeanMain> data = new ArrayList<ItemBeanMain>();
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState)
 	{
 		Log.d("Chat 2:: main", "Started.");
-		config.load();
-		//setTheme(config.THEME);
-
-		comm = new CommunicationService();
+		setTheme(Config.get(this).settings.theme);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -101,14 +96,10 @@ public class MainActivity extends AppCompatActivity {
 				startActivityForResult(intent_signup, 0);
 				break;
 			case R.id.option_settings:
-				try
-				{
-					//task = new TestTask();
-					Toast.makeText(this, "Start...", Toast.LENGTH_LONG).show();
-					comm.test();
+				try {
+					CommunicationService.getComm(this).test();
 				}
-				catch (Exception e)
-				{
+				catch (Exception e) {
 					Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 				}
 				break;

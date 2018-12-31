@@ -13,18 +13,20 @@ import android.util.*;
 
 public class Signup extends Activity
 {
-	private Config config = new Config(this);
 	private Button btn;
 	private EditText text_username;
 	private EditText text_password;
 	private EditText text_email;
-	private ProgressDialog.Builder builder;
+	private AlertDialog dialog;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		config.load();
-		//setTheme(config.THEME);
+		Config config = Config.get(this);
+		//config.settings.server = "https://lance-chatroom2.herokuapp.com/";
+		config.settings.theme = R.style.AppTheme2;
+		config.save();
+		setTheme(config.settings.theme);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.signup);
 		
@@ -37,31 +39,37 @@ public class Signup extends Activity
 				@Override
 				public void onClick(View p1){
 					//Toast.makeText(Signup.this, "TODO: Sign up " + String.valueOf(text_username.getText()), Toast.LENGTH_SHORT).show();
-					builder = new ProgressDialog.Builder(Signup.this);
+					AlertDialog.Builder builder = new AlertDialog.Builder(Signup.this);
 					builder.setMessage("Please wait...");
 					builder.setCancelable(false);
-					builder.show();
+					dialog = builder.create();
+					dialog.show();
 					HashMap<String, String> data = new HashMap<String, String>();
 					data.put(CommunicationService.USERNAME, text_username.getText().toString());
 					data.put(CommunicationService.EMAIL, text_email.getText().toString());
 					data.put(CommunicationService.PASSWORD, text_password.getText().toString());
 					data.put(CommunicationService.NAME, text_username.getText().toString());
-					CommunicationService.getComm().post(CommunicationService.SIGNUP, data, new okhttp3.Callback() {
+					CommunicationService.getComm(Signup.this).post(CommunicationService.SIGNUP, data, new okhttp3.Callback() {
 							@Override
 							public void onFailure(Call p1, IOException p2)
 							{
-								Toast.makeText(Signup.this, "Failed. Check your Internet connections.", Toast.LENGTH_SHORT).show();
 								
 							}
 							@Override
 							public void onResponse(Call p1, Response p2) throws IOException
 							{
-								Log.d("Chat-2-Sign-up", p2.body().string());
+								
 							}
 						});
 				}
 		});
 	}
-	
+
+	@Override
+	protected void onDestroy()
+	{
+		dialog.dismiss();
+		super.onDestroy();
+	}
 }
 

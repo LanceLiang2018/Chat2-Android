@@ -22,7 +22,6 @@ import android.support.v7.widget.Toolbar;
 
 public class Chat extends AppCompatActivity
 {
-	private Config config = new Config(this);
 	private EditText text_message;
 	private Button btn_send, btn_more;
 	private ListView list_message;
@@ -35,14 +34,9 @@ public class Chat extends AppCompatActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		//config.THEME = android.R.style.Theme_Material_NoActionBar;
-		//config.save();
-		config.load();
-		//setTheme(config.THEME);
-		//setTheme(R.style.AppTheme_NoActionBar);
+		setTheme(Config.get(this).settings.theme);
 		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 		
-
 		super.onCreate(savedInstanceState);
 		
 		Bundle bundle = getIntent().getExtras();

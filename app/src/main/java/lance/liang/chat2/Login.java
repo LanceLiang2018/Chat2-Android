@@ -17,18 +17,15 @@ import java.net.*;
 
 public class Login extends Activity
 {
-	private Config config = new Config(this);
 	private TextView text_username;
 	private TextView text_password;
 	private Button btn_login;
 	private Button btn_signup;
-	private CommunicationService comm = new CommunicationService();
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		config.load();
-		//setTheme(config.THEME);
-
+		setTheme(Config.get(this).settings.theme);
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
 		//Toast.makeText(this, "Login Activity", Toast.LENGTH_SHORT);
