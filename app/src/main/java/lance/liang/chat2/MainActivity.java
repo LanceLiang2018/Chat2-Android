@@ -61,10 +61,11 @@ public class MainActivity extends AppCompatActivity {
 		srl = (SwipeRefreshLayout)findViewById(R.id.slr);
 		srl.setEnabled(true);
 		
-		TextView txt = new TextView(this);
-		txt.setText("Left");
-		left.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1));
-		left.addHeaderView(txt);
+		List<ItemBeanLeft> left_data = new ArrayList<ItemBeanLeft>();
+		for (int i=1; i<=20; i++)
+			left_data.add(new ItemBeanLeft(R.drawable.image_1, "Title"));
+		
+		left.setAdapter(new LeftAdapter(this, left_data));
     }
 
 	@Override

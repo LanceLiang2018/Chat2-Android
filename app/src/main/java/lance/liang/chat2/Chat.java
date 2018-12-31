@@ -18,6 +18,7 @@ import android.graphics.drawable.*;
 //import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 //import android.support.v7.app.*;
+//import lance.liang.chat2.
 
 public class Chat extends AppCompatActivity
 {
