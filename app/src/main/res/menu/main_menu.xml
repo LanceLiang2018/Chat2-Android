@@ -1,0 +1,36 @@
+<menu 
+	xmlns:android="http://schemas.android.com/apk/res/android" 
+	xmlns:app="http://schemas.android.com/apk/res-auto"> 
+
+	<item android:id="@+id/option_login"
+		android:title="登录"
+		app:showAsAction="ifRoom"/> 
+
+	<item android:id="@+id/option_signup" 
+		android:title="注册" 
+		app:showAsAction="ifRoom"/> 
+
+	<item android:id="@+id/option_settings" 
+		android:title="设置" 
+		app:showAsAction="ifRoom"/> 
+	
+	<item android:id="@+id/option_new_room" 
+		android:title="新房间" 
+		app:showAsAction="ifRoom"/> 
+	
+	<item android:id="@+id/option_join_in" 
+		android:title="加入房间" 
+		app:showAsAction="ifRoom"/> 
+	
+	<item android:id="@+id/option_about" 
+		android:title="关于" 
+		app:showAsAction="ifRoom"/> 
+	
+	<item android:id="@+id/option_clear_all" 
+		android:title="设置" 
+		app:showAsAction="ifRoom"/> 
+
+	<item android:id="@+id/option_exit" 
+		android:title="退出" 
+		app:showAsAction="ifRoom"/> 
+</menu>

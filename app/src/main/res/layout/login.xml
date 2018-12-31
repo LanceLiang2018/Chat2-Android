@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal"
+		android:gravity="center">
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="Login"
+			android:textSize="70sp"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal"
+		android:gravity="center"
+		android:layout_marginLeft="10dp">
+
+		<EditText
+			android:inputType="textPersonName"
+			android:layout_width="match_parent"
+			android:ems="10"
+			android:layout_height="wrap_content"
+			android:id="@+id/loginEditText_username"
+			android:hint="用户名"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal"
+		android:gravity="center"
+		android:layout_marginLeft="10dp">
+
+		<EditText
+			android:inputType="textPassword"
+			android:layout_width="match_parent"
+			android:ems="10"
+			android:layout_height="wrap_content"
+			android:id="@+id/loginEditText_password"
+			android:hint="密码"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal"
+		android:gravity="center">
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="注册"
+			android:layout_weight="1.0"
+			android:id="@+id/loginButton_signup"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="登录"
+			android:layout_weight="1.0"
+			android:id="@+id/loginButton_login"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+

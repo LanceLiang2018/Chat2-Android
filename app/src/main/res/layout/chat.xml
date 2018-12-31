@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:gravity="bottom">
+
+	<android.support.v4.widget.SwipeRefreshLayout
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:orientation="vertical"
+		android:id="@+id/chatSwipeRefreshLayout"
+		android:layout_marginTop="160px">
+
+		<ListView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:id="@+id/chatListView"
+			android:stackFromBottom="true">
+
+		</ListView>
+
+	</android.support.v4.widget.SwipeRefreshLayout>
+
+	<LinearLayout
+		android:layout_height="160px"
+		android:layout_width="match_parent"
+		android:orientation="horizontal">
+
+		<EditText
+			android:inputType="textMultiLine"
+			android:layout_width="wrap_content"
+			android:ems="10"
+			android:layout_height="wrap_content"
+			android:layout_weight="2"
+			android:id="@+id/chatEditText"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="Send"
+			android:id="@+id/chatButton_send"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="More"
+			android:id="@+id/chatButton_more"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+
