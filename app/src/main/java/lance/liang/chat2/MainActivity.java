@@ -13,17 +13,17 @@ import android.support.v7.app.*;
 import java.util.*;
 import android.util.*;
 import lance.liang.chat2.MainActivity.*;
+import lance.liang.chat2.MainAdapter;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout srl;
 	private ListView list;
 	private ListView left;
-	private ArrayAdapter adp;
+	private MainAdapter adp;
 	private Config config = new Config(this);
 	private CommunicationService comm;
-	//private AsyncTask<String, Void, Object> task;
-	private List<String> data = new ArrayList<>();
-
+	List<ItemBeanMain> data = new ArrayList<ItemBeanMain>();
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState)
 	{
@@ -38,22 +38,21 @@ public class MainActivity extends AppCompatActivity {
 
 		list = (ListView)findViewById(R.id.list_rooms);
 		left = (ListView)findViewById(R.id.list_left);
-
+		
 		for (int i=1; i <= 100; i++)
-			data.add(String.valueOf(i));
+			data.add(new ItemBeanMain(0, R.mipmap.ic_launcher, "Title " + i, "Content" + i));
 
-		adp = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
+		adp = new MainAdapter(this, data);
+		
 		list.setAdapter(adp);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4){
-					//Toast.makeText(MainActivity.this, data.get(p3), Toast.LENGTH_SHORT).show();
 					Intent intent_room = new Intent();
 					intent_room.setClass(MainActivity.this, Chat.class);
 					Bundle bundle=new Bundle();
-					//Toast.makeText(MainActivity.this, String.valueOf(p3) + " of " + String.valueOf(p4), Toast.LENGTH_SHORT).show();
-					bundle.putString("name", "Name of Room " + data.get(p3));
-					bundle.putString("gid", data.get(p3));
+					bundle.putString("name", data.get(p3).title);
+					bundle.putInt("gid", data.get(p3).gid);
 					intent_room.putExtras(bundle);
 					startActivityForResult(intent_room, 0);
 				}
