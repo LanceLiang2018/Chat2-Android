@@ -65,6 +65,10 @@ class ChatAdapter extends BaseAdapter
 	public long getItemId(int p1) {
 		return p1;
 	}
+	
+	public void insert(ItemBeanChat data) {
+		list.add(data);
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {

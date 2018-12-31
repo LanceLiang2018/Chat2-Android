@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:orientation="vertical"
-	android:gravity="bottom">
+	android:orientation="vertical">
 
 	<android.support.v4.widget.SwipeRefreshLayout
-		android:layout_height="match_parent"
+		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
 		android:orientation="vertical"
 		android:id="@+id/chatSwipeRefreshLayout"
-		android:layout_marginTop="160px">
+		android:layout_above="@+id/chatBelowBar">
 
 		<ListView
 			android:layout_height="wrap_content"
@@ -24,9 +23,11 @@
 	</android.support.v4.widget.SwipeRefreshLayout>
 
 	<LinearLayout
-		android:layout_height="160px"
+		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
-		android:orientation="horizontal">
+		android:orientation="horizontal"
+		android:id="@+id/chatBelowBar"
+		android:layout_alignParentBottom="true">
 
 		<EditText
 			android:inputType="textMultiLine"
@@ -34,7 +35,8 @@
 			android:ems="10"
 			android:layout_height="wrap_content"
 			android:layout_weight="2"
-			android:id="@+id/chatEditText"/>
+			android:id="@+id/chatEditText"
+			android:maxLines="10"/>
 
 		<Button
 			android:layout_height="wrap_content"
@@ -50,5 +52,5 @@
 
 	</LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
 

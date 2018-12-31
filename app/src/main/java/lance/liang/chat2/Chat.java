@@ -26,8 +26,8 @@ public class Chat extends AppCompatActivity
 	private EditText text_message;
 	private Button btn_send, btn_more;
 	private ListView list_message;
-	private ArrayAdapter adp;
-	private List<String> data = new ArrayList<>();
+	private ChatAdapter adp;
+	private List<ItemBeanChat> data = new ArrayList<>();
 	private SwipeRefreshLayout srl;
 	private String gid = "0";
 	private ActionBar bar;
@@ -71,14 +71,13 @@ public class Chat extends AppCompatActivity
 		list_message = (ListView)findViewById(R.id.chatListView);
 		srl = (SwipeRefreshLayout)findViewById(R.id.chatSwipeRefreshLayout);
 		
-		adp = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-		
 		for (int i=1; i<100; i++)
-			data.add(String.valueOf(i));
+			data.add(new ItemBeanChat(0, "Lance", "12:00", "A short message.", 
+									  "https://avatars0.githubusercontent.com/u/41908064?s=460&v=4"));
 		
 		Collections.reverse(data);
 		
-		adp.addAll(data);
+		adp = new ChatAdapter(this, data);
 		
 		list_message.setAdapter(adp);
 		
@@ -88,7 +87,8 @@ public class Chat extends AppCompatActivity
 				public void onRefresh()
 				{
 					Toast.makeText(Chat.this, "Refreshing...", Toast.LENGTH_SHORT).show();
-					adp.insert("ReFresh", 0);
+					adp.insert(new ItemBeanChat(0, "Lance", "12:00", "Refreshed.", 
+												"https://avatars0.githubusercontent.com/u/41908064?s=460&v=4"));
 					//adp.add("Ref...");
 					adp.notifyDataSetChanged();
 					//adp.notifyDataSetInvalidated();

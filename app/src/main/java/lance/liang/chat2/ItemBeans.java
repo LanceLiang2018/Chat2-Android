@@ -27,8 +27,8 @@ class ItemBeanChat {
 	String time, head_url, message, username;
 	int mid;
 
-	ItemBeanChat(int mid, String usrname, String time, String message, String head_url) {
-		this.mid = mid; this.username = usrname; this.time = time;
+	ItemBeanChat(int mid, String usrename, String time, String message, String head_url) {
+		this.mid = mid; this.username = usrename; this.time = time;
 		this.head_url = head_url; this.message = message;
 	}
 }
