@@ -20,6 +20,8 @@ public class ResultData
 		public List<Message> message;
 		public Info info;
 		public String auth;
+		public String head;
+		public String username;
 		public List<RoomData> room_data;
 	}
 	public int code;

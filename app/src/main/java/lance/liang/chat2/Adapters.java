@@ -87,7 +87,7 @@ class ChatAdapter extends BaseAdapter
 		((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
 		((TextView) view.findViewById(R.id.itemchatTextView_message)).setText(bean.message);
 		
-		Glide.with(view).load("https://avatars0.githubusercontent.com/u/41908064?s=460&v=4")
+		Glide.with(view).load(bean.head_url)
 			.into((ImageView) view.findViewById(R.id.itemchatImageView_head));
 		
 		return view;

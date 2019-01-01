@@ -64,6 +64,7 @@ public class Login extends Activity
 									Config config = Config.get(Login.this);
 									config.user.auth = result.data.auth;
 									config.user.username = text_username.getText().toString();
+									config.user.head = result.data.head;
 									config.save();
 									
 									Intent intent = new Intent();
@@ -92,7 +93,7 @@ public class Login extends Activity
 				}
 			});
 	}
-
+	
 	@Override
 	protected void onDestroy()
 	{

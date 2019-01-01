@@ -25,7 +25,8 @@ public class Communication
 	LOGIN = SERVER + "login",
 	SIGNUP = SERVER + "signup",
 	GET_MESSAGE = SERVER + "get_message",
-	SEND_MESSAGE = SERVER + "send_messsage",
+	SEND_MESSAGE = SERVER + "send_message",
+	GET_HEAD = SERVER + "get_head",
 	CLEAR_ALL = SERVER + "clear_all",
 
 	SET_USER = SERVER + "set_user",

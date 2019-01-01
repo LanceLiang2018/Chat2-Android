@@ -34,6 +34,8 @@ public class Chat extends AppCompatActivity
 	private SwipeRefreshLayout srl;
 	private String gid = "0";
 	private ActionBar bar;
+	AlertDialog dialog;
+	Timer timer;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -79,21 +81,74 @@ public class Chat extends AppCompatActivity
 				{
 					Toast.makeText(Chat.this, "Refreshing...", Toast.LENGTH_SHORT).show();
 					adp.insert_back(new ItemBeanChat(0, "Lance", "12:00", "Refreshed.", 
-													 "https://avatars0.githubusercontent.com/u/41908064?s=460&v=4"));
+													 "https://s.gravatar.com/avatar/cb135b9ed779f242373ab3a8db99f25a?s=144"));
 					adp.notifyDataSetChanged();
 					//adp.notifyDataSetInvalidated();
 					srl.setRefreshing(false);
 				}
 			});
 		
+		btn_send.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					final String text = text_message.getText().toString();
+					ContentValues parames = new ContentValues();
+					parames.put("auth", Config.get(Chat.this).user.auth);
+					parames.put("message_type", "text");
+					parames.put("text", text);
+					parames.put("gid", gid);
+					AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+					builder.setMessage("Sending");
+					builder.setCancelable(false);
+					dialog = builder.create();
+					dialog.show();
+					Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, 
+						new StringCallback() {
+							public void onStart(Response<String> p1) {
+								
+							}
+							@Override
+							public void onError(Response<String> p1) {
+								dialog.hide();
+								AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+								builder.setMessage("Error. (Code: " + p1.code() + ")");
+								builder.show();
+							}
+							@Override
+							public void onSuccess(Response<String> p1) {
+								dialog.hide();
+								ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
+								if (result.code == 0) {
+									String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
+									adp.insert(new ItemBeanChat(0, Config.get(Chat.this).user.username, date, 
+																text, Config.get(Chat.this).user.head));
+									adp.notifyDataSetChanged();
+									text_message.setText("");
+									
+								} else {
+									AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+									builder.setMessage(result.message+ " (Code: " + result.code + ")");
+									builder.show();
+								}
+							}
+						});
+				}
+		});
 		
+		timer = new Timer();
+		timer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					Refresh();
+				}
+		}, 0, 5000);
 	}
 	
 	public void Refresh()
 	{
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(this).user.auth);
-		parames.put("gid", "" + gid);
+		parames.put("gid", gid);
 		parames.put("limit", "30");
 		try {
 			Communication.getComm(this).post(Communication.GET_MESSAGE, parames,  
@@ -103,10 +158,10 @@ public class Chat extends AppCompatActivity
 					{
 						ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
 						if (result.code == 0) {
+							adp.list.clear();
 							for (ResultData.Data.Message message: result.data.message) {
-								//ItemBeanChat(int mid, String usrename, String time, String message, String head_url)
 								Long stime = Long.parseLong(message.send_time) * 1000;
-								String date = new SimpleDateFormat("MM dd HH:mm", Locale.CHINA).format(new Date(stime));
+								String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date(stime));
 								adp.insert_back(new ItemBeanChat(0, message.username, date, 
 									message.text, message.head));
 							}
