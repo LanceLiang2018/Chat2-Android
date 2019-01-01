@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import com.google.gson.*;
+import java.text.*;
 //import android.support.v7.app.*;
 //import lance.liang.chat2.
 
@@ -67,10 +68,9 @@ public class Chat extends AppCompatActivity
 		srl = (SwipeRefreshLayout)findViewById(R.id.chatSwipeRefreshLayout);
 		
 		adp = new ChatAdapter(this, data);
+		list_message.setAdapter(adp);
 		
 		Refresh();
-		
-		list_message.setAdapter(adp);
 		
 		srl.setColorSchemeResources(android.R.color.holo_blue_dark);
 		srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
@@ -85,30 +85,41 @@ public class Chat extends AppCompatActivity
 					srl.setRefreshing(false);
 				}
 			});
+		
+		
 	}
 	
 	public void Refresh()
 	{
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(this).user.auth);
-		parames.put("gid", gid);
+		parames.put("gid", "" + gid);
 		parames.put("limit", "30");
-		Communication.getComm(this).post(Communication.GET_MESSAGE, parames,
-			new StringCallback() {
-				@Override
-				public void onSuccess(Response<String> response) {
-					Toast.makeText(Chat.this, response.body().toString(), Toast.LENGTH_LONG);
-//					ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
-//					if (result.code == 0) {
-//						for (ResultData.Data.Message message: result.data.message) {
-//							adp.insert_back(new ItemBeanChat(0, message.username, "" + message.send_time, message.text, message.head));
-//							adp.notifyDataSetChanged();
-//						}
-//					} else {
-//						Log.e("Chat 2", result.message + "(Code: " + result.code + ")");
-//					}
-				}
-			});
+		try {
+			Communication.getComm(this).post(Communication.GET_MESSAGE, parames,  
+				new StringCallback() {
+					@Override
+					public void onSuccess(Response<String> p1)
+					{
+						ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
+						if (result.code == 0) {
+							for (ResultData.Data.Message message: result.data.message) {
+								//ItemBeanChat(int mid, String usrename, String time, String message, String head_url)
+								Long stime = Long.parseLong(message.send_time) * 1000;
+								String date = new SimpleDateFormat("MM dd HH:mm", Locale.CHINA).format(new Date(stime));
+								adp.insert_back(new ItemBeanChat(0, message.username, date, 
+									message.text, message.head));
+							}
+							adp.notifyDataSetChanged();
+						} else {
+							
+						}
+					}
+				});
+		}
+		catch (Exception e) {
+			Log.e("Chat 2", e.getMessage());
+		}
 	}
 
 	@Override
