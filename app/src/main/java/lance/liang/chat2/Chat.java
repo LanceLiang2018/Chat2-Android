@@ -189,4 +189,14 @@ public class Chat extends AppCompatActivity
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		if (timer != null) {
+			timer.cancel();
+			timer = null;
+		}
+	}
 }

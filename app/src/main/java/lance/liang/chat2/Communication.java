@@ -58,6 +58,25 @@ public class Communication
 	private void init(Context context)
 	{
 		this.SERVER = Config.get(context).settings.server;
+		MAIN = SERVER + "";
+		ABOUT = SERVER + "about";
+		BEAT = SERVER + "beat";
+		LOGIN = SERVER + "login";
+		SIGNUP = SERVER + "signup";
+		GET_MESSAGE = SERVER + "get_message";
+		SEND_MESSAGE = SERVER + "send_message";
+		GET_HEAD = SERVER + "get_head";
+		CLEAR_ALL = SERVER + "clear_all";
+
+		SET_USER = SERVER + "set_user";
+		JOIN_IN = SERVER + "join_in";
+
+		CREATE_ROOM = SERVER + "create_room";
+		SET_ROOM = SERVER + "set_room";
+		GET_ROOMS = SERVER + "get_room_all";
+		GET_ROOM_INFO = SERVER + "get_room_info";
+		SET_ROOM_INFO = SERVER + "set_room_info";
+		GET_MEMBERS = SERVER + "get_room_members";
 	}
 
 	public static Communication getComm(Context context)

@@ -22,14 +22,21 @@ public class MainActivity extends AppCompatActivity {
 	List<ItemBeanMain> data = new ArrayList<ItemBeanMain>();
 	private EditText edit;
 	
-	public static int code_login = 0x80, code_signup = 0x81, code_chat = 0x82;
+	public static final int code_login = 0x80, code_signup = 0x81, code_chat = 0x82;
 	
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState)
 	{
-		Log.d("Chat 2:: main", "Started.");
+		Log.i("Chat 2", "Started.");
 		setTheme(Config.get(this).settings.theme);
+		
+		Config config = Config.get(this);
+		config.settings.server = "https://lance-chatroom2.herokuapp.com/";
+		config.save();
+		
+		//Toast.makeText(this, Config.get(this).settings.server, Toast.LENGTH_LONG);
+		//Log.i("Chat 2", Communication.getComm(this).SERVER);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -60,6 +67,13 @@ public class MainActivity extends AppCompatActivity {
 
 		srl = (SwipeRefreshLayout)findViewById(R.id.slr);
 		srl.setEnabled(true);
+		srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+				@Override
+				public void onRefresh() {
+					MainActivity.this.Refresh();
+					srl.setRefreshing(false);
+				}
+		});
 		
 		List<ItemBeanLeft> left_data = new ArrayList<ItemBeanLeft>();
 		for (int i=1; i<=20; i++)
@@ -105,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
 			});
 	}
 
-	/*
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
@@ -113,11 +126,11 @@ public class MainActivity extends AppCompatActivity {
 		
 		switch (requestCode)
 		{
-			case R.layout.login:
+			case code_login:
 				try {
 					String str = data.getStringExtra("command");
 					if (str == "Refresh") {
-						this.recreate();
+						this.Refresh();
 					}
 				}
 				catch (Exception e) {
@@ -128,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 				break;
 		}
 	}
-	*/
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -180,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
 										ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
 										if (result.code == 0) {
 											Log.d("Chat 2", "Create Room: name:" + result.data.info.name + " gid: " + result.data.info.gid);
+											MainActivity.this.Refresh();
 										}
 										else {
 											Log.e("Chat 2", result.message + "(Code: " + result.code + ")");
