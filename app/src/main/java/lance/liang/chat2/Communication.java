@@ -12,6 +12,7 @@ import lance.liang.chat2.*;
 import lance.liang.chat2.ResultData;
 import android.nfc.*;
 import com.lzy.okgo.request.*;
+import java.io.*;
 
 public class Communication
 {
@@ -57,7 +58,7 @@ public class Communication
 	
 	private void init(Context context)
 	{
-		this.SERVER = Config.get(context).settings.server;
+		this.SERVER = Config.get(context).data.settings.server;
 		MAIN = SERVER + "";
 		ABOUT = SERVER + "about";
 		BEAT = SERVER + "beat";
@@ -110,7 +111,7 @@ public class Communication
 		request.execute(callback);
 	}
 
-	public void test(final Context context) throws Exception
+	public void test(final Context context)
 	{
 		ContentValues parames = new ContentValues();
 		parames.put("username", "Lan");

@@ -8,6 +8,7 @@ import android.widget.*;
 import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
+import java.io.*;
 
 public class Login extends Activity
 {
@@ -20,8 +21,8 @@ public class Login extends Activity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		setTheme(Config.get(this).settings.theme);
-		
+		setTheme(Config.get(this).data.settings.theme);
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
 		//Toast.makeText(this, "Login Activity", Toast.LENGTH_SHORT);
@@ -62,15 +63,15 @@ public class Login extends Activity
 								if (result.code == 0)
 								{
 									Config config = Config.get(Login.this);
-									config.user.auth = result.data.auth;
-									config.user.username = text_username.getText().toString();
-									config.user.head = result.data.head;
+									config.data.user.auth = result.data.auth;
+									config.data.user.username = text_username.getText().toString();
+									config.data.user.head = result.data.head;
 									config.save();
 									
 									Intent intent = new Intent();
 									intent.putExtra("command", "Refresh");
 									setResult(0, intent);
-									Toast.makeText(Login.this, "Login successfully. Got auth: " + config.user.auth, Toast.LENGTH_SHORT).show();
+									Toast.makeText(Login.this, "Login successfully. Got auth: " + config.data.user.auth, Toast.LENGTH_SHORT).show();
 									Login.this.finish();
 								}
 								else

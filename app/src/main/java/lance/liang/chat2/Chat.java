@@ -40,7 +40,7 @@ public class Chat extends AppCompatActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		setTheme(Config.get(this).settings.theme);
+		setTheme(Config.get(this).data.settings.theme);
 		super.onCreate(savedInstanceState);
 		
 		Bundle bundle = getIntent().getExtras();
@@ -93,7 +93,7 @@ public class Chat extends AppCompatActivity
 				public void onClick(View p1) {
 					final String text = text_message.getText().toString();
 					ContentValues parames = new ContentValues();
-					parames.put("auth", Config.get(Chat.this).user.auth);
+					parames.put("auth", Config.get(Chat.this).data.user.auth);
 					parames.put("message_type", "text");
 					parames.put("text", text);
 					parames.put("gid", gid);
@@ -120,8 +120,8 @@ public class Chat extends AppCompatActivity
 								ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
 								if (result.code == 0) {
 									String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
-									adp.insert(new ItemBeanChat(0, Config.get(Chat.this).user.username, date, 
-																text, Config.get(Chat.this).user.head));
+									adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, date, 
+																text, Config.get(Chat.this).data.user.head));
 									adp.notifyDataSetChanged();
 									text_message.setText("");
 									
@@ -147,11 +147,11 @@ public class Chat extends AppCompatActivity
 	public void Refresh()
 	{
 		ContentValues parames = new ContentValues();
-		parames.put("auth", Config.get(this).user.auth);
+		parames.put("auth", Config.get(Chat.this).data.user.auth);
 		parames.put("gid", gid);
 		parames.put("limit", "30");
 		try {
-			Communication.getComm(this).post(Communication.GET_MESSAGE, parames,  
+			Communication.getComm(Chat.this).post(Communication.GET_MESSAGE, parames,  
 				new StringCallback() {
 					@Override
 					public void onSuccess(Response<String> p1)

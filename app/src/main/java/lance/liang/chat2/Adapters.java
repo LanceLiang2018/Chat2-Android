@@ -1,9 +1,17 @@
 package lance.liang.chat2;
 import android.content.*;
+import android.graphics.*;
+import android.support.v4.graphics.drawable.*;
+import android.support.v7.appcompat.*;
 import android.view.*;
 import android.widget.*;
-import java.util.*;
 import com.bumptech.glide.*;
+import java.util.*;
+
+import android.support.v7.appcompat.R;
+import android.graphics.drawable.*;
+import android.util.*;
+import com.lzy.okgo.request.*;
 
 class MainAdapter extends BaseAdapter
 {
@@ -38,9 +46,20 @@ class MainAdapter extends BaseAdapter
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = inflater.inflate(R.layout.item_main, null);
 		ItemBeanMain bean = list.get(position);
-		((ImageView) view.findViewById(R.id.itemmainImageView)).setImageResource(bean.image);
+		ImageView im = (ImageView) view.findViewById(R.id.itemmainImageView);
+		//im.setImageResource(bean.image);
 		((TextView) view.findViewById(R.id.itemmainTextView_title)).setText(bean.title);
 		((TextView) view.findViewById(R.id.itemmainTextView_content)).setText(bean.content);
+		
+		try {
+			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(view.getResources(), BitmapFactory.decodeResource(view.getResources(), R.drawable.image_1));
+			roundedBitmapDrawable1.setCircular(true);
+			im.setImageDrawable(roundedBitmapDrawable1);
+		}
+		catch (Exception e) {
+			Log.e("Chat 2", e.getMessage());
+		}
+		
 		return view;
 	}
 }
@@ -86,46 +105,111 @@ class ChatAdapter extends BaseAdapter
 		((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
 		((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
 		((TextView) view.findViewById(R.id.itemchatTextView_message)).setText(bean.message);
+		ImageView im = (ImageView) view.findViewById(R.id.itemchatImageView_head);
 		
 		Glide.with(view).load(bean.head_url)
-			.into((ImageView) view.findViewById(R.id.itemchatImageView_head));
+			.into(im);
+		try {
+			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(view.getResources(), ((BitmapDrawable) im.getDrawable()).getBitmap());
+			roundedBitmapDrawable1.setCircular(true);
+			im.setImageDrawable(roundedBitmapDrawable1);
+		}
+		catch (Exception e) {
+			Log.e("Chat 2", e.getMessage());
+		}
 		
 		return view;
 	}
 }
 
-class LeftAdapter extends BaseAdapter
+class LeftAdapter extends BaseExpandableListAdapter
 {
-	private List<ItemBeanLeft> list;
+	private ItemBeanLeft[] list = {
+		new ItemBeanLeft(R.drawable.image_1, "Me"),
+		new ItemBeanLeft(R.drawable.image_2, "Settings"),
+	};
+	private ItemBeanLeft[][] child = {
+		{
+			new ItemBeanLeft(R.drawable.image_1, "I"),
+			new ItemBeanLeft(R.drawable.image_2, "Logout"),
+		},
+		{
+			new ItemBeanLeft(R.drawable.image_1, "Theme"),
+			new ItemBeanLeft(R.drawable.image_2, "Host"),
+		},
+	};
 	private LayoutInflater inflater;
 
-	LeftAdapter(Context context, List<ItemBeanLeft> ilist) {
-		this.list = ilist;
-		inflater = LayoutInflater.from(context);
+	@Override
+	public int getGroupCount()
+	{
+		return list.length;
 	}
 
 	@Override
-	public int getCount() {
-		return list.size();
+	public int getChildrenCount(int p1)
+	{
+		return child[p1].length;
 	}
 
 	@Override
-	public Object getItem(int p1) {
-		return list.get(p1);
+	public Object getGroup(int p1)
+	{
+		return list[p1];
 	}
 
 	@Override
-	public long getItemId(int p1) {
+	public Object getChild(int p1, int p2)
+	{
+		return child[p1][p2];
+	}
+
+	@Override
+	public long getGroupId(int p1)
+	{
 		return p1;
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public long getChildId(int p1, int p2)
+	{
+		return p2;
+	}
+
+	@Override
+	public boolean hasStableIds()
+	{
+		return true;
+	}
+
+	@Override
+	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent)
+	{
 		View view = inflater.inflate(R.layout.item_left, null);
-		ItemBeanLeft bean = list.get(position);
-		((ImageView) view.findViewById(R.id.itemleftImageView)).setImageResource(bean.image);
-		((TextView) view.findViewById(R.id.itemleftTextView)).setText(bean.title);
+		ImageView im = (ImageView) view.findViewById(R.id.itemleftImageView);
+		TextView text = (TextView) view.findViewById(R.id.itemleftTextView);
+		im.setImageResource(list[groupPosition].image);
+		text.setText(list[groupPosition].title);
 		return view;
+	}
+
+	@Override
+	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent)
+	{
+		View view = inflater.inflate(R.layout.item_left_child, null);
+		TextView text = (TextView) view.findViewById(R.id.itemleftchildTextView);
+		text.setText(child[groupPosition][childPosition].title);
+		return view;
+	}
+
+	@Override
+	public boolean isChildSelectable(int p1, int p2)
+	{
+		return true;
+	}
+
+	LeftAdapter(Context context) {
+		inflater = LayoutInflater.from(context);
 	}
 }
 

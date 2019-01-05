@@ -33,4 +33,5 @@ dependencies {
 	compile "com.github.bumptech.glide:glide:4.0.0+"
 	compile "com.google.code.gson:gson:+"
 	compile 'com.lzy.net:okgo:3.0.4'
+	compile "com.github.bumptech.glide:glide:compiler"
 }

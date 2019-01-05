@@ -1,27 +1,119 @@
 package lance.liang.chat2;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.content.*;
+import android.util.*;
+import com.google.gson.*;
+import java.io.*;
 import android.widget.*;
-import android.os.*;
-import okhttp3.internal.http2.*;
 
-class UserData
+class ConfigData
 {
-	public String username = "", auth = "", head = "";
-	public int uid = 0, lastest = 0;
+	static class UserData
+	{
+		public String username = "", auth = "", head = "";
+		public int uid = 0, lastest = 0;
+	}
+	static class Settings
+	{
+		//public String server = "https://lance-chatroom2.herokuapp.com/";
+		public String server = "http://0.0.0.0:5000/";
+		public int theme = R.style.AppTheme;
+	}
+	public Settings settings = new Settings();
+	public UserData user = new UserData();
 }
 
-class Settings
+public class Config
 {
-	//public String server = "https://lance-chatroom2.herokuapp.com/";
-	public String server = "http://0.0.0.0:5000/";
-	public int theme = R.style.AppTheme;
+	public static ConfigData data;
+
+	public static String FILENAME = "";
+	public final static String NAME = "settings.json";
+	
+	private Context pcontext;
+	
+	public Config(Context context)
+	{
+		pcontext = context;
+		//FILENAME = pcontext.getFilesDir().getAbsolutePath() + "/" + NAME;
+		FILENAME = pcontext.getExternalFilesDir("Chat2").getAbsolutePath() + "/" + NAME;
+		//Log.v("Chat 2", "Config FileName: " + FILENAME);
+		load();
+	}
+	
+	public static Config get(Context context)
+	{
+		return new Config(context);
+	}
+	
+	public void load()
+	{
+		try {
+			File file = new File(FILENAME);
+			Reader reader = new FileReader(file);
+			char[] buf = new char[(int)file.length()];
+			reader.read(buf, 0, (int)file.length());
+			reader.close();
+			String str = String.valueOf(buf).toString();
+			//String str = "{}";
+			//Log.v("Chat 2", "Load(): " + str);
+			//Toast.makeText(context, str, Toast.LENGTH_LONG).show();
+			data = (new Gson()).fromJson(str, ConfigData.class);
+		}
+		catch (IOException e) {
+			init();
+			load();
+			Log.e("Chat 2", e.getMessage());
+		}
+	}
+	
+	public void init()
+	{
+		try {
+			File file = new File(FILENAME);
+			if (!file.exists())
+				file.createNewFile();
+			Writer writer = new FileWriter(file);
+			String str = (new Gson()).toJson(new ConfigData(), ConfigData.class);
+			writer.write(str);
+			writer.close();
+			
+			//ConfigData d = (new Gson()).fromJson(str, ConfigData.class);
+		}
+		catch (IOException e) {
+			Log.e("Chat 2", e.getMessage());
+		}
+	}
+	
+	public void save()
+	{
+		try {
+			File file = new File(FILENAME);
+			Writer writer = new FileWriter(file);
+			String str = (new Gson()).toJson(data, ConfigData.class);
+			writer.write(str);
+			writer.close();
+			//Log.v("Chat 2", "Save(): " + str);
+		}
+		catch (IOException e) {
+			Log.e("Chat 2", e.getMessage());
+		}
+	}
+	
+	public void test()
+	{
+		init();
+		load();
+		data.user.username = "Changed";
+		Log.w("Chat 2", (new Gson()).toJson(data, ConfigData.class));
+		save();
+		load();
+		Log.w("Chat 2", (new Gson()).toJson(data, ConfigData.class));
+		
+	}
 }
 
+/*
 public class Config extends SQLiteOpenHelper
 {
 	public static final String DB_NAME = "settings.db";
@@ -110,3 +202,5 @@ public class Config extends SQLiteOpenHelper
 		return this;
 	}
 }
+
+*/

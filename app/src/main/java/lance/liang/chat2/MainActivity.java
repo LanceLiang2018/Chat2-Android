@@ -1,48 +1,96 @@
 package lance.liang.chat2;
 
 import android.content.*;
+import android.graphics.*;
 import android.os.*;
+import android.support.v4.graphics.drawable.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
+import android.support.v7.appcompat.*;
 import android.util.*;
 import android.view.*;
+import android.view.View.*;
 import android.widget.*;
-import com.lzy.okgo.*;
+import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import java.util.*;
-import lance.liang.chat2.*;
-import com.google.gson.*;
+
+import android.support.v7.appcompat.R;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout srl;
 	private ListView list;
-	private ListView left;
+	private ExpandableListView left;
 	private MainAdapter adp;
 	List<ItemBeanMain> data = new ArrayList<ItemBeanMain>();
 	private EditText edit;
+	private TextView text_title;
+	private ImageView im_head;
 	
 	public static final int code_login = 0x80, code_signup = 0x81, code_chat = 0x82;
+
+	private ActionBar bar;
+	private DrawerLayout drawer;
 	
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState)
 	{
 		Log.i("Chat 2", "Started.");
-		setTheme(Config.get(this).settings.theme);
+		setTheme(Config.get(this).data.settings.theme);
+		//Config.get(this).test();
 		
-		Config config = Config.get(this);
-		config.settings.server = "https://lance-chatroom2.herokuapp.com/";
-		config.save();
+		//Config config = Config.get(this);
+		//config.settings.server = "https://lance-chatroom2.herokuapp.com/";
+		//config.save();
 		
-		//Toast.makeText(this, Config.get(this).settings.server, Toast.LENGTH_LONG);
-		//Log.i("Chat 2", Communication.getComm(this).SERVER);
-
-        super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+		
+		bar = getSupportActionBar();
+		//bar.setLogo(R.drawable.image_1);
+		//bar.setIcon(R.drawable.image_2);
+		//bar.setDisplayHomeAsUpEnabled(true);
+		//bar.setDisplayShowHomeEnabled(true);
+		//bar.setHomeButtonEnabled(true);
+		//bar.setTitle("");
+		//bar.setDisplayOptions(bar.DISPLAY_USE_LOGO);
+		
+		//Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
+		//toolbar.setNavigationIcon(R.drawable.image_2);
+		//toolbar.setTitle("Lance");
+		
+		View view = LayoutInflater.from(this).inflate(R.layout.title_main, null);
+		im_head = (ImageView)view.findViewById(R.id.titlemainImageButton_head);
+		text_title = (TextView)view.findViewById(R.id.titlemainTextView_title);
+		
+		View.OnClickListener onclick = new OnClickListener() {
+			@Override
+			public void onClick(View p1) {
+				if (drawer.isDrawerOpen(Gravity.LEFT))
+					drawer.closeDrawers();
+				else
+					drawer.openDrawer(Gravity.LEFT);
+			}
+		};
+		
+		im_head.setOnClickListener(onclick);
+		text_title.setOnClickListener(onclick);
+		//Glide.with(this).load(Config.get(MainActivity.this).data.user.head).into(im_head);
+		//Glide.with(this).load(R.drawable.image_2).into(im_head);
+		RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.image_2));
+		roundedBitmapDrawable1.setCircular(true);
+		im_head.setImageDrawable(roundedBitmapDrawable1);
+		
+		bar.setDisplayShowTitleEnabled(false);
+		bar.setDisplayHomeAsUpEnabled(false);
+		bar.setDisplayShowCustomEnabled(true);
+		bar.setCustomView(view);
 
 		list = (ListView)findViewById(R.id.list_rooms);
-		left = (ListView)findViewById(R.id.list_left);
+		left = (ExpandableListView)findViewById(R.id.list_left);
+		drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
 		
 //		for (int i=1; i <= 100; i++)
 //			data.add(new ItemBeanMain(0, R.mipmap.ic_launcher, "Title " + i, "Content" + i));
@@ -75,14 +123,10 @@ public class MainActivity extends AppCompatActivity {
 				}
 		});
 		
-		List<ItemBeanLeft> left_data = new ArrayList<ItemBeanLeft>();
-		for (int i=1; i<=20; i++)
-			left_data.add(new ItemBeanLeft(R.drawable.image_1, "Title"));
-		
-		left.setAdapter(new LeftAdapter(this, left_data));
+		left.setAdapter(new LeftAdapter(this));
 		
 		ContentValues parames = new ContentValues();
-		parames.put("auth", Config.get(this).user.auth);
+		parames.put("auth", Config.get(this).data.user.auth);
 		Communication.getComm(this).post(Communication.BEAT, parames, 
 			new StringCallback() {
 				@Override
@@ -101,9 +145,12 @@ public class MainActivity extends AppCompatActivity {
 	
 	public void Refresh()
 	{
+		//Glide.with(this).load(Config.get(this).data.user.head).into(im_head);
+		text_title.setText(Config.get(this).data.user.username);
+		
 		adp.list.clear();
 		ContentValues parames = new ContentValues();
-		parames.put("auth", Config.get(this).user.auth);
+		parames.put("auth", Config.get(this).data.user.auth);
 		Communication.getComm(this).post(Communication.GET_ROOMS, parames, 
 			new StringCallback() {
 				@Override
@@ -113,6 +160,18 @@ public class MainActivity extends AppCompatActivity {
 						for (ResultData.Data.RoomData room_data: result.data.room_data) {
 							adp.insert(new ItemBeanMain(room_data.gid, R.mipmap.ic_launcher, room_data.name, "Content"));
 							adp.notifyDataSetChanged();
+						}
+					}
+					else {
+						if (result.code == 2) {
+							Toast.makeText(MainActivity.this, "(Refresh(): ) Login Failed.", Toast.LENGTH_SHORT).show();
+							Intent intent_login = new Intent();
+							intent_login.setClass(MainActivity.this, Login.class);
+							startActivityForResult(intent_login, code_login);
+						}
+						else {
+							AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+							builder.setMessage(result.message + " (Code: " + result.code + ")");
 						}
 					}
 				}
@@ -184,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
 						@Override
 						public void onClick(DialogInterface p1, int p2) {
 							ContentValues parames = new ContentValues();
-							parames.put("auth", Config.get(MainActivity.this).user.auth);
+							parames.put("auth", Config.get(MainActivity.this).data.user.auth);
 							parames.put("name", edit.getText().toString());
 							Communication.getComm(MainActivity.this).post(Communication.CREATE_ROOM, parames, 
 								new StringCallback() {

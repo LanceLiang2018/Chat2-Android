@@ -21,11 +21,12 @@ public class Signup extends Activity
 	private EditText text_password;
 	private EditText text_email;
 	private AlertDialog dialog;
+	private EditText text_conform;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		setTheme(Config.get(this).settings.theme);
+		setTheme(Config.get(this).data.settings.theme);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.signup);
 		
@@ -33,10 +34,20 @@ public class Signup extends Activity
 		text_username = (EditText)findViewById(R.id.signupEditText_username);
 		text_password = (EditText)findViewById(R.id.signupEditText_password);
 		text_email = (EditText)findViewById(R.id.signupEditText_email);
+		text_conform = (EditText)findViewById(R.id.signupEditText_conform);
 		
 		btn.setOnClickListener(new Button.OnClickListener(){
 				@Override
-				public void onClick(View p1){
+				public void onClick(View p1) {
+					String s1 = text_password.getText().toString();
+					String s2 = text_conform.getText().toString();
+					if (!s1.equals(s2)) {
+						AlertDialog.Builder builder = new AlertDialog.Builder(Signup.this);
+						builder.setMessage("Password do not ... Please Check.");
+						builder.show();
+						return;
+					}
+					
 					AlertDialog.Builder builder = new AlertDialog.Builder(Signup.this);
 					builder.setMessage("Please wait...");
 					builder.setCancelable(false);
