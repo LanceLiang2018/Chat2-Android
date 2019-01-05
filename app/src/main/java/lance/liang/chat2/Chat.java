@@ -74,7 +74,8 @@ public class Chat extends AppCompatActivity
 		
 		Refresh();
 		
-		srl.setColorSchemeResources(android.R.color.holo_blue_dark);
+		//srl.setColorSchemeResources(android.R.color.holo_blue_dark);
+		srl.setColorSchemeResources(Config.get(this).data.settings.colorFt);
 		srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
 				@Override
 				public void onRefresh()

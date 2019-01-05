@@ -17,7 +17,11 @@ class ConfigData
 	{
 		//public String server = "https://lance-chatroom2.herokuapp.com/";
 		public String server = "http://0.0.0.0:5000/";
-		public int theme = R.style.AppTheme;
+		public int theme = R.style.AppTheme01;
+		//public int colorBg = 0xFF9BAEC8;
+		//public int colorFt = 0xFF6AAFE6;
+		public int colorBg = R.color.colorBg01;
+		public int colorFt = R.color.colorFt01;
 	}
 	public Settings settings = new Settings();
 	public UserData user = new UserData();

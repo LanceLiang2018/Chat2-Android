@@ -12,14 +12,22 @@
 		android:src="@drawable/image_2"
 		android:id="@+id/titlemainImageButton_head"/>
 
-	<TextView
+	<LinearLayout
+		android:layout_height="match_parent"
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceMedium"
-		android:text="Medium Text"
-		android:id="@+id/titlemainTextView_title"
-		android:layout_marginLeft="15dp"
-		android:textColor="#FAFAFA"/>
+		android:orientation="horizontal"
+		android:paddingLeft="20dp">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:text="Medium Text"
+			android:id="@+id/titlemainTextView_title"
+			android:textColor="#FAFAFA"
+			android:gravity="center_vertical"/>
+
+	</LinearLayout>
 
 </LinearLayout>
 

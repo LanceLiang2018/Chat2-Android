@@ -75,7 +75,8 @@
 					android:layout_width="wrap_content"
 					android:text="Large Text"
 					android:background="#76FFE846"
-					android:id="@+id/itemchatTextView_message"/>
+					android:id="@+id/itemchatTextView_message"
+					android:textColor="#A0FFFFFF"/>
 
 			</LinearLayout>
 

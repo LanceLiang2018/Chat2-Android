@@ -68,10 +68,12 @@ class ChatAdapter extends BaseAdapter
 {
 	public List<ItemBeanChat> list;
 	private LayoutInflater inflater;
+	Context pcontext;
 
 	ChatAdapter(Context context, List<ItemBeanChat> ilist) {
 		this.list = ilist;
 		inflater = LayoutInflater.from(context);
+		pcontext = context;
 	}
 
 	@Override
@@ -104,7 +106,10 @@ class ChatAdapter extends BaseAdapter
 		
 		((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
 		((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
-		((TextView) view.findViewById(R.id.itemchatTextView_message)).setText(bean.message);
+		TextView message = (TextView) view.findViewById(R.id.itemchatTextView_message);
+		message.setText(bean.message);
+		message.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
+		//message.setTextColor(Config.get(pcontext).data.settings.colorFt);
 		ImageView im = (ImageView) view.findViewById(R.id.itemchatImageView_head);
 		
 		Glide.with(view).load(bean.head_url)
@@ -124,44 +129,32 @@ class ChatAdapter extends BaseAdapter
 
 class LeftAdapter extends BaseExpandableListAdapter
 {
-	private ItemBeanLeft[] list = {
-		new ItemBeanLeft(R.drawable.image_1, "Me"),
-		new ItemBeanLeft(R.drawable.image_2, "Settings"),
-	};
-	private ItemBeanLeft[][] child = {
-		{
-			new ItemBeanLeft(R.drawable.image_1, "I"),
-			new ItemBeanLeft(R.drawable.image_2, "Logout"),
-		},
-		{
-			new ItemBeanLeft(R.drawable.image_1, "Theme"),
-			new ItemBeanLeft(R.drawable.image_2, "Host"),
-		},
-	};
+	private List<ItemBeanLeft> list;
+	private List<ItemBeanLeft[]> child;
 	private LayoutInflater inflater;
 
 	@Override
 	public int getGroupCount()
 	{
-		return list.length;
+		return list.size();
 	}
 
 	@Override
 	public int getChildrenCount(int p1)
 	{
-		return child[p1].length;
+		return child.get(p1).length;
 	}
 
 	@Override
 	public Object getGroup(int p1)
 	{
-		return list[p1];
+		return list.get(p1);
 	}
 
 	@Override
 	public Object getChild(int p1, int p2)
 	{
-		return child[p1][p2];
+		return child.get(p1)[p2];
 	}
 
 	@Override
@@ -188,8 +181,8 @@ class LeftAdapter extends BaseExpandableListAdapter
 		View view = inflater.inflate(R.layout.item_left, null);
 		ImageView im = (ImageView) view.findViewById(R.id.itemleftImageView);
 		TextView text = (TextView) view.findViewById(R.id.itemleftTextView);
-		im.setImageResource(list[groupPosition].image);
-		text.setText(list[groupPosition].title);
+		im.setImageResource(list.get(groupPosition).image);
+		text.setText(list.get(groupPosition).title);
 		return view;
 	}
 
@@ -198,7 +191,7 @@ class LeftAdapter extends BaseExpandableListAdapter
 	{
 		View view = inflater.inflate(R.layout.item_left_child, null);
 		TextView text = (TextView) view.findViewById(R.id.itemleftchildTextView);
-		text.setText(child[groupPosition][childPosition].title);
+		text.setText(child.get(groupPosition)[childPosition].title);
 		return view;
 	}
 
@@ -208,8 +201,10 @@ class LeftAdapter extends BaseExpandableListAdapter
 		return true;
 	}
 
-	LeftAdapter(Context context) {
+	LeftAdapter(Context context, List<ItemBeanLeft> ilist, List<ItemBeanLeft[]> ichild) {
 		inflater = LayoutInflater.from(context);
+		this.list = ilist;
+		this.child = ichild;
 	}
 }
 
