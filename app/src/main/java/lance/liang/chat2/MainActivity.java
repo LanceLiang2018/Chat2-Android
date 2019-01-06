@@ -1,6 +1,7 @@
 package lance.liang.chat2;
 
 import android.content.*;
+import android.content.pm.*;
 import android.graphics.*;
 import android.os.*;
 import android.support.v4.graphics.drawable.*;
@@ -11,16 +12,15 @@ import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
-import com.bumptech.glide.*;
 import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
+import com.zhihu.matisse.*;
+import com.zhihu.matisse.engine.impl.*;
 import java.util.*;
+import lance.liang.chat2.*;
 
 import android.support.v7.appcompat.R;
-import com.pizidea.imagepicker.*;
-import com.pizidea.imagepicker.bean.*;
-import android.net.*;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout srl;
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 	private TextView text_title;
 	private ImageView im_head;
 	
-	public static final int code_login = 0x80, code_signup = 0x81, code_chat = 0x82;
+	public static final int code_login = 0x80, code_signup = 0x81, code_chat = 0x82, code_pick = 0x83;
 
 	private ActionBar bar;
 	private DrawerLayout drawer;
@@ -389,28 +389,17 @@ public class MainActivity extends AppCompatActivity {
 						}
 					});
 				*/
-				try {
-					AndroidImagePicker.getInstance().pickSingle(MainActivity.this, false, new AndroidImagePicker.OnImagePickCompleteListener() {
-							@Override
-							public void onImagePickComplete(List<ImageItem> items) {
-								if (items == null || items.size() == 0)
-									return;
-								try {
-									AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-									builder.setTitle("Image");
-									//ImageView im = new ImageView(MainActivity.this);
-									//Uri uri = Uri.parse(items.get(0).path);
-									//im.setImageURI(uri);
-									//builder.setView(im);
-									builder.show();
-								} catch (Exception e) {
-									Log.e("Chat 2", e.getMessage());
-								}
-							}					
-					});
-				} catch (Exception e) {
-					Log.e("Chat 2", e.getMessage());
-				}
+				Matisse.from(MainActivity.this)
+					.choose(MimeType.ofAll())
+					.countable(true)
+					.maxSelectable(9)
+					//.addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
+					//.gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+					.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+					.thumbnailScale(0.85f)
+					.imageEngine(new GlideEngine())
+					.forResult(code_pick);
+				
 				break;
 			default:
 				break;
