@@ -18,11 +18,9 @@
 
 package com.pizidea.imagepicker;
 
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
-
-import java.io.File;
+import android.widget.*;
+import com.squareup.picasso.*;
+import java.io.*;
 
 /**
  * <b>desc your class</b><br/>
@@ -32,12 +30,12 @@ import java.io.File;
 public class GlideImgLoader implements ImgLoader {
     @Override
     public void onPresentImage(ImageView imageView, String imageUri, int size) {
-        Glide.with(imageView.getContext())
+        Picasso.with(imageView.getContext())
                 .load(new File(imageUri))
                 .centerCrop()
-                .dontAnimate()
-                .thumbnail(0.5f)
-                .override(size/4*3, size/4*3)
+                //.dontAnimate()
+                //.thumbnail(0.5f)
+                //.override(size/4*3, size/4*3)
                 .placeholder(R.drawable.default_img)
                 .error(R.drawable.default_img)
                 .into(imageView);

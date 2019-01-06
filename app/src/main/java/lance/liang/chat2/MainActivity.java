@@ -18,6 +18,9 @@ import com.lzy.okgo.model.*;
 import java.util.*;
 
 import android.support.v7.appcompat.R;
+import com.pizidea.imagepicker.*;
+import com.pizidea.imagepicker.bean.*;
+import android.net.*;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout srl;
@@ -376,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
 				build.show();
 				break;
 			case R.id.option_clear_all:
+				/*
 				Communication.getComm(this).get(Communication.CLEAR_ALL, 
 					new StringCallback() {
 						@Override
@@ -384,6 +388,29 @@ public class MainActivity extends AppCompatActivity {
 							Toast.makeText(MainActivity.this, result.message, Toast.LENGTH_SHORT).show();
 						}
 					});
+				*/
+				try {
+					AndroidImagePicker.getInstance().pickSingle(MainActivity.this, false, new AndroidImagePicker.OnImagePickCompleteListener() {
+							@Override
+							public void onImagePickComplete(List<ImageItem> items) {
+								if (items == null || items.size() == 0)
+									return;
+								try {
+									AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+									builder.setTitle("Image");
+									//ImageView im = new ImageView(MainActivity.this);
+									//Uri uri = Uri.parse(items.get(0).path);
+									//im.setImageURI(uri);
+									//builder.setView(im);
+									builder.show();
+								} catch (Exception e) {
+									Log.e("Chat 2", e.getMessage());
+								}
+							}					
+					});
+				} catch (Exception e) {
+					Log.e("Chat 2", e.getMessage());
+				}
 				break;
 			default:
 				break;
