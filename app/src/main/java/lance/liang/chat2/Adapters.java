@@ -112,10 +112,11 @@ class ChatAdapter extends BaseAdapter
 		//message.setTextColor(Config.get(pcontext).data.settings.colorFt);
 		ImageView im = (ImageView) view.findViewById(R.id.itemchatImageView_head);
 		
-		Glide.with(view).load(bean.head_url)
-			.into(im);
 		try {
-			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(view.getResources(), ((BitmapDrawable) im.getDrawable()).getBitmap());
+			Glide.with(pcontext).load(bean.head_url)
+				.into(im);
+			
+			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), ((BitmapDrawable) im.getDrawable()).getBitmap());
 			roundedBitmapDrawable1.setCircular(true);
 			im.setImageDrawable(roundedBitmapDrawable1);
 		}
