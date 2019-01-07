@@ -24,12 +24,18 @@ class ItemBeanLeft {
 }
 
 class ItemBeanChat {
-	String time, head_url, message, username;
+	String time, head_url, message, username, type = "text";
 	int mid;
 
+	/*
 	ItemBeanChat(int mid, String usrename, String time, String message, String head_url) {
 		this.mid = mid; this.username = usrename; this.time = time;
 		this.head_url = head_url; this.message = message;
+	}*/
+	ItemBeanChat(int mid, String usrename, String time, String message, String head_url, String type) {
+		this.mid = mid; this.username = usrename; this.time = time;
+		this.head_url = head_url; this.message = message; this.type = type;
 	}
+	
 }
 

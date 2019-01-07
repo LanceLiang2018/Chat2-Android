@@ -8,6 +8,7 @@ public class ResultData
 		public static class Message {
 			public String username, head, type, text;
 			public String send_time;
+			int mid;
 		}
 		public static class Info {
 			public int gid, create_time, member_number, last_post_time;

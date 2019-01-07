@@ -88,7 +88,7 @@ public class Chat extends AppCompatActivity
 				{
 					Toast.makeText(Chat.this, "Refreshing...", Toast.LENGTH_SHORT).show();
 					adp.insert_back(new ItemBeanChat(0, "Lance", "12:00", "Refreshed.", 
-													 "https://s.gravatar.com/avatar/cb135b9ed779f242373ab3a8db99f25a?s=144"));
+													 "https://s.gravatar.com/avatar/cb135b9ed779f242373ab3a8db99f25a?s=144", "text"));
 					adp.notifyDataSetChanged();
 					//adp.notifyDataSetInvalidated();
 					srl.setRefreshing(false);
@@ -131,7 +131,7 @@ public class Chat extends AppCompatActivity
 								{
 									String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
 									adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, date, 
-																text, Config.get(Chat.this).data.user.head));
+																text, Config.get(Chat.this).data.user.head, "text"));
 									adp.notifyDataSetChanged();
 									text_message.setText("");
 
@@ -188,7 +188,7 @@ public class Chat extends AppCompatActivity
 														.choose(MimeType.ofImage(), false)
 														.countable(true)
 														.capture(false)
-														.maxSelectable(1)
+														.maxSelectable(9)
 														.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 														.thumbnailScale(0.85f)
 														.originalEnable(true)
@@ -222,49 +222,52 @@ public class Chat extends AppCompatActivity
 				{
 					//for (String s: Matisse.obtainPathResult(data))
 					//	Toast.makeText(this, s, Toast.LENGTH_LONG).show();
-					final String choose = Matisse.obtainPathResult(data).get(0);
-					ContentValues parames = new ContentValues();
-					parames.put("auth", Config.get(Chat.this).data.user.auth);
-					parames.put("text", choose);
-					parames.put("message_type", "image");
-					parames.put("gid", gid);
-					AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-					builder.setMessage("Sending");
-					builder.setCancelable(false);
-					dialog = builder.create();
-					dialog.show();
-					Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, 
-						new StringCallback() {
-							public void onStart(Response<String> p1)
-							{}
-							@Override
-							public void onError(Response<String> p1)
-							{
-								dialog.hide();
-								AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-								builder.setMessage("Error. (Code: " + p1.code() + ")");
-								builder.show();
-							}
-							@Override
-							public void onSuccess(Response<String> p1)
-							{
-								dialog.hide();
-								ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
-								if (result.code == 0)
+					//final String choose = Matisse.obtainPathResult(data).get(0);
+					for (final String choose: Matisse.obtainPathResult(data))
+					{
+						ContentValues parames = new ContentValues();
+						parames.put("auth", Config.get(Chat.this).data.user.auth);
+						parames.put("text", choose);
+						parames.put("message_type", "image");
+						parames.put("gid", gid);
+						AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+						builder.setMessage("Sending");
+						builder.setCancelable(false);
+						dialog = builder.create();
+						dialog.show();
+						Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, 
+							new StringCallback() {
+								public void onStart(Response<String> p1)
+								{}
+								@Override
+								public void onError(Response<String> p1)
 								{
-									String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
-									adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, date, 
-																choose, Config.get(Chat.this).data.user.head));
-									adp.notifyDataSetChanged();
-								}
-								else
-								{
+									dialog.hide();
 									AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-									builder.setMessage(result.message + " (Code: " + result.code + ")");
+									builder.setMessage("Error. (Code: " + p1.code() + ")");
 									builder.show();
 								}
-							}
-						});
+								@Override
+								public void onSuccess(Response<String> p1)
+								{
+									dialog.hide();
+									ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
+									if (result.code == 0)
+									{
+										String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
+										adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, date, 
+																	choose, Config.get(Chat.this).data.user.head, "image"));
+										adp.notifyDataSetChanged();
+									}
+									else
+									{
+										AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+										builder.setMessage(result.message + " (Code: " + result.code + ")");
+										builder.show();
+									}
+								}
+							});
+						}
 				}
 				break;
 			default:
@@ -293,8 +296,8 @@ public class Chat extends AppCompatActivity
 							{
 								Long stime = Long.parseLong(message.send_time) * 1000;
 								String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date(stime));
-								adp.insert_back(new ItemBeanChat(0, message.username, date, 
-																 message.text, message.head));
+								adp.insert_back(new ItemBeanChat(message.mid, message.username, date, 
+																 message.text, message.head, message.type));
 							}
 							adp.notifyDataSetChanged();
 						}

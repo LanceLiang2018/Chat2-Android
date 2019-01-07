@@ -16,6 +16,10 @@ import android.support.v7.appcompat.R;
 import com.bumptech.glide.*;
 import com.bumptech.glide.load.resource.drawable.*;
 import com.bumptech.glide.load.resource.bitmap.*;
+import com.bumptech.glide.load.engine.*;
+import com.bumptech.glide.load.*;
+import android.view.View.*;
+import android.app.*;
 
 class MainAdapter extends BaseAdapter
 {
@@ -105,46 +109,89 @@ class ChatAdapter extends BaseAdapter
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View view = inflater.inflate(R.layout.item_chat, null);
+		View view = null;
 		ItemBeanChat bean = list.get(position);
+		ImageView head = new ImageView(pcontext);
 		
-		((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
-		((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
-		TextView message = (TextView) view.findViewById(R.id.itemchatTextView_message);
-		LinearLayout box = (LinearLayout) view.findViewById(R.id.itemchatLinearLayout_box);
-		message.setText(bean.message);
-		box.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
-		//message.setTextColor(Config.get(pcontext).data.settings.colorFt);
-		final ImageView im = (ImageView) view.findViewById(R.id.itemchatImageView_head);
-		
-		try {
-			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), new BitmapFactory().decodeResource(pcontext.getResources(), R.drawable.image_box_bg));
-			roundedBitmapDrawable1.setCornerRadius(40);
-			box.setBackgroundDrawable(roundedBitmapDrawable1);
-		}
-		catch (Exception e) {
-			Log.e("Chat 2", e.getMessage());
-		}
-		
-		SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
-			@Override
-			public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-				//RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), ((BitmapDrawable) resource).getBitmap());
-				//roundedBitmapDrawable1.setCircular(true);
-				//im.setImageDrawable(roundedBitmapDrawable1);
-				im.setImageDrawable(resource);
+		if (bean.type.equals("text")) {
+			view = inflater.inflate(R.layout.item_chat_text, null);
+			
+			((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
+			((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
+			TextView message = (TextView) view.findViewById(R.id.itemchatTextView_message);
+			LinearLayout box = (LinearLayout) view.findViewById(R.id.itemchatLinearLayout_box);
+			head = (ImageView) view.findViewById(R.id.itemchatImageView_head);
+			
+			message.setText(bean.message);
+			box.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
+			//message.setTextColor(Config.get(pcontext).data.settings.colorFt);
+
+			try {
+				RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), 
+					new BitmapFactory().decodeResource(pcontext.getResources(), R.drawable.image_box_bg));
+				roundedBitmapDrawable1.setCornerRadius(35);
+				box.setBackgroundDrawable(roundedBitmapDrawable1);
 			}
-		};
-		RequestOptions options = new RequestOptions()
-			.circleCrop()
-			.placeholder(R.drawable.image_1)
-			;
-		
-		Glide.with(pcontext).load(bean.head_url)
-			.apply(options)
+			catch (Exception e) {
+				Log.e("Chat 2", e.getMessage());
+			}
+		}
+		if (bean.type.equals("image"))
+		{
+			view = inflater.inflate(R.layout.item_chat_image, null);
+
+			((TextView) view.findViewById(R.id.itemchatimageTextView_username)).setText(bean.username);
+			((TextView) view.findViewById(R.id.itemchatimageTextView_time)).setText(bean.time);
+			head = (ImageView) view.findViewById(R.id.itemchatimageImageView_head);
+			final ImageView image = (ImageView) view.findViewById(R.id.itemchatimageImageView_image);
+			image.setTag(bean.message);
+			
+			image.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View p1) {
+						View inview = inflater.inflate(R.layout.image_view, null);
+						
+						String url = (String) p1.getTag();
+						AlertDialog.Builder builder = new AlertDialog.Builder(pcontext);
+						ImageView imview = (ImageView) inview.findViewById(R.id.imageviewImageView);
+						
+						Glide.with(builder.getContext()).load(url)
+							.apply(new RequestOptions().placeholder(R.drawable.image_1)
+								.encodeQuality(100))
+							.into(imview);
+						final AlertDialog dialog = builder.setView(inview).show();
+						imview.setOnClickListener(new OnClickListener() {
+								@Override
+								public void onClick(View p1) {
+									dialog.hide();
+								}
+							});
+					}
+				});
+			
+			SimpleTarget target = new SimpleTarget<Drawable>() {
+				@Override
+				public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
+					RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), 
+						((BitmapDrawable) p1).getBitmap());
+					roundedBitmapDrawable1.setCornerRadius(30);
+					image.setImageDrawable(roundedBitmapDrawable1);
+				}
+			};
+			
+			Glide.with(pcontext)
+				//.asBitmap()
+				.load(bean.message)
+				.apply(new RequestOptions()
+					.placeholder(R.drawable.image_box_bg)
+					.override(300))
+				.into(target);
+		}
+		Glide.with(pcontext)
+			.load(bean.head_url)
+			.apply(new RequestOptions().circleCrop().placeholder(R.drawable.image_1))
 			.transition(DrawableTransitionOptions.withCrossFade())
-			.into(simpleTarget);
-		
+			.into(head);
 		
 		return view;
 	}
