@@ -1,10 +1,10 @@
 package lance.liang.chat2;
 
+import android.*;
 import android.content.*;
 import android.content.pm.*;
-import android.graphics.*;
+import android.net.*;
 import android.os.*;
-import android.support.v4.graphics.drawable.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
 import android.support.v7.appcompat.*;
@@ -12,13 +12,22 @@ import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
+import com.bumptech.glide.*;
+import com.bumptech.glide.request.*;
 import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
+import com.tbruyelle.rxpermissions2.*;
 import com.zhihu.matisse.*;
 import com.zhihu.matisse.engine.impl.*;
+import com.zhihu.matisse.internal.entity.*;
+import com.zhihu.matisse.listener.*;
+import io.reactivex.annotations.*;
+import io.reactivex.disposables.*;
 import java.util.*;
-import lance.liang.chat2.*;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
 
 import android.support.v7.appcompat.R;
 
@@ -96,9 +105,9 @@ public class MainActivity extends AppCompatActivity {
 		text_title.setOnClickListener(onclick);
 		//Glide.with(this).load(Config.get(MainActivity.this).data.user.head).into(im_head);
 		//Glide.with(this).load(R.drawable.image_2).into(im_head);
-		RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.image_2));
-		roundedBitmapDrawable1.setCircular(true);
-		im_head.setImageDrawable(roundedBitmapDrawable1);
+		//RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.image_2));
+		//roundedBitmapDrawable1.setCircular(true);
+		//im_head.setImageDrawable(roundedBitmapDrawable1);
 		
 		bar.setDisplayShowTitleEnabled(false);
 		bar.setDisplayHomeAsUpEnabled(false);
@@ -274,7 +283,14 @@ public class MainActivity extends AppCompatActivity {
 	public void Refresh()
 	{
 		// Here errors.
-		//Glide.with(this).load(Config.get(this).data.user.head).into(im_head);
+		RequestOptions options = new RequestOptions()
+			.circleCrop()
+			.placeholder(R.drawable.image_1)
+			.dontAnimate();
+		
+		Glide.with(this).load(Config.get(this).data.user.head)
+			.apply(options)
+			.into(im_head);
 		text_title.setText(Config.get(this).data.user.username);
 		
 		adp.list.clear();
@@ -325,6 +341,14 @@ public class MainActivity extends AppCompatActivity {
 				}
 				catch (Exception e) {
 					e.printStackTrace();
+				}
+				break;
+			case code_pick:
+				//mAdapter.setData(Matisse.obtainResult(data), Matisse.obtainPathResult(data));
+				if (resultCode == RESULT_OK)
+				{
+					for (String s: Matisse.obtainPathResult(data))
+						Toast.makeText(this, s, Toast.LENGTH_LONG).show();
 				}
 				break;
 			default:
@@ -389,8 +413,9 @@ public class MainActivity extends AppCompatActivity {
 						}
 					});
 				*/
+				/*
 				Matisse.from(MainActivity.this)
-					.choose(MimeType.ofAll())
+					.choose(MimeType.ofImage())
 					.countable(true)
 					.maxSelectable(9)
 					//.addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
@@ -399,7 +424,92 @@ public class MainActivity extends AppCompatActivity {
 					.thumbnailScale(0.85f)
 					.imageEngine(new GlideEngine())
 					.forResult(code_pick);
+					*/
 				
+
+				/*
+                Bitmap btm = BitmapFactory.decodeResource(getResources(),
+														  R.drawable.image_2);
+                Intent intent = new Intent(MainActivity.this,
+										   MainActivity.class);
+
+                PendingIntent pendingIntent = PendingIntent.getActivity(
+					MainActivity.this, 0, intent,
+					PendingIntent.FLAG_CANCEL_CURRENT);
+
+                Notification noti = new NotificationCompat.Builder(
+					MainActivity.this)
+					.setSmallIcon(R.drawable.image_1)
+					.setLargeIcon(btm)
+					.setNumber(13)
+					.setDefaults(Notification.DEFAULT_LIGHTS)
+					.setContentIntent(pendingIntent)
+					.setStyle(
+					new NotificationCompat.InboxStyle()
+					.addLine("M.Twain Lunch?")
+					.setBigContentTitle("6 new message"))
+					.build();
+
+                NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                mNotificationManager.notify(0, noti);
+				*/
+				
+				
+				RxPermissions rxPermissions = new RxPermissions(this);
+
+				rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+					.subscribe(new Observer<Boolean>() {
+						@Override
+						public void onSubscribe(Disposable d) {}
+						@Override
+						public void onNext(Boolean aBoolean) {
+							if (aBoolean) {
+								Matisse.from(MainActivity.this)
+									.choose(MimeType.ofImage(), false)
+									.countable(true)
+									.capture(false)
+									//.captureStrategy(
+									//new CaptureStrategy(true, "lance.liang.chat2","test"))
+									.maxSelectable(1)
+									//.addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
+									//.gridExpectedSize(
+									//getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+									.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+									.thumbnailScale(0.85f)
+									.setOnSelectedListener(new OnSelectedListener() {
+										@Override
+										public void onSelected(@NonNull List<Uri> uriList, @NonNull List<String> pathList) {
+											// DO SOMETHING IMMEDIATELY HERE
+											Log.e("onSelected", "onSelected: pathList=" + pathList);
+										}
+									})
+									.originalEnable(true)
+									.maxOriginalSize(10)
+									.autoHideToolbarOnSingleTap(true)
+									.setOnCheckedListener(new OnCheckedListener() {
+										@Override
+										public void onCheck(boolean isChecked) {
+											// DO SOMETHING IMMEDIATELY HERE
+											Log.e("isChecked", "onCheck: isChecked=" + isChecked);
+										}
+									})
+									.forResult(code_pick);
+							} else {
+								Toast.makeText(MainActivity.this, "Permision denide", Toast.LENGTH_LONG)
+                                    .show();
+							}
+						}
+
+						@Override
+						public void onError(Throwable e) {
+
+						}
+
+						@Override
+						public void onComplete() {
+
+						}
+					});
 				break;
 			default:
 				break;
@@ -407,3 +517,4 @@ public class MainActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 }
+

@@ -1,17 +1,21 @@
 package lance.liang.chat2;
 import android.content.*;
 import android.graphics.*;
+import android.graphics.drawable.*;
 import android.support.v4.graphics.drawable.*;
 import android.support.v7.appcompat.*;
+import android.util.*;
 import android.view.*;
 import android.widget.*;
-import com.bumptech.glide.*;
+import com.bumptech.glide.request.*;
+import com.bumptech.glide.request.target.*;
+import com.bumptech.glide.request.transition.*;
 import java.util.*;
 
 import android.support.v7.appcompat.R;
-import android.graphics.drawable.*;
-import android.util.*;
-import com.lzy.okgo.request.*;
+import com.bumptech.glide.*;
+import com.bumptech.glide.load.resource.drawable.*;
+import com.bumptech.glide.load.resource.bitmap.*;
 
 class MainAdapter extends BaseAdapter
 {
@@ -107,22 +111,40 @@ class ChatAdapter extends BaseAdapter
 		((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
 		((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
 		TextView message = (TextView) view.findViewById(R.id.itemchatTextView_message);
+		LinearLayout box = (LinearLayout) view.findViewById(R.id.itemchatLinearLayout_box);
 		message.setText(bean.message);
-		message.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
+		box.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
 		//message.setTextColor(Config.get(pcontext).data.settings.colorFt);
-		ImageView im = (ImageView) view.findViewById(R.id.itemchatImageView_head);
+		final ImageView im = (ImageView) view.findViewById(R.id.itemchatImageView_head);
 		
 		try {
-			Glide.with(pcontext).load(bean.head_url)
-				.into(im);
-			
-			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), ((BitmapDrawable) im.getDrawable()).getBitmap());
-			roundedBitmapDrawable1.setCircular(true);
-			im.setImageDrawable(roundedBitmapDrawable1);
+			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), new BitmapFactory().decodeResource(pcontext.getResources(), R.drawable.image_box_bg));
+			roundedBitmapDrawable1.setCornerRadius(40);
+			box.setBackgroundDrawable(roundedBitmapDrawable1);
 		}
 		catch (Exception e) {
 			Log.e("Chat 2", e.getMessage());
 		}
+		
+		SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
+			@Override
+			public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+				//RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), ((BitmapDrawable) resource).getBitmap());
+				//roundedBitmapDrawable1.setCircular(true);
+				//im.setImageDrawable(roundedBitmapDrawable1);
+				im.setImageDrawable(resource);
+			}
+		};
+		RequestOptions options = new RequestOptions()
+			.circleCrop()
+			.placeholder(R.drawable.image_1)
+			;
+		
+		Glide.with(pcontext).load(bean.head_url)
+			.apply(options)
+			.transition(DrawableTransitionOptions.withCrossFade())
+			.into(simpleTarget);
+		
 		
 		return view;
 	}
