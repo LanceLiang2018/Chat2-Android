@@ -3,7 +3,6 @@ package lance.liang.chat2;
 import android.*;
 import android.content.*;
 import android.content.pm.*;
-import android.net.*;
 import android.os.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
@@ -16,16 +15,29 @@ import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import com.tbruyelle.rxpermissions2.*;
 import com.zhihu.matisse.*;
-import com.zhihu.matisse.listener.*;
-import io.reactivex.annotations.*;
+import io.reactivex.*;
 import io.reactivex.disposables.*;
+import java.io.*;
+import java.net.*;
 import java.text.*;
 import java.util.*;
-import lance.liang.chat2.*;
-//import android.support.v7.app.*;
-//import lance.liang.chat2.
+
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import org.apache.http.impl.auth.*;
+
+import java.security.MessageDigest; /**
+ * @Author:Starry
+ * @Description:
+ * @Date:Created in 9:46 2018/4/13
+ * Modified By:
+ */
+class MD5Utils { private static final String hexDigIts[] = {"0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"}; /**
+     * MD5加密
+     * @param origin 字符
+     * @param charsetname 编码
+     * @return
+     */
+    public static String MD5Encode(String origin, String charsetname){ String resultString = null; try{ resultString = new String(origin); MessageDigest md = MessageDigest.getInstance("MD5"); if(null == charsetname || "".equals(charsetname)){ resultString = byteArrayToHexString(md.digest(resultString.getBytes())); }else{ resultString = byteArrayToHexString(md.digest(resultString.getBytes(charsetname))); } }catch (Exception e){ } return resultString; } public static String byteArrayToHexString(byte b[]){ StringBuffer resultSb = new StringBuffer(); for(int i = 0; i < b.length; i++){ resultSb.append(byteToHexString(b[i])); } return resultSb.toString(); } public static String byteToHexString(byte b){ int n = b; if(n < 0){ n += 256; } int d1 = n / 16; int d2 = n % 16; return hexDigIts[d1] + hexDigIts[d2]; } }
 
 public class Chat extends AppCompatActivity
 {
@@ -39,7 +51,7 @@ public class Chat extends AppCompatActivity
 	private ActionBar bar;
 	AlertDialog dialog;
 	Timer timer;
-	private final int code_pick = 0x91;
+	private final int code_pick = 0x91, code_file = 0x92;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -74,6 +86,24 @@ public class Chat extends AppCompatActivity
 		btn_more = (Button)findViewById(R.id.chatButton_more);
 		list_message = (ListView)findViewById(R.id.chatListView);
 		srl = (SwipeRefreshLayout)findViewById(R.id.chatSwipeRefreshLayout);
+		
+		//btn_send.setBackgroundColor(Config.get(this).data.settings.colorFt);
+		//btn_more.setBackgroundResource(Config.get(this).data.settings.colorFt);
+		
+		RxPermissions rxPermissions = new RxPermissions(this);
+		rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+			.subscribe(new Observer<Boolean>() {
+				@Override
+				public void onSubscribe(Disposable p1) {}
+				@Override
+				public void onNext(Boolean p1) {}
+				@Override
+				public void onError(Throwable p1) {
+					Chat.this.finish();
+				}
+				@Override
+				public void onComplete() {}
+			});
 
 		adp = new ChatAdapter(this, data);
 		list_message.setAdapter(adp);
@@ -188,7 +218,7 @@ public class Chat extends AppCompatActivity
 														.choose(MimeType.ofImage(), false)
 														.countable(true)
 														.capture(false)
-														.maxSelectable(9)
+														.maxSelectable(1)
 														.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 														.thumbnailScale(0.85f)
 														.originalEnable(true)
@@ -200,7 +230,10 @@ public class Chat extends AppCompatActivity
 								}
 								else if (p2 == 1)
 								{ // file
-
+									Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+									intent.setType("*/*");
+									intent.addCategory(Intent.CATEGORY_OPENABLE);
+									Chat.this.startActivityForResult(intent, code_file);
 								}
 							}
 						});
@@ -217,6 +250,42 @@ public class Chat extends AppCompatActivity
 
 		switch (requestCode)
 		{
+			case code_file:
+				if (resultCode != RESULT_OK)
+					break;
+				String str = URLDecoder.decode(data.getData().toString());
+				Toast.makeText(Chat.this, str, Toast.LENGTH_LONG).show();
+				File file = new File(str);
+				try {
+					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+					byte[] buf = new byte[bis.available()];
+					bis.read(buf);
+					String md5 = MD5Utils.byteArrayToHexString(buf);
+					String b64 = Base64.encodeToString(buf, Base64.DEFAULT);
+					
+					ContentValues parames = new ContentValues();
+					parames.put("auth", Config.get(Chat.this).data.user.auth);
+					parames.put("data", b64);
+					parames.put("md5", md5);
+					Communication.getComm(Chat.this).post(Communication.UPLOAD, parames, 
+						new StringCallback() {
+							@Override
+							public void onSuccess(Response<String> p1) {
+								if (p1.code() != 200)
+									return;
+								ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+								if (result.code == 0) {
+									EditText edit = new EditText(Chat.this);
+									edit.setText(result.data.url);
+									new AlertDialog.Builder(Chat.this).setView(edit).show();
+								}
+							}
+						});
+				}
+				catch (Exception e) {
+					Toast.makeText(Chat.this, e.getMessage(), Toast.LENGTH_LONG).show();
+				}
+				break;
 			case code_pick:
 				if (resultCode == RESULT_OK)
 				{

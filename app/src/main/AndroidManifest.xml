@@ -25,6 +25,8 @@
         </activity>
 		<activity android:name=".Signup">    
         </activity>
+		<activity android:name=".Person">    
+        </activity>
 		
     </application>
 	

@@ -20,6 +20,8 @@ import com.bumptech.glide.load.engine.*;
 import com.bumptech.glide.load.*;
 import android.view.View.*;
 import android.app.*;
+import android.widget.SearchView.*;
+import android.os.*;
 
 class MainAdapter extends BaseAdapter
 {
@@ -60,7 +62,8 @@ class MainAdapter extends BaseAdapter
 		((TextView) view.findViewById(R.id.itemmainTextView_content)).setText(bean.content);
 		
 		try {
-			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(view.getResources(), BitmapFactory.decodeResource(view.getResources(), R.drawable.image_1));
+			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(view.getResources(), 
+				BitmapFactory.decodeResource(view.getResources(), R.drawable.image_1));
 			roundedBitmapDrawable1.setCircular(true);
 			im.setImageDrawable(roundedBitmapDrawable1);
 		}
@@ -110,7 +113,7 @@ class ChatAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = null;
-		ItemBeanChat bean = list.get(position);
+		final ItemBeanChat bean = list.get(position);
 		ImageView head = new ImageView(pcontext);
 		
 		if (bean.type.equals("text")) {
@@ -149,11 +152,12 @@ class ChatAdapter extends BaseAdapter
 			image.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View p1) {
+						String url = (String) p1.getTag();
+						
 						View inview = inflater.inflate(R.layout.image_view, null);
 						
-						String url = (String) p1.getTag();
 						AlertDialog.Builder builder = new AlertDialog.Builder(pcontext);
-						ImageView imview = (ImageView) inview.findViewById(R.id.imageviewImageView);
+						final ImageView imview = (ImageView) inview.findViewById(R.id.imageviewImageView);
 						
 						Glide.with(builder.getContext()).load(url)
 							.apply(new RequestOptions().placeholder(R.drawable.image_1)
@@ -166,16 +170,41 @@ class ChatAdapter extends BaseAdapter
 									dialog.hide();
 								}
 							});
+						imview.setOnLongClickListener(new OnLongClickListener() {
+								@Override
+								public boolean onLongClick(View p1) {
+									new AlertDialog.Builder(pcontext).setItems(new String[] {"Save", "Star"}, 
+										new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface p1, int p2) {
+												if (p2 == 0) {
+													BitmapDrawable bd = (BitmapDrawable) imview.getDrawable();
+													
+												} else if (p2 == 1) {
+													
+												}
+											}
+										}).show();
+									return false;
+								}
+							});
 					}
 				});
 			
 			SimpleTarget target = new SimpleTarget<Drawable>() {
 				@Override
 				public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
-					RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), 
-						((BitmapDrawable) p1).getBitmap());
-					roundedBitmapDrawable1.setCornerRadius(30);
-					image.setImageDrawable(roundedBitmapDrawable1);
+					if (bean.message.toLowerCase().endsWith(".gif")) {
+						image.setImageDrawable(p1);
+					}
+					try {
+						RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), 
+							((BitmapDrawable) p1).getBitmap());
+						roundedBitmapDrawable1.setCornerRadius(30);
+						image.setImageDrawable(roundedBitmapDrawable1);
+					} catch (Exception e) {
+						image.setImageDrawable(p1);
+					}
 				}
 			};
 			
@@ -184,7 +213,8 @@ class ChatAdapter extends BaseAdapter
 				.load(bean.message)
 				.apply(new RequestOptions()
 					.placeholder(R.drawable.image_box_bg)
-					.override(300))
+					.override(300)
+					.diskCacheStrategy(DiskCacheStrategy.ALL))
 				.into(target);
 		}
 		Glide.with(pcontext)
@@ -192,6 +222,18 @@ class ChatAdapter extends BaseAdapter
 			.apply(new RequestOptions().circleCrop().placeholder(R.drawable.image_1))
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(head);
+			
+		head.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					Bundle bundle = new Bundle();
+					bundle.putString("username", bean.username);
+					Intent intent = new Intent();
+					intent.setClass(pcontext, Person.class);
+					intent.putExtras(bundle);
+					pcontext.startActivity(intent);
+				}
+			});
 		
 		return view;
 	}

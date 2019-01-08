@@ -456,7 +456,6 @@ public class MainActivity extends AppCompatActivity {
 				
 				
 				RxPermissions rxPermissions = new RxPermissions(this);
-
 				rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 					.subscribe(new Observer<Boolean>() {
 						@Override

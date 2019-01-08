@@ -40,6 +40,8 @@ public class Communication
 	SET_ROOM_INFO = SERVER + "set_room_info",
 	GET_MEMBERS = SERVER + "get_room_members",
 	
+	UPLOAD = SERVER + "upload",
+	
 	UID = "uid",
 	MID = "mid",
 	GID = "gid",
@@ -78,6 +80,7 @@ public class Communication
 		GET_ROOM_INFO = SERVER + "get_room_info";
 		SET_ROOM_INFO = SERVER + "set_room_info";
 		GET_MEMBERS = SERVER + "get_room_members";
+		UPLOAD = SERVER + "upload";
 	}
 
 	public static Communication getComm(Context context)

@@ -24,6 +24,8 @@ public class ResultData
 		public String head;
 		public String username;
 		public List<RoomData> room_data;
+		
+		public String md5, filrname, etag, url;
 	}
 	public int code;
 	public String message;
