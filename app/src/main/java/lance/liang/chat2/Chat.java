@@ -25,19 +25,25 @@ import java.util.*;
 import io.reactivex.Observer;
 import org.apache.http.impl.auth.*;
 
-import java.security.MessageDigest; /**
- * @Author:Starry
- * @Description:
- * @Date:Created in 9:46 2018/4/13
- * Modified By:
- */
-class MD5Utils { private static final String hexDigIts[] = {"0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"}; /**
-     * MD5加密
-     * @param origin 字符
-     * @param charsetname 编码
-     * @return
-     */
-    public static String MD5Encode(String origin, String charsetname){ String resultString = null; try{ resultString = new String(origin); MessageDigest md = MessageDigest.getInstance("MD5"); if(null == charsetname || "".equals(charsetname)){ resultString = byteArrayToHexString(md.digest(resultString.getBytes())); }else{ resultString = byteArrayToHexString(md.digest(resultString.getBytes(charsetname))); } }catch (Exception e){ } return resultString; } public static String byteArrayToHexString(byte b[]){ StringBuffer resultSb = new StringBuffer(); for(int i = 0; i < b.length; i++){ resultSb.append(byteToHexString(b[i])); } return resultSb.toString(); } public static String byteToHexString(byte b){ int n = b; if(n < 0){ n += 256; } int d1 = n / 16; int d2 = n % 16; return hexDigIts[d1] + hexDigIts[d2]; } }
+import java.security.MessageDigest;
+import android.net.*;
+class MD5Utils
+{ private static final String hexDigIts[] = {"0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"};
+	public static String MD5Encode(String origin, String charsetname)
+	{ String resultString = null; try
+		{ resultString = new String(origin); MessageDigest md = MessageDigest.getInstance("MD5"); if (null == charsetname || "".equals(charsetname))
+			{ resultString = byteArrayToHexString(md.digest(resultString.getBytes())); }
+			else
+			{ resultString = byteArrayToHexString(md.digest(resultString.getBytes(charsetname))); } }
+		catch (Exception e)
+		{ } return resultString; }
+	public static String byteArrayToHexString(byte b[])
+	{ StringBuffer resultSb = new StringBuffer(); for (int i = 0; i < b.length; i++)
+		{ resultSb.append(byteToHexString(b[i])); } return resultSb.toString(); }
+	public static String byteToHexString(byte b)
+	{ int n = b; if (n < 0)
+		{ n += 256; }
+	int d1 = n / 16; int d2 = n % 16; return hexDigIts[d1] + hexDigIts[d2]; } }
 
 public class Chat extends AppCompatActivity
 {
@@ -253,13 +259,18 @@ public class Chat extends AppCompatActivity
 			case code_file:
 				if (resultCode != RESULT_OK)
 					break;
-				String str = URLDecoder.decode(data.getData().toString());
-				Toast.makeText(Chat.this, str, Toast.LENGTH_LONG).show();
-				File file = new File(str);
+				//String str = URLDecoder.decode(data.getData().toString());
+				//String path = Uri.parse().
+				Uri uri = data.getData();
+				ContentResolver cr = this.getContentResolver();  
+				//String str = cr.openInputStream().;
+				Toast.makeText(Chat.this, uri.toString(), Toast.LENGTH_LONG).show();
+				//File file = new File(uri);
 				try {
-					BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-					byte[] buf = new byte[bis.available()];
-					bis.read(buf);
+					//BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+					InputStream is = cr.openInputStream(uri);
+					byte[] buf = new byte[is.available()];
+					is.read(buf);
 					String md5 = MD5Utils.byteArrayToHexString(buf);
 					String b64 = Base64.encodeToString(buf, Base64.DEFAULT);
 					
@@ -275,9 +286,52 @@ public class Chat extends AppCompatActivity
 									return;
 								ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
 								if (result.code == 0) {
+									/*
 									EditText edit = new EditText(Chat.this);
 									edit.setText(result.data.url);
-									new AlertDialog.Builder(Chat.this).setView(edit).show();
+									new AlertDialog.Builder(Chat.this).setView(edit).show();*/
+									ContentValues parames = new ContentValues();
+									parames.put("auth", Config.get(Chat.this).data.user.auth);
+									parames.put("text", result.data.url);
+									parames.put("message_type", "file");
+									parames.put("gid", gid);
+									AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+									builder.setMessage("Sending");
+									builder.setCancelable(false);
+									dialog = builder.create();
+									dialog.show();
+									Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, 
+										new StringCallback() {
+											public void onStart(Response<String> p1)
+											{}
+											@Override
+											public void onError(Response<String> p1)
+											{
+												dialog.hide();
+												AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+												builder.setMessage("Error. (Code: " + p1.code() + ")");
+												builder.show();
+											}
+											@Override
+											public void onSuccess(Response<String> p1)
+											{
+												dialog.hide();
+												ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
+												if (result.code == 0)
+												{
+													String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
+													adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, date, 
+																				result.data.url, Config.get(Chat.this).data.user.head, "file"));
+													adp.notifyDataSetChanged();
+												}
+												else
+												{
+													AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+													builder.setMessage(result.message + " (Code: " + result.code + ")");
+													builder.show();
+												}
+											}
+										});
 								}
 							}
 						});

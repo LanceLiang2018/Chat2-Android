@@ -1,27 +1,26 @@
 package lance.liang.chat2;
+import android.app.*;
 import android.content.*;
 import android.graphics.*;
 import android.graphics.drawable.*;
+import android.net.*;
+import android.os.*;
 import android.support.v4.graphics.drawable.*;
 import android.support.v7.appcompat.*;
 import android.util.*;
 import android.view.*;
+import android.view.View.*;
 import android.widget.*;
+import com.bumptech.glide.*;
+import com.bumptech.glide.load.engine.*;
+import com.bumptech.glide.load.resource.drawable.*;
 import com.bumptech.glide.request.*;
 import com.bumptech.glide.request.target.*;
 import com.bumptech.glide.request.transition.*;
 import java.util.*;
 
 import android.support.v7.appcompat.R;
-import com.bumptech.glide.*;
-import com.bumptech.glide.load.resource.drawable.*;
-import com.bumptech.glide.load.resource.bitmap.*;
-import com.bumptech.glide.load.engine.*;
-import com.bumptech.glide.load.*;
-import android.view.View.*;
-import android.app.*;
-import android.widget.SearchView.*;
-import android.os.*;
+import android.app.DownloadManager.*;
 
 class MainAdapter extends BaseAdapter
 {
@@ -216,6 +215,52 @@ class ChatAdapter extends BaseAdapter
 					.override(300)
 					.diskCacheStrategy(DiskCacheStrategy.ALL))
 				.into(target);
+		}
+		if (bean.type.equals("file")) {
+			view = inflater.inflate(R.layout.item_chat_text, null);
+
+			((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
+			((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
+			TextView message = (TextView) view.findViewById(R.id.itemchatTextView_message);
+			LinearLayout box = (LinearLayout) view.findViewById(R.id.itemchatLinearLayout_box);
+			head = (ImageView) view.findViewById(R.id.itemchatImageView_head);
+
+			message.setText(bean.message);
+			box.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
+			message.setTextColor(Config.get(pcontext).data.settings.colorFt);
+			
+			message.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View p1) {
+						/*
+						 downloadManager=activity.getSystemService(Context.DOWNLOAD_SERVICE);
+						 url=Uri.parse(url);
+						 request=DownloadManager.Request(url);
+						 request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
+						 request.setDestinationInExternalPublicDir(path, filename);
+						 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+						 downloadManager.enqueue(request);
+						*/
+						DownloadManager downloadManager = (DownloadManager) pcontext.getSystemService(Context.DOWNLOAD_SERVICE);
+						Uri url = Uri.parse(bean.message);
+						DownloadManager.Request request = new DownloadManager.Request(url);
+						request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
+						request.setDestinationInExternalPublicDir("/sdcard/", "filename");
+						request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+						downloadManager.enqueue(request);
+					}
+				});
+
+			try {
+				RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), 
+								new BitmapFactory().decodeResource(pcontext.getResources(), R.drawable.image_box_bg));
+				roundedBitmapDrawable1.setCornerRadius(35);
+				box.setBackgroundDrawable(roundedBitmapDrawable1);
+			}
+			catch (Exception e) {
+				Log.e("Chat 2", e.getMessage());
+			}
 		}
 		Glide.with(pcontext)
 			.load(bean.head_url)
