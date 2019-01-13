@@ -14,29 +14,55 @@
 			android:layout_width="match_parent"
 			android:orientation="vertical">
 
-			<LinearLayout
-				android:layout_height="250dp"
-				android:layout_width="match_parent"
-				android:orientation="vertical"
-				android:gravity="center"
-				android:background="@drawable/image_person_bg">
+			<RelativeLayout
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content">
 
 				<ImageView
-					android:layout_height="100dp"
-					android:layout_width="100dp"
-					android:src="@drawable/image_2"
-					android:adjustViewBounds="true"
-					android:scaleType="fitXY"
-					android:id="@+id/personImageView_head"/>
+					android:layout_height="250dp"
+					android:layout_width="match_parent"
+					android:src="@drawable/image_person_bg"
+					android:layout_centerInParent="true"
+					android:id="@+id/personImageView_bg"
+					android:adjustViewBounds="false"
+					android:scaleType="centerCrop"/>
 
-				<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:textAppearance="?android:attr/textAppearanceLarge"
-					android:text="用户名"
-					android:id="@+id/personTextView_username"/>
+				<LinearLayout
+					android:layout_height="250dp"
+					android:layout_width="match_parent"
+					android:orientation="vertical"
+					android:gravity="center">
 
-			</LinearLayout>
+					<LinearLayout
+						android:layout_height="wrap_content"
+						android:layout_width="match_parent"
+						android:orientation="vertical"
+						android:gravity="center">
+
+						<ImageView
+							android:layout_height="100dp"
+							android:layout_width="100dp"
+							android:src="@drawable/image_2"
+							android:adjustViewBounds="true"
+							android:scaleType="fitXY"
+							android:id="@+id/personImageView_head"/>
+
+						<TextView
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:textAppearance="?android:attr/textAppearanceLarge"
+							android:text="用户名"
+							android:id="@+id/personTextView_username"
+							android:textColor="#FFFFFF"
+							android:shadowRadius="15"
+							android:shadowColor="#000000"
+							android:gravity="center_horizontal"/>
+
+					</LinearLayout>
+
+				</LinearLayout>
+
+			</RelativeLayout>
 
 		</LinearLayout>
 

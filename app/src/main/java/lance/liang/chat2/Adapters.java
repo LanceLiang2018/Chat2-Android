@@ -21,6 +21,8 @@ import java.util.*;
 
 import android.support.v7.appcompat.R;
 import android.app.DownloadManager.*;
+//import android.transition.*;
+//import android.support.v7.app.*;
 
 class MainAdapter extends BaseAdapter
 {
@@ -59,6 +61,16 @@ class MainAdapter extends BaseAdapter
 		//im.setImageResource(bean.image);
 		((TextView) view.findViewById(R.id.itemmainTextView_title)).setText(bean.title);
 		((TextView) view.findViewById(R.id.itemmainTextView_content)).setText(bean.content);
+		TextView text_unread = (TextView) view.findViewById(R.id.itemmainTextView_unread);
+		TextView text_time = (TextView) view.findViewById(R.id.itemmainTextView_time);
+		
+		
+		text_time.setText(bean.time);
+		if (bean.unread != 0) {
+			text_unread.setText("" + bean.unread);
+		} else {
+			text_unread.setVisibility(View.GONE);
+		}
 		
 		try {
 			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(view.getResources(), 
@@ -116,7 +128,10 @@ class ChatAdapter extends BaseAdapter
 		ImageView head = new ImageView(pcontext);
 		
 		if (bean.type.equals("text")) {
-			view = inflater.inflate(R.layout.item_chat_text, null);
+			if (bean.username.equals(Config.get(pcontext).data.user.username))
+				view = inflater.inflate(R.layout.item_chat_text_me, null);
+			else
+				view = inflater.inflate(R.layout.item_chat_text, null);
 			
 			((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
 			((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
@@ -140,7 +155,10 @@ class ChatAdapter extends BaseAdapter
 		}
 		if (bean.type.equals("image"))
 		{
-			view = inflater.inflate(R.layout.item_chat_image, null);
+			if (bean.username.equals(Config.get(pcontext).data.user.username))
+				view = inflater.inflate(R.layout.item_chat_image_me, null);
+			else
+				view = inflater.inflate(R.layout.item_chat_image, null);
 
 			((TextView) view.findViewById(R.id.itemchatimageTextView_username)).setText(bean.username);
 			((TextView) view.findViewById(R.id.itemchatimageTextView_time)).setText(bean.time);
@@ -151,6 +169,7 @@ class ChatAdapter extends BaseAdapter
 			image.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View p1) {
+						/*
 						String url = (String) p1.getTag();
 						
 						View inview = inflater.inflate(R.layout.image_view, null);
@@ -186,7 +205,13 @@ class ChatAdapter extends BaseAdapter
 										}).show();
 									return false;
 								}
-							});
+							});*/
+						Intent intent = new Intent();
+						Bundle bundle = new Bundle();
+						bundle.putString("url", (String) p1.getTag());
+						intent.setClass(pcontext, ImagePreView.class);
+						intent.putExtras(bundle);
+						pcontext.startActivity(intent);
 					}
 				});
 			
@@ -214,10 +239,14 @@ class ChatAdapter extends BaseAdapter
 					.placeholder(R.drawable.image_box_bg)
 					.override(300)
 					.diskCacheStrategy(DiskCacheStrategy.ALL))
+				.transition(DrawableTransitionOptions.withCrossFade())
 				.into(target);
 		}
 		if (bean.type.equals("file")) {
-			view = inflater.inflate(R.layout.item_chat_text, null);
+			if (bean.username.equals(Config.get(pcontext).data.user.username))
+				view = inflater.inflate(R.layout.item_chat_text_me, null);
+			else
+				view = inflater.inflate(R.layout.item_chat_text, null);
 
 			((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
 			((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
@@ -233,15 +262,6 @@ class ChatAdapter extends BaseAdapter
 
 					@Override
 					public void onClick(View p1) {
-						/*
-						 downloadManager=activity.getSystemService(Context.DOWNLOAD_SERVICE);
-						 url=Uri.parse(url);
-						 request=DownloadManager.Request(url);
-						 request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
-						 request.setDestinationInExternalPublicDir(path, filename);
-						 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-						 downloadManager.enqueue(request);
-						*/
 						DownloadManager downloadManager = (DownloadManager) pcontext.getSystemService(Context.DOWNLOAD_SERVICE);
 						Uri url = Uri.parse(bean.message);
 						DownloadManager.Request request = new DownloadManager.Request(url);
@@ -264,7 +284,7 @@ class ChatAdapter extends BaseAdapter
 		}
 		Glide.with(pcontext)
 			.load(bean.head_url)
-			.apply(new RequestOptions().circleCrop().placeholder(R.drawable.image_1))
+			.apply(new RequestOptions().circleCrop().placeholder(R.drawable.image_head))
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(head);
 			
@@ -273,6 +293,7 @@ class ChatAdapter extends BaseAdapter
 				public void onClick(View p1) {
 					Bundle bundle = new Bundle();
 					bundle.putString("username", bean.username);
+					bundle.putString("head_url", bean.head_url);
 					Intent intent = new Intent();
 					intent.setClass(pcontext, Person.class);
 					intent.putExtras(bundle);
@@ -364,4 +385,5 @@ class LeftAdapter extends BaseExpandableListAdapter
 		this.child = ichild;
 	}
 }
+
 

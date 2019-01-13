@@ -27,6 +27,8 @@ import org.apache.http.impl.auth.*;
 
 import java.security.MessageDigest;
 import android.net.*;
+import android.service.chooser.*;
+/*
 class MD5Utils
 { private static final String hexDigIts[] = {"0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"};
 	public static String MD5Encode(String origin, String charsetname)
@@ -44,7 +46,7 @@ class MD5Utils
 	{ int n = b; if (n < 0)
 		{ n += 256; }
 	int d1 = n / 16; int d2 = n % 16; return hexDigIts[d1] + hexDigIts[d2]; } }
-
+*/
 public class Chat extends AppCompatActivity
 {
 	private EditText text_message;
@@ -165,8 +167,7 @@ public class Chat extends AppCompatActivity
 								ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
 								if (result.code == 0)
 								{
-									String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
-									adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, date, 
+									adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
 																text, Config.get(Chat.this).data.user.head, "text"));
 									adp.notifyDataSetChanged();
 									text_message.setText("");
@@ -222,13 +223,13 @@ public class Chat extends AppCompatActivity
 												{
 													Matisse.from(Chat.this)
 														.choose(MimeType.ofImage(), false)
-														.countable(true)
+														.countable(false)
 														.capture(false)
 														.maxSelectable(1)
 														.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 														.thumbnailScale(0.85f)
-														.originalEnable(true)
-														.maxOriginalSize(10)
+														//.originalEnable(true)
+														//.maxOriginalSize(10)
 														.autoHideToolbarOnSingleTap(true)
 														.forResult(code_pick);
 												}
@@ -271,13 +272,13 @@ public class Chat extends AppCompatActivity
 					InputStream is = cr.openInputStream(uri);
 					byte[] buf = new byte[is.available()];
 					is.read(buf);
-					String md5 = MD5Utils.byteArrayToHexString(buf);
+					//String md5 = MD5Utils.byteArrayToHexString(buf);
 					String b64 = Base64.encodeToString(buf, Base64.DEFAULT);
 					
 					ContentValues parames = new ContentValues();
 					parames.put("auth", Config.get(Chat.this).data.user.auth);
 					parames.put("data", b64);
-					parames.put("md5", md5);
+					//parames.put("md5", md5);
 					Communication.getComm(Chat.this).post(Communication.UPLOAD, parames, 
 						new StringCallback() {
 							@Override
@@ -319,8 +320,7 @@ public class Chat extends AppCompatActivity
 												ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
 												if (result.code == 0)
 												{
-													String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
-													adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, date, 
+													adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
 																				result.data.url, Config.get(Chat.this).data.user.head, "file"));
 													adp.notifyDataSetChanged();
 												}
@@ -346,47 +346,77 @@ public class Chat extends AppCompatActivity
 					//for (String s: Matisse.obtainPathResult(data))
 					//	Toast.makeText(this, s, Toast.LENGTH_LONG).show();
 					//final String choose = Matisse.obtainPathResult(data).get(0);
-					for (final String choose: Matisse.obtainPathResult(data))
+					for (final Uri choose: Matisse.obtainResult(data))
 					{
+						ContentResolver cr2 = this.getContentResolver();  
+						InputStream is = null;
+						byte[] buf2 = null;
+						try
+						{
+							is = cr2.openInputStream(choose);
+							buf2 = new byte[is.available()];
+							is.read(buf2);
+						}
+						catch (Exception e)
+						{
+							break;
+						}
+						//String md5 = MD5Utils.byteArrayToHexString(buf2);
+						String b64 = Base64.encodeToString(buf2, Base64.DEFAULT);
+						
 						ContentValues parames = new ContentValues();
 						parames.put("auth", Config.get(Chat.this).data.user.auth);
-						parames.put("text", choose);
-						parames.put("message_type", "image");
-						parames.put("gid", gid);
-						AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-						builder.setMessage("Sending");
-						builder.setCancelable(false);
-						dialog = builder.create();
-						dialog.show();
-						Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, 
+						parames.put("data", b64);
+						//parames.put("md5", md5);
+						Communication.getComm(Chat.this).post(Communication.UPLOAD, parames, 
 							new StringCallback() {
-								public void onStart(Response<String> p1)
-								{}
 								@Override
-								public void onError(Response<String> p1)
-								{
-									dialog.hide();
-									AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-									builder.setMessage("Error. (Code: " + p1.code() + ")");
-									builder.show();
-								}
-								@Override
-								public void onSuccess(Response<String> p1)
-								{
-									dialog.hide();
-									ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
-									if (result.code == 0)
-									{
-										String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date());
-										adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, date, 
-																	choose, Config.get(Chat.this).data.user.head, "image"));
-										adp.notifyDataSetChanged();
-									}
-									else
-									{
+								public void onSuccess(Response<String> p1) {
+									if (p1.code() != 200)
+										return;
+									ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+									if (result.code == 0) {
+										ContentValues parames = new ContentValues();
+										parames.put("auth", Config.get(Chat.this).data.user.auth);
+										parames.put("text", result.data.url);
+										parames.put("message_type", "image");
+										parames.put("gid", gid);
 										AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-										builder.setMessage(result.message + " (Code: " + result.code + ")");
-										builder.show();
+										builder.setMessage("Sending");
+										builder.setCancelable(false);
+										dialog = builder.create();
+										dialog.show();
+										Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, 
+											new StringCallback() {
+												public void onStart(Response<String> p1)
+												{}
+												@Override
+												public void onError(Response<String> p1)
+												{
+													dialog.hide();
+													AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+													builder.setMessage("Error. (Code: " + p1.code() + ")");
+													builder.show();
+												}
+												@Override
+												public void onSuccess(Response<String> p1)
+												{
+													dialog.hide();
+													ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
+													if (result.code == 0)
+													{
+														adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+																					result.data.url, Config.get(Chat.this).data.user.head, "image"));
+														adp.notifyDataSetChanged();
+													}
+													else
+													{
+														AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+														builder.setMessage(result.message + " (Code: " + result.code + ")");
+														builder.show();
+													}
+												}
+											});
 									}
 								}
 							});
@@ -417,9 +447,7 @@ public class Chat extends AppCompatActivity
 							adp.list.clear();
 							for (ResultData.Data.Message message: result.data.message)
 							{
-								Long stime = Long.parseLong(message.send_time) * 1000;
-								String date = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date(stime));
-								adp.insert_back(new ItemBeanChat(message.mid, message.username, date, 
+								adp.insert_back(new ItemBeanChat(message.mid, message.username, new MyGetTime().remote(message.send_time), 
 																 message.text, message.head, message.type));
 							}
 							adp.notifyDataSetChanged();

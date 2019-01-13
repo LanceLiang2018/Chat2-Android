@@ -27,6 +27,8 @@
         </activity>
 		<activity android:name=".Person">    
         </activity>
+		<activity android:name=".ImagePreView">    
+        </activity>
 		
     </application>
 	

@@ -5,7 +5,7 @@
 	android:layout_height="65dp"
 	android:orientation="horizontal"
 	android:gravity="center_vertical"
-	android:padding="10dp">
+	android:padding="5dp">
 
 	<LinearLayout
 		android:layout_height="wrap_content"
@@ -13,35 +13,72 @@
 		android:orientation="horizontal">
 
 		<ImageView
-			android:layout_height="40dp"
-			android:layout_width="40dp"
+			android:layout_height="45dp"
+			android:layout_width="45dp"
 			android:src="@drawable/image_1"
 			android:scaleType="fitXY"
 			android:id="@+id/itemmainImageView"/>
 
 	</LinearLayout>
 
-	<LinearLayout
+	<RelativeLayout
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
-		android:orientation="vertical"
-		android:layout_marginLeft="20dp">
+		android:layout_marginLeft="5dp">
 
-		<TextView
+		<LinearLayout
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:text="Text"
-			android:textAppearance="?android:attr/textAppearanceLarge"
-			android:id="@+id/itemmainTextView_title"/>
+			android:orientation="vertical"
+			android:id="@+id/itemmainLinearLayout1">
 
-		<TextView
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="Text"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:id="@+id/itemmainTextView_title"/>
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="Text"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:id="@+id/itemmainTextView_content"
+				android:layout_marginLeft="10dp"/>
+
+		</LinearLayout>
+
+		<LinearLayout
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:text="Text"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:id="@+id/itemmainTextView_content"/>
+			android:orientation="vertical"
+			android:layout_toRightOf="@id/itemmainLinearLayout1"
+			android:layout_alignParentRight="true"
+			android:gravity="right|center_horizontal"
+			android:layout_centerInParent="true">
 
-	</LinearLayout>
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="2019-01-12"
+				android:textSize="10sp"
+				android:gravity="bottom"
+				android:id="@+id/itemmainTextView_time"/>
+
+			<TextView
+				android:layout_height="20dp"
+				android:text="99"
+				android:textSize="10sp"
+				android:gravity="center"
+				android:background="@drawable/image_unread"
+				android:id="@+id/itemmainTextView_unread"
+				android:layout_width="20dp"
+				android:textColor="#FFFFFF"/>
+
+		</LinearLayout>
+
+	</RelativeLayout>
 
 </LinearLayout>
 

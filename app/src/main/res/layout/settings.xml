@@ -5,11 +5,9 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
 
-	<ImageButton
-		style="?android:attr/buttonBarButtonStyle"
+	<android.support.v4.view.ViewPager
 		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:src="@drawable/image_2"/>
+		android:layout_width="wrap_content"/>
 
 </LinearLayout>
 

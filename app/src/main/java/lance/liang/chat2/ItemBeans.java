@@ -1,15 +1,23 @@
 package lance.liang.chat2;
 
 class ItemBeanMain {
-	String title, content;
-	int image;
-	int gid;
+	public String title, content, time = "";
+	public int image;
+	public int gid, unread = 0;
 
-	ItemBeanMain(int gid,int image, String title, String content) {
+	ItemBeanMain(int gid, int image, String title, String content) {
 		this.gid = gid;
 		this.image = image;
 		this.title = title;
 		this.content = content;
+	}
+	ItemBeanMain(int gid, int image, String title, String content, String time, int unread) {
+		this.gid = gid;
+		this.image = image;
+		this.title = title;
+		this.content = content;
+		this.unread = unread;
+		this.time = time;
 	}
 }
 
@@ -19,6 +27,11 @@ class ItemBeanLeft {
 
 	ItemBeanLeft(int image, String title) {
 		this.image = image;
+		this.title = title;
+	}
+	
+	ItemBeanLeft(String title) {
+		this.image = R.drawable.image_blank;
 		this.title = title;
 	}
 }

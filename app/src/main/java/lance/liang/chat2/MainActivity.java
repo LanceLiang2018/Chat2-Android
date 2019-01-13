@@ -19,17 +19,15 @@ import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import com.tbruyelle.rxpermissions2.*;
 import com.zhihu.matisse.*;
-import com.zhihu.matisse.engine.impl.*;
-import com.zhihu.matisse.internal.entity.*;
 import com.zhihu.matisse.listener.*;
+import io.reactivex.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.*;
+import java.text.*;
 import java.util.*;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-
 
 import android.support.v7.appcompat.R;
+import io.reactivex.Observer;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout srl;
@@ -47,26 +45,26 @@ public class MainActivity extends AppCompatActivity {
 	private DrawerLayout drawer;
 	
 	private ItemBeanLeft[] left_data = {
-		new ItemBeanLeft(R.drawable.image_1, "我"),
-		new ItemBeanLeft(R.drawable.image_2, "联系人"),
-		new ItemBeanLeft(R.drawable.image_2, "设置"),
-		new ItemBeanLeft(R.drawable.image_2, "网盘"),
-		new ItemBeanLeft(R.drawable.image_2, "插件"),
-		new ItemBeanLeft(R.drawable.image_2, "退出"),
+		new ItemBeanLeft(R.drawable.image_head, "我"),
+		new ItemBeanLeft(R.drawable.image_mark, "联系人"),
+		new ItemBeanLeft(R.drawable.image_settings, "设置"),
+		new ItemBeanLeft(R.drawable.image_pan, "网盘"),
+		new ItemBeanLeft(R.drawable.image_star, "插件"),
+		new ItemBeanLeft(R.drawable.image_blank, "退出"),
 	};
 	private ItemBeanLeft[][] left_child_data = {
 		{
-			new ItemBeanLeft(R.drawable.image_1, "我的信息"),
-			new ItemBeanLeft(R.drawable.image_1, "新用户"),
-			new ItemBeanLeft(R.drawable.image_1, "新 Room"),
-			new ItemBeanLeft(R.drawable.image_2, "注销"),
+			new ItemBeanLeft("我的信息"),
+			new ItemBeanLeft("新用户"),
+			new ItemBeanLeft("新 Room"),
+			new ItemBeanLeft("注销"),
 		},
 		{},
 		{
-			new ItemBeanLeft(R.drawable.image_1, "主题"),
-			new ItemBeanLeft(R.drawable.image_2, "服务器地址"),
-			new ItemBeanLeft(R.drawable.image_1, "文件保存目录"),
-			new ItemBeanLeft(R.drawable.image_1, "关于"),
+			new ItemBeanLeft("主题"),
+			new ItemBeanLeft("服务器地址"),
+			new ItemBeanLeft("文件保存目录"),
+			new ItemBeanLeft("关于"),
 		},
 		{},
 		{},
@@ -167,7 +165,13 @@ public class MainActivity extends AppCompatActivity {
 				public boolean onChildClick(ExpandableListView p1, View p2, int p3, int p4, long p5) {
 					if (p3 == 0) { // me
 						if (p4 == 0) { // info
-							
+							Intent intent = new Intent();
+							Bundle bundle = new Bundle();
+							bundle.putString("username", Config.get(MainActivity.this).data.user.username);
+							bundle.putString("head_url", Config.get(MainActivity.this).data.user.head);
+							intent.putExtras(bundle);
+							intent.setClass(MainActivity.this, Person.class);
+							MainActivity.this.startActivity(intent);
 						} else if (p4 == 1) { // new user
 							Intent intent_signup = new Intent();
 							intent_signup.setClass(MainActivity.this, Signup.class);
@@ -303,7 +307,10 @@ public class MainActivity extends AppCompatActivity {
 					ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
 					if (result.code == 0) {
 						for (ResultData.Data.RoomData room_data: result.data.room_data) {
-							adp.insert(new ItemBeanMain(room_data.gid, R.mipmap.ic_launcher, room_data.name, "Content"));
+							adp.insert(new ItemBeanMain(room_data.gid, R.mipmap.ic_launcher, room_data.name, 
+								room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
+								room_data.latest_time == null ? "" : room_data.latest_time, 
+								room_data.latest_mid));
 							adp.notifyDataSetChanged();
 						}
 					}

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:gravity="center_vertical"
+	android:padding="10dp">
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal"
+		android:gravity="center_horizontal">
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="Text"
+			android:textSize="10sp"
+			android:gravity="bottom"
+			android:id="@+id/itemchatimageTextView_time"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal"
+		android:padding="10dp"
+		android:gravity="right">
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:orientation="vertical"
+			android:layout_marginRight="15dp"
+			android:gravity="right">
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:orientation="horizontal">
+
+				<TextView
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Text"
+					android:textSize="10sp"
+					android:gravity="bottom"
+					android:id="@+id/itemchatimageTextView_username"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:orientation="vertical">
+
+				<ImageView
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:id="@+id/itemchatimageImageView_image"
+					android:adjustViewBounds="true"
+					android:maxWidth="225dp"/>
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:orientation="horizontal">
+
+			<ImageView
+				android:layout_height="40dp"
+				android:layout_width="40dp"
+				android:src="@drawable/image_1"
+				android:scaleType="fitXY"
+				android:id="@+id/itemchatimageImageView_head"/>
+
+		</LinearLayout>
+
+	</LinearLayout>
+
+</LinearLayout>
+
