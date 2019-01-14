@@ -25,6 +25,9 @@ public class ResultData
 			public String latest_msg;
 			public String latest_time;
 		}
+		public static class UploadResult {
+			public String filename, etag, url;
+		}
 		public List<Message> message;
 		public Info info;
 		public String auth;
@@ -32,8 +35,9 @@ public class ResultData
 		public String username;
 		public List<RoomData> room_data;
 		public List<NewMessages> new_messages;
+		public UploadResult upload_result;
 		
-		public String md5, filrname, etag, url;
+		//public String md5, filrname, etag, url;
 	}
 	public int code;
 	public String message;

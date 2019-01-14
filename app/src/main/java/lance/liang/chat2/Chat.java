@@ -60,6 +60,39 @@ public class Chat extends AppCompatActivity
 	AlertDialog dialog;
 	Timer timer;
 	private final int code_pick = 0x91, code_file = 0x92;
+	
+	private StringCallback callback_text = new StringCallback() {
+		public void onStart(Response<String> p1)
+		{}
+		@Override
+		public void onError(Response<String> p1)
+		{
+			dialog.hide();
+			AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+			builder.setMessage("Error. (Code: " + p1.code() + ")");
+			builder.show();
+		}
+		@Override
+		public void onSuccess(Response<String> p1)
+		{
+			dialog.hide();
+			ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
+			if (result.code == 0)
+			{
+				adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+											text_message.getText().toString(), Config.get(Chat.this).data.user.head, "text"));
+				adp.notifyDataSetChanged();
+				text_message.setText("");
+				//text_message.setText("");
+			}
+			else
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
+				builder.setMessage(result.message + " (Code: " + result.code + ")");
+				builder.show();
+			}
+		}
+	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -148,39 +181,7 @@ public class Chat extends AppCompatActivity
 					builder.setCancelable(false);
 					dialog = builder.create();
 					dialog.show();
-					Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, 
-						new StringCallback() {
-							public void onStart(Response<String> p1)
-							{}
-							@Override
-							public void onError(Response<String> p1)
-							{
-								dialog.hide();
-								AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-								builder.setMessage("Error. (Code: " + p1.code() + ")");
-								builder.show();
-							}
-							@Override
-							public void onSuccess(Response<String> p1)
-							{
-								dialog.hide();
-								ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
-								if (result.code == 0)
-								{
-									adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
-																text, Config.get(Chat.this).data.user.head, "text"));
-									adp.notifyDataSetChanged();
-									text_message.setText("");
-
-								}
-								else
-								{
-									AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-									builder.setMessage(result.message + " (Code: " + result.code + ")");
-									builder.show();
-								}
-							}
-						});
+					Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, callback_text);
 				}
 			});
 
@@ -278,6 +279,8 @@ public class Chat extends AppCompatActivity
 					ContentValues parames = new ContentValues();
 					parames.put("auth", Config.get(Chat.this).data.user.auth);
 					parames.put("data", b64);
+					parames.put("filename", uri.getLastPathSegment());
+					
 					//parames.put("md5", md5);
 					Communication.getComm(Chat.this).post(Communication.UPLOAD, parames, 
 						new StringCallback() {
@@ -285,7 +288,7 @@ public class Chat extends AppCompatActivity
 							public void onSuccess(Response<String> p1) {
 								if (p1.code() != 200)
 									return;
-								ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+								final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
 								if (result.code == 0) {
 									/*
 									EditText edit = new EditText(Chat.this);
@@ -293,7 +296,7 @@ public class Chat extends AppCompatActivity
 									new AlertDialog.Builder(Chat.this).setView(edit).show();*/
 									ContentValues parames = new ContentValues();
 									parames.put("auth", Config.get(Chat.this).data.user.auth);
-									parames.put("text", result.data.url);
+									parames.put("text", result.data.upload_result.url);
 									parames.put("message_type", "file");
 									parames.put("gid", gid);
 									AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
@@ -317,17 +320,17 @@ public class Chat extends AppCompatActivity
 											public void onSuccess(Response<String> p1)
 											{
 												dialog.hide();
-												ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
-												if (result.code == 0)
+												ResultData result2 = (new Gson()).fromJson(p1.body(), ResultData.class);
+												if (result2.code == 0)
 												{
 													adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
-																				result.data.url, Config.get(Chat.this).data.user.head, "file"));
+																				result.data.upload_result.url, Config.get(Chat.this).data.user.head, "file"));
 													adp.notifyDataSetChanged();
 												}
 												else
 												{
 													AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-													builder.setMessage(result.message + " (Code: " + result.code + ")");
+													builder.setMessage(result2.message + " (Code: " + result2.code + ")");
 													builder.show();
 												}
 											}
@@ -367,6 +370,7 @@ public class Chat extends AppCompatActivity
 						ContentValues parames = new ContentValues();
 						parames.put("auth", Config.get(Chat.this).data.user.auth);
 						parames.put("data", b64);
+						parames.put("filename", choose.getLastPathSegment());
 						//parames.put("md5", md5);
 						Communication.getComm(Chat.this).post(Communication.UPLOAD, parames, 
 							new StringCallback() {
@@ -374,11 +378,11 @@ public class Chat extends AppCompatActivity
 								public void onSuccess(Response<String> p1) {
 									if (p1.code() != 200)
 										return;
-									ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+									final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
 									if (result.code == 0) {
 										ContentValues parames = new ContentValues();
 										parames.put("auth", Config.get(Chat.this).data.user.auth);
-										parames.put("text", result.data.url);
+										parames.put("text", result.data.upload_result.url);
 										parames.put("message_type", "image");
 										parames.put("gid", gid);
 										AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
@@ -402,17 +406,17 @@ public class Chat extends AppCompatActivity
 												public void onSuccess(Response<String> p1)
 												{
 													dialog.hide();
-													ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
-													if (result.code == 0)
+													ResultData result2 = (new Gson()).fromJson(p1.body(), ResultData.class);
+													if (result2.code == 0)
 													{
 														adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
-																					result.data.url, Config.get(Chat.this).data.user.head, "image"));
+																					result.data.upload_result.url, Config.get(Chat.this).data.user.head, "image"));
 														adp.notifyDataSetChanged();
 													}
 													else
 													{
 														AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-														builder.setMessage(result.message + " (Code: " + result.code + ")");
+														builder.setMessage(result2.message + " (Code: " + result2.code + ")");
 														builder.show();
 													}
 												}

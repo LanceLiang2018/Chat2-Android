@@ -81,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
 		
 		//todo: init glide
 		
+		MyDB db = MyDB.get(this);
+		db.moduleTest();
+		db.close();
+		
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 		
