@@ -26,6 +26,7 @@ public class Communication
 	LOGIN = SERVER + "login",
 	SIGNUP = SERVER + "signup",
 	GET_MESSAGE = SERVER + "get_message",
+	GET_NEW_MESSAGE = SERVER + "get_new_message",
 	SEND_MESSAGE = SERVER + "send_message",
 	GET_HEAD = SERVER + "get_head",
 	CLEAR_ALL = SERVER + "clear_all",
@@ -68,6 +69,7 @@ public class Communication
 		SIGNUP = SERVER + "signup";
 		GET_MESSAGE = SERVER + "get_message";
 		SEND_MESSAGE = SERVER + "send_message";
+		GET_NEW_MESSAGE = SERVER + "get_new_message";
 		GET_HEAD = SERVER + "get_head";
 		CLEAR_ALL = SERVER + "clear_all";
 

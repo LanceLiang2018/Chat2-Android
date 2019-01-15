@@ -45,9 +45,14 @@ class ItemBeanChat {
 		this.mid = mid; this.username = usrename; this.time = time;
 		this.head_url = head_url; this.message = message;
 	}*/
-	ItemBeanChat(int mid, String usrename, String time, String message, String head_url, String type) {
-		this.mid = mid; this.username = usrename; this.time = time;
+	ItemBeanChat(int mid, String username, String time, String message, String head_url, String type) {
+		this.mid = mid; this.username = username; this.time = time;
 		this.head_url = head_url; this.message = message; this.type = type;
+	}
+	ItemBeanChat(MessageData m) {
+		this.mid = m.mid; this.username = m.username; //this.time = m.send_time;
+		this.time = new MyGetTime().remote(m.send_time);
+		this.head_url = m.head; this.message = m.text; this.type = m.type;
 	}
 	
 }

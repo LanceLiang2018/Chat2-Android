@@ -81,9 +81,7 @@ public class MainActivity extends AppCompatActivity {
 		
 		//todo: init glide
 		
-		MyDB db = MyDB.get(this);
-		db.moduleTest();
-		db.close();
+		new MyDB(this).init();
 		
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -132,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 					intent_room.setClass(MainActivity.this, Chat.class);
 					Bundle bundle=new Bundle();
 					bundle.putString("name", data.get(p3).title);
-					bundle.putString("gid", "" + data.get(p3).gid);
+					bundle.putInt("gid", data.get(p3).gid);
 					intent_room.putExtras(bundle);
 					startActivityForResult(intent_room, code_chat);
 				}

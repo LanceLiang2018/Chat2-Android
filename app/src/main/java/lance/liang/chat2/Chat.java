@@ -28,25 +28,7 @@ import org.apache.http.impl.auth.*;
 import java.security.MessageDigest;
 import android.net.*;
 import android.service.chooser.*;
-/*
-class MD5Utils
-{ private static final String hexDigIts[] = {"0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"};
-	public static String MD5Encode(String origin, String charsetname)
-	{ String resultString = null; try
-		{ resultString = new String(origin); MessageDigest md = MessageDigest.getInstance("MD5"); if (null == charsetname || "".equals(charsetname))
-			{ resultString = byteArrayToHexString(md.digest(resultString.getBytes())); }
-			else
-			{ resultString = byteArrayToHexString(md.digest(resultString.getBytes(charsetname))); } }
-		catch (Exception e)
-		{ } return resultString; }
-	public static String byteArrayToHexString(byte b[])
-	{ StringBuffer resultSb = new StringBuffer(); for (int i = 0; i < b.length; i++)
-		{ resultSb.append(byteToHexString(b[i])); } return resultSb.toString(); }
-	public static String byteToHexString(byte b)
-	{ int n = b; if (n < 0)
-		{ n += 256; }
-	int d1 = n / 16; int d2 = n % 16; return hexDigIts[d1] + hexDigIts[d2]; } }
-*/
+
 public class Chat extends AppCompatActivity
 {
 	private EditText text_message;
@@ -56,6 +38,7 @@ public class Chat extends AppCompatActivity
 	private List<ItemBeanChat> data = new ArrayList<>();
 	private SwipeRefreshLayout srl;
 	private String gid = "0";
+	private int gid_int = 0;
 	private ActionBar bar;
 	AlertDialog dialog;
 	Timer timer;
@@ -83,7 +66,6 @@ public class Chat extends AppCompatActivity
 											text_message.getText().toString(), Config.get(Chat.this).data.user.head, "text"));
 				adp.notifyDataSetChanged();
 				text_message.setText("");
-				//text_message.setText("");
 			}
 			else
 			{
@@ -101,22 +83,10 @@ public class Chat extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 
 		Bundle bundle = getIntent().getExtras();
-		gid = bundle.getString("gid");
+		gid_int = bundle.getInt("gid");
+		gid = "" + gid_int;
 
-		try
-		{
-			setContentView(R.layout.chat);
-
-//			Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-//			toolbar.setTitle((CharSequence)bundle.getString("name"));
-//			toolbar.setBackgroundColor(Color.parseColor("#FFC03546"));
-//			
-		}
-		catch (Exception e)
-		{
-			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-		}
-
+		setContentView(R.layout.chat);
 		bar = getSupportActionBar();
 		bar.setDisplayHomeAsUpEnabled(true);
 		bar.setHomeButtonEnabled(true);
@@ -149,8 +119,10 @@ public class Chat extends AppCompatActivity
 		adp = new ChatAdapter(this, data);
 		list_message.setAdapter(adp);
 
-		Refresh();
-
+		//refresh();
+		//getMessage();
+		initMessages();
+		
 		//srl.setColorSchemeResources(android.R.color.holo_blue_dark);
 		srl.setColorSchemeResources(Config.get(this).data.settings.colorFt);
 		srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
@@ -190,7 +162,8 @@ public class Chat extends AppCompatActivity
 				@Override
 				public void run()
 				{
-					Refresh();
+					getMessage();
+					//refresh();
 				}
 			}, 0, 5000);
 
@@ -432,15 +405,37 @@ public class Chat extends AppCompatActivity
 		}
 	}
 
-	public void Refresh()
+	public void refresh()
 	{
+		List<MessageData> messages = MyDB.get(this).getNewMessages(gid_int);
+		//adp.list.clear();
+		int flag = 0;
+		for (MessageData m: messages) {
+			adp.insert(new ItemBeanChat(m));
+			flag = 1;
+		}
+		if (flag != 0)
+			adp.notifyDataSetChanged();
+	}
+	
+	public void initMessages() {
+		List<MessageData> messages = MyDB.get(this).getMessages(gid_int, 30, 0);
+		adp.list.clear();
+		for (MessageData m: messages) {
+			adp.insert(new ItemBeanChat(m));
+		}
+		adp.notifyDataSetChanged();
+	}
+	
+	void getMessage() {
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(Chat.this).data.user.auth);
 		parames.put("gid", gid);
+		parames.put("since", new MyDB(Chat.this).getLatestMid(gid_int));
 		parames.put("limit", "30");
 		try
 		{
-			Communication.getComm(Chat.this).post(Communication.GET_MESSAGE, parames,  
+			Communication.getComm(Chat.this).post(Communication.GET_NEW_MESSAGE, parames,  
 				new StringCallback() {
 					@Override
 					public void onSuccess(Response<String> p1)
@@ -448,13 +443,15 @@ public class Chat extends AppCompatActivity
 						ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
 						if (result.code == 0)
 						{
-							adp.list.clear();
-							for (ResultData.Data.Message message: result.data.message)
-							{
-								adp.insert_back(new ItemBeanChat(message.mid, message.username, new MyGetTime().remote(message.send_time), 
-																 message.text, message.head, message.type));
-							}
-							adp.notifyDataSetChanged();
+							//adp.list.clear();
+							//for (MessageData message: result.data.message)
+							//{
+								//adp.insert_back(new ItemBeanChat(message.mid, message.username, new MyGetTime().remote(message.send_time), 
+								//								 message.text, message.head, message.type));
+							//}
+							//adp.notifyDataSetChanged();
+							MyDB.get(Chat.this).saveMessage(result.data.message);
+							refresh();
 						}
 						else
 						{
