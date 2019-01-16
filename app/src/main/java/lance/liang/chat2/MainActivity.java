@@ -79,9 +79,12 @@ public class MainActivity extends AppCompatActivity {
 		Log.i("Chat 2", "Started.");
 		setTheme(Config.get(this).data.settings.theme);
 		
+		//getDelegate().set
+		//AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+		
 		//todo: init glide
 		
-		new MyDB(this).init();
+		//new MyDB(this).init();
 		
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);

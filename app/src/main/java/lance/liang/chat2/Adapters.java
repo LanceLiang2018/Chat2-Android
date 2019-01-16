@@ -169,7 +169,6 @@ class ChatAdapter extends BaseAdapter
 			image.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View p1) {
-						/*
 						String url = (String) p1.getTag();
 						
 						View inview = inflater.inflate(R.layout.image_view, null);
@@ -178,8 +177,7 @@ class ChatAdapter extends BaseAdapter
 						final ImageView imview = (ImageView) inview.findViewById(R.id.imageviewImageView);
 						
 						Glide.with(builder.getContext()).load(url)
-							.apply(new RequestOptions().placeholder(R.drawable.image_1)
-								.encodeQuality(100))
+							.apply(new RequestOptions().placeholder(R.drawable.image_1))
 							.into(imview);
 						final AlertDialog dialog = builder.setView(inview).show();
 						imview.setOnClickListener(new OnClickListener() {
@@ -205,13 +203,15 @@ class ChatAdapter extends BaseAdapter
 										}).show();
 									return false;
 								}
-							});*/
+							});
+						imview.setOnTouchListener(new ImageZoomListenter());
+						/*
 						Intent intent = new Intent();
 						Bundle bundle = new Bundle();
 						bundle.putString("url", (String) p1.getTag());
 						intent.setClass(pcontext, ImagePreView.class);
 						intent.putExtras(bundle);
-						pcontext.startActivity(intent);
+						pcontext.startActivity(intent);*/
 					}
 				});
 			

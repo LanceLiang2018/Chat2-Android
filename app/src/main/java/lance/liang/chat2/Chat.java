@@ -165,7 +165,7 @@ public class Chat extends AppCompatActivity
 					getMessage();
 					//refresh();
 				}
-			}, 0, 5000);
+			}, 0, 1000);
 
 		btn_more.setOnClickListener(new OnClickListener() {
 				@Override
@@ -409,12 +409,10 @@ public class Chat extends AppCompatActivity
 	{
 		List<MessageData> messages = MyDB.get(this).getNewMessages(gid_int);
 		//adp.list.clear();
-		int flag = 0;
 		for (MessageData m: messages) {
 			adp.insert(new ItemBeanChat(m));
-			flag = 1;
 		}
-		if (flag != 0)
+		if (messages.size() > 0)
 			adp.notifyDataSetChanged();
 	}
 	

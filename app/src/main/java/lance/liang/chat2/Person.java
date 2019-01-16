@@ -58,6 +58,8 @@ public class Person extends AppCompatActivity
 		text_uid = (TextView) findViewById(R.id.personTextView_uid);
 		bg = (ImageView) findViewById(R.id.personImageView_bg);
 		
+		text_motto.setOnTouchListener(new TextZoomListenter());
+		
 		text_username.setText(username);
 		
 		Glide.with(this).load(head_url)
@@ -155,3 +157,69 @@ public class Person extends AppCompatActivity
 		super.onDestroy();
 	}
 }
+
+class TextZoomListenter implements OnTouchListener
+{
+	private int mode = 0;
+	float oldDist;
+	float textSize = 0;
+	TextView textView = null;
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event)
+	{
+		textView = (TextView) v;
+		if (textSize == 0)
+		{
+			textSize = textView.getTextSize();
+		}
+		switch (event.getAction() & MotionEvent.ACTION_MASK)
+		{
+			case MotionEvent.ACTION_DOWN:
+				mode = 1;
+				break;
+			case MotionEvent.ACTION_UP:
+				mode = 0;
+				break;
+			case MotionEvent.ACTION_POINTER_UP:
+				mode -= 1;
+				break;
+			case MotionEvent.ACTION_POINTER_DOWN:
+				oldDist = spacing(event);
+				mode += 1;
+				break;
+
+			case MotionEvent.ACTION_MOVE:
+				if (mode >= 2)
+				{
+					float newDist = spacing(event);
+					if (newDist > oldDist + 1)
+					{
+						zoom(newDist / oldDist);
+						oldDist = newDist;
+					}
+					if (newDist < oldDist - 1)
+					{
+						zoom(newDist / oldDist);
+						oldDist = newDist;
+					}
+				}
+				break;
+		}
+		return true;
+	}
+
+	private void zoom(float f)
+	{
+		textView.setTextSize(textSize *= f);
+	}
+
+	private float spacing(MotionEvent event)
+	{
+		float x = event.getX(0) - event.getX(1);
+		float y = event.getY(0) - event.getY(1);
+		//return new FloatMath.sqrt(x * x + y * y);
+		return (float)Math.sqrt(x * x + y * y);
+	}
+}
+

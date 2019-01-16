@@ -29,8 +29,7 @@ public class ImagePreView extends Activity
 		imview.setImageResource(R.drawable.image_person_bg);
 
 		Glide.with(this).load(url)
-			.apply(new RequestOptions().placeholder(R.drawable.image_1)
-				   .encodeQuality(100).override(1024, 1024))
+			.apply(new RequestOptions().placeholder(R.drawable.image_1))
 			.into(imview);
 		imview.setOnClickListener(new OnClickListener() {
 				@Override
@@ -38,6 +37,7 @@ public class ImagePreView extends Activity
 					ImagePreView.this.finish();
 				}
 			});
+		imview.setOnTouchListener(new ImageZoomListenter());
 		imview.setOnLongClickListener(new OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View p1) {
@@ -62,6 +62,74 @@ public class ImagePreView extends Activity
 	protected void onDestroy()
 	{
 		super.onDestroy();
+	}
+}
+
+class ImageZoomListenter implements OnTouchListener
+{
+	private int mode = 0;
+	float oldDist;
+	float sx = 0, sy = 0;
+	ImageView imageView = null;
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event)
+	{
+		imageView = (ImageView) v;
+		if (sx == 0 || sy == 0)
+		{
+			sx = imageView.getScaleX();
+			sy = imageView.getScaleY();
+		}
+		switch (event.getAction() & MotionEvent.ACTION_MASK)
+		{
+			case MotionEvent.ACTION_DOWN:
+				mode = 1;
+				break;
+			case MotionEvent.ACTION_UP:
+				mode = 0;
+				break;
+			case MotionEvent.ACTION_POINTER_UP:
+				mode -= 1;
+				break;
+			case MotionEvent.ACTION_POINTER_DOWN:
+				oldDist = spacing(event);
+				mode += 1;
+				break;
+
+			case MotionEvent.ACTION_MOVE:
+				if (mode >= 2)
+				{
+					float newDist = spacing(event);
+					if (newDist > oldDist + 1)
+					{
+						zoom(newDist / oldDist);
+						oldDist = newDist;
+					}
+					if (newDist < oldDist - 1)
+					{
+						zoom(newDist / oldDist);
+						oldDist = newDist;
+					}
+				}
+				break;
+		}
+		return true;
+	}
+
+	private void zoom(float f)
+	{
+		//imageView.setTextSize(textSize *= f);
+		imageView.setScaleX(sx *= f);
+		imageView.setScaleY(sy *= f);
+	}
+
+	private float spacing(MotionEvent event)
+	{
+		float x = event.getX(0) - event.getX(1);
+		float y = event.getY(0) - event.getY(1);
+		//return new FloatMath.sqrt(x * x + y * y);
+		return (float)Math.sqrt(x * x + y * y);
 	}
 }
 
