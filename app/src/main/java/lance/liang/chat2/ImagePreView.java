@@ -13,7 +13,7 @@ import com.bumptech.glide.request.*;
 import lance.liang.chat2.*;
 
 import android.support.v7.app.AlertDialog;
-import com.github.chrisbanes.photoview.*;
+import com.bm.library.*;
 
 public class ImagePreView extends Activity
 {
@@ -27,18 +27,21 @@ public class ImagePreView extends Activity
 		String url = getIntent().getExtras().getString("url");
 
 		final PhotoView imview = (PhotoView) findViewById(R.id.photo_view);
+		imview.enable();
 		imview.setImageResource(R.drawable.image_person_bg);
 
 		Glide.with(this).load(url)
 			.apply(new RequestOptions().placeholder(R.drawable.image_1))
 			.into(imview);
-		imview.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View p1) {
-					ImagePreView.this.finish();
-				}
-			});
+		//imview.setOnClickListener(new OnClickListener() {
+		//		@Override
+		//		public void onClick(View p1) {
+		//			ImagePreView.this.finish();
+		//		}
+		//	});
+		
 		//imview.setOnTouchListener(new ImageZoomListenter());
+		/*
 		imview.setOnLongClickListener(new OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View p1) {
@@ -57,6 +60,7 @@ public class ImagePreView extends Activity
 					return false;
 				}
 			});
+		*/
 	}
 
 	@Override

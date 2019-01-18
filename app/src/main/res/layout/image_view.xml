@@ -6,7 +6,7 @@
 	android:orientation="vertical"
 	android:gravity="center">
 
-	<com.github.chrisbanes.photoview.PhotoView 
+	<com.bm.library.PhotoView 
 		android:id="@+id/photo_view" 
 		android:layout_width="match_parent" 
 		android:layout_height="match_parent"/>
