@@ -3,7 +3,10 @@ package lance.liang.chat2;
 import android.*;
 import android.content.*;
 import android.content.pm.*;
+import android.database.*;
+import android.net.*;
 import android.os.*;
+import android.provider.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
 import android.util.*;
@@ -18,16 +21,9 @@ import com.zhihu.matisse.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import java.io.*;
-import java.net.*;
-import java.text.*;
 import java.util.*;
 
 import io.reactivex.Observer;
-import org.apache.http.impl.auth.*;
-
-import java.security.MessageDigest;
-import android.net.*;
-import android.service.chooser.*;
 
 public class Chat extends AppCompatActivity
 {
@@ -62,7 +58,7 @@ public class Chat extends AppCompatActivity
 			ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
 			if (result.code == 0)
 			{
-				adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+				adp.insert(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
 											text_message.getText().toString(), Config.get(Chat.this).data.user.head, "text"));
 				adp.notifyDataSetChanged();
 				text_message.setText("");
@@ -130,7 +126,7 @@ public class Chat extends AppCompatActivity
 				public void onRefresh()
 				{
 					Toast.makeText(Chat.this, "Refreshing...", Toast.LENGTH_SHORT).show();
-					adp.insert_back(new ItemBeanChat(0, "Lance", "12:00", "Refreshed.", 
+					adp.insert_back(new ItemBeanChat(0, gid_int, "Lance", "12:00", "Refreshed.", 
 													 "https://s.gravatar.com/avatar/cb135b9ed779f242373ab3a8db99f25a?s=144", "text"));
 					adp.notifyDataSetChanged();
 					//adp.notifyDataSetInvalidated();
@@ -234,6 +230,7 @@ public class Chat extends AppCompatActivity
 			case code_file:
 				if (resultCode != RESULT_OK)
 					break;
+				/*
 				//String str = URLDecoder.decode(data.getData().toString());
 				//String path = Uri.parse().
 				Uri uri = data.getData();
@@ -263,10 +260,6 @@ public class Chat extends AppCompatActivity
 									return;
 								final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
 								if (result.code == 0) {
-									/*
-									EditText edit = new EditText(Chat.this);
-									edit.setText(result.data.url);
-									new AlertDialog.Builder(Chat.this).setView(edit).show();*/
 									ContentValues parames = new ContentValues();
 									parames.put("auth", Config.get(Chat.this).data.user.auth);
 									parames.put("text", result.data.upload_result.url);
@@ -314,7 +307,18 @@ public class Chat extends AppCompatActivity
 				}
 				catch (Exception e) {
 					Toast.makeText(Chat.this, e.getMessage(), Toast.LENGTH_LONG).show();
-				}
+				}*/
+				
+				Uri uri = data.getData();
+				ContentResolver cr = this.getContentResolver();  
+				//String str = cr.openInputStream().;
+				String path = getRealFilePath(Chat.this, uri);
+				Toast.makeText(Chat.this, path, Toast.LENGTH_LONG).show();
+				//File file = new File(uri);
+				new MyDB(Chat.this).saveMessage(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+																 path.substring(path.lastIndexOf("/") + 1, path.length()), 
+																 Config.get(Chat.this).data.user.head, "file", ItemBeanChat.SENDING).setSendTime(new MyGetTime().getInt()));
+				refresh();
 				break;
 			case code_pick:
 				if (resultCode == RESULT_OK)
@@ -382,7 +386,7 @@ public class Chat extends AppCompatActivity
 													ResultData result2 = (new Gson()).fromJson(p1.body(), ResultData.class);
 													if (result2.code == 0)
 													{
-														adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+														adp.insert(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
 																					result.data.upload_result.url, Config.get(Chat.this).data.user.head, "image"));
 														adp.notifyDataSetChanged();
 													}
@@ -488,4 +492,29 @@ public class Chat extends AppCompatActivity
 			timer = null;
 		}
 	}
+	
+	public static String getRealFilePath( final Context context, final Uri uri ) {
+        if ( null == uri ) return null;
+        final String scheme = uri.getScheme();
+        String data = null;
+        if ( scheme == null )
+            data = uri.getPath();
+        else if ( ContentResolver.SCHEME_FILE.equals( scheme ) ) {
+            data = uri.getPath();
+        } else if ( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+            Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
+            if ( null != cursor ) {
+                if ( cursor.moveToFirst() ) {
+                    int index = cursor.getColumnIndex( MediaStore.Images.ImageColumns.DATA );
+                    if ( index > -1 ) {
+                        data = cursor.getString( index );
+                    }
+                }
+                cursor.close();
+            }
+        }
+        return data;
+    }
 }
+
+

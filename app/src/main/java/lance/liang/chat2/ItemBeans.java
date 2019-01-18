@@ -37,17 +37,37 @@ class ItemBeanLeft {
 }
 
 class ItemBeanChat {
-	String time, head_url, message, username, type = "text";
-	int mid;
+	String time, head_url, message, username, type = "text", tag = null;
+	static public final int DONE = 0, SENDING = 1, RECEIVING = 2;
+	int mid, gid, status = DONE, send_time = 0;
 
 	/*
 	ItemBeanChat(int mid, String usrename, String time, String message, String head_url) {
 		this.mid = mid; this.username = usrename; this.time = time;
 		this.head_url = head_url; this.message = message;
 	}*/
-	ItemBeanChat(int mid, String username, String time, String message, String head_url, String type) {
+	ItemBeanChat(int mid, int gid, String username, String time, String message, String head_url, String type) {
 		this.mid = mid; this.username = username; this.time = time;
 		this.head_url = head_url; this.message = message; this.type = type;
+		this.gid = gid;
+	}
+	ItemBeanChat(int mid, int gid, String username, String time, String message, String head_url, String type, int status) {
+		this.mid = mid; this.username = username; this.time = time;
+		this.head_url = head_url; this.message = message; this.type = type;
+		this.status = status;
+		this.gid = gid;
+	}
+	public ItemBeanChat setStatus(int stat) {
+		status = stat;
+		return this;
+	}
+	public ItemBeanChat setTag(String tag) {
+		this.tag = tag;
+		return this;
+	}
+	public ItemBeanChat setSendTime(int stime) {
+		send_time = stime;
+		return this;
 	}
 	ItemBeanChat(MessageData m) {
 		this.mid = m.mid; this.username = m.username; //this.time = m.send_time;

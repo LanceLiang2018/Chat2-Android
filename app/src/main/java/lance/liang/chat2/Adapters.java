@@ -123,29 +123,36 @@ class ChatAdapter extends BaseAdapter
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View view = null;
+		View view = null, frame = null;
 		final ItemBeanChat bean = list.get(position);
-		ImageView head = new ImageView(pcontext);
 		
+		if (bean.username.equals(Config.get(pcontext).data.user.username))
+			view = inflater.inflate(R.layout.item_chat_frame_me, null);
+		else
+			view = inflater.inflate(R.layout.item_chat_frame, null);
+		
+		((TextView) view.findViewById(R.id.itemchatframeTextView_username)).setText(bean.username);
+		((TextView) view.findViewById(R.id.itemchatframeTextView_time)).setText(bean.time);
+		ImageView head = (ImageView) view.findViewById(R.id.itemchatframeImageView_head);
+		
+		Glide.with(pcontext)
+			.load(bean.head_url)
+			.apply(new RequestOptions().circleCrop().placeholder(R.drawable.image_blank))
+			.transition(DrawableTransitionOptions.withCrossFade())
+			.into(head);
+
 		if (bean.type.equals("text")) {
-			if (bean.username.equals(Config.get(pcontext).data.user.username))
-				view = inflater.inflate(R.layout.item_chat_text_me, null);
-			else
-				view = inflater.inflate(R.layout.item_chat_text, null);
-			
-			((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
-			((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
-			TextView message = (TextView) view.findViewById(R.id.itemchatTextView_message);
-			LinearLayout box = (LinearLayout) view.findViewById(R.id.itemchatLinearLayout_box);
-			head = (ImageView) view.findViewById(R.id.itemchatImageView_head);
+			frame = inflater.inflate(R.layout.item_frame_text, null);
+			TextView message = (TextView) frame.findViewById(R.id.itemframetextTextView_message);
+			LinearLayout box = (LinearLayout) frame.findViewById(R.id.itemframetextLinearLayout_box);
 			
 			message.setText(bean.message);
-			box.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
+			//box.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
 			//message.setTextColor(Config.get(pcontext).data.settings.colorFt);
 
 			try {
 				RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), 
-					new BitmapFactory().decodeResource(pcontext.getResources(), R.drawable.image_box_bg));
+							new BitmapFactory().decodeResource(pcontext.getResources(), R.drawable.image_box_bg));
 				roundedBitmapDrawable1.setCornerRadius(35);
 				box.setBackgroundDrawable(roundedBitmapDrawable1);
 			}
@@ -155,66 +162,22 @@ class ChatAdapter extends BaseAdapter
 		}
 		if (bean.type.equals("image"))
 		{
-			if (bean.username.equals(Config.get(pcontext).data.user.username))
-				view = inflater.inflate(R.layout.item_chat_image_me, null);
-			else
-				view = inflater.inflate(R.layout.item_chat_image, null);
-
-			((TextView) view.findViewById(R.id.itemchatimageTextView_username)).setText(bean.username);
-			((TextView) view.findViewById(R.id.itemchatimageTextView_time)).setText(bean.time);
-			head = (ImageView) view.findViewById(R.id.itemchatimageImageView_head);
-			final ImageView image = (ImageView) view.findViewById(R.id.itemchatimageImageView_image);
-			image.setTag(bean.message);
+			frame = inflater.inflate(R.layout.item_frame_image, null);
+			final ImageView image = (ImageView) frame.findViewById(R.id.itemframeimageImageView);
+			//image.setTag(bean.message);
 			
-			image.setOnClickListener(new OnClickListener() {
+			frame.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View p1) {
-						String url = (String) p1.getTag();
-						
-						View inview = inflater.inflate(R.layout.image_view, null);
-						
-						AlertDialog.Builder builder = new AlertDialog.Builder(pcontext);
-						final ImageView imview = (ImageView) inview.findViewById(R.id.imageviewImageView);
-						
-						Glide.with(builder.getContext()).load(url)
-							.apply(new RequestOptions().placeholder(R.drawable.image_1))
-							.into(imview);
-						final AlertDialog dialog = builder.setView(inview).show();
-						imview.setOnClickListener(new OnClickListener() {
-								@Override
-								public void onClick(View p1) {
-									dialog.hide();
-								}
-							});
-						imview.setOnLongClickListener(new OnLongClickListener() {
-								@Override
-								public boolean onLongClick(View p1) {
-									new AlertDialog.Builder(pcontext).setItems(new String[] {"Save", "Star"}, 
-										new DialogInterface.OnClickListener() {
-											@Override
-											public void onClick(DialogInterface p1, int p2) {
-												if (p2 == 0) {
-													BitmapDrawable bd = (BitmapDrawable) imview.getDrawable();
-													
-												} else if (p2 == 1) {
-													
-												}
-											}
-										}).show();
-									return false;
-								}
-							});
-						imview.setOnTouchListener(new ImageZoomListenter());
-						/*
 						Intent intent = new Intent();
 						Bundle bundle = new Bundle();
-						bundle.putString("url", (String) p1.getTag());
+						bundle.putString("url", bean.message);
 						intent.setClass(pcontext, ImagePreView.class);
 						intent.putExtras(bundle);
-						pcontext.startActivity(intent);*/
+						pcontext.startActivity(intent);
 					}
 				});
-			
+
 			SimpleTarget target = new SimpleTarget<Drawable>() {
 				@Override
 				public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
@@ -223,7 +186,7 @@ class ChatAdapter extends BaseAdapter
 					}
 					try {
 						RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), 
-							((BitmapDrawable) p1).getBitmap());
+																										   ((BitmapDrawable) p1).getBitmap());
 						roundedBitmapDrawable1.setCornerRadius(30);
 						image.setImageDrawable(roundedBitmapDrawable1);
 					} catch (Exception e) {
@@ -231,39 +194,34 @@ class ChatAdapter extends BaseAdapter
 					}
 				}
 			};
-			
+
 			Glide.with(pcontext)
 				//.asBitmap()
 				.load(bean.message)
 				.apply(new RequestOptions()
-					.placeholder(R.drawable.image_box_bg)
-					.override(300)
-					.diskCacheStrategy(DiskCacheStrategy.ALL))
+					   .placeholder(R.drawable.image_box_bg)
+					   .override(300)
+					   .diskCacheStrategy(DiskCacheStrategy.ALL))
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.into(target);
 		}
 		if (bean.type.equals("file")) {
-			if (bean.username.equals(Config.get(pcontext).data.user.username))
-				view = inflater.inflate(R.layout.item_chat_text_me, null);
-			else
-				view = inflater.inflate(R.layout.item_chat_text, null);
-
-			((TextView) view.findViewById(R.id.itemchatTextView_username)).setText(bean.username);
-			((TextView) view.findViewById(R.id.itemchatTextView_time)).setText(bean.time);
-			TextView message = (TextView) view.findViewById(R.id.itemchatTextView_message);
-			LinearLayout box = (LinearLayout) view.findViewById(R.id.itemchatLinearLayout_box);
-			head = (ImageView) view.findViewById(R.id.itemchatImageView_head);
-
-			message.setText(bean.message);
-			box.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
-			message.setTextColor(Config.get(pcontext).data.settings.colorFt);
+			frame = inflater.inflate(R.layout.item_frame_file, null);
+			TextView filename = (TextView) frame.findViewById(R.id.itemframefileTextView_filename);
+			TextView filesize = (TextView) frame.findViewById(R.id.itemframefileTextView_filesize);
 			
-			message.setOnClickListener(new OnClickListener() {
+			filename.setText(bean.message);
+			filesize.setText("0.34 Kb");
+			frame.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
+			
+			frame.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View p1) {
 						DownloadManager downloadManager = (DownloadManager) pcontext.getSystemService(Context.DOWNLOAD_SERVICE);
-						Uri url = Uri.parse(bean.message);
+						if (bean.tag == null)
+							return;
+						Uri url = Uri.parse(bean.tag);
 						DownloadManager.Request request = new DownloadManager.Request(url);
 						request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
 						request.setDestinationInExternalPublicDir("/sdcard/", "filename");
@@ -274,20 +232,15 @@ class ChatAdapter extends BaseAdapter
 
 			try {
 				RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(pcontext.getResources(), 
-								new BitmapFactory().decodeResource(pcontext.getResources(), R.drawable.image_box_bg));
+																								   new BitmapFactory().decodeResource(pcontext.getResources(), R.drawable.image_box_bg));
 				roundedBitmapDrawable1.setCornerRadius(35);
-				box.setBackgroundDrawable(roundedBitmapDrawable1);
+				frame.setBackgroundDrawable(roundedBitmapDrawable1);
 			}
 			catch (Exception e) {
 				Log.e("Chat 2", e.getMessage());
 			}
 		}
-		Glide.with(pcontext)
-			.load(bean.head_url)
-			.apply(new RequestOptions().circleCrop().placeholder(R.drawable.image_head))
-			.transition(DrawableTransitionOptions.withCrossFade())
-			.into(head);
-			
+		
 		head.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View p1) {
@@ -300,6 +253,15 @@ class ChatAdapter extends BaseAdapter
 					pcontext.startActivity(intent);
 				}
 			});
+		
+		View gview = inflater.inflate(R.layout.item_loading, null);
+		LinearLayout back = (LinearLayout) gview.findViewById(R.id.itemloadingLinearLayout_back);
+		back.addView(frame);
+		//((TextView) gview.findViewById(R.id.itemloadingTextView_progress)).setTextColor(Config.get(pcontext).data.settings.colorFt);
+		if (bean.status == ItemBeanChat.DONE) {
+			((RelativeLayout) gview.findViewById(R.id.itemloadingRelativeLayout_main)).setVisibility(View.GONE);
+		}
+		((LinearLayout) view.findViewById(R.id.itemchatframeLinearLayout_content)).addView(gview);
 		
 		return view;
 	}

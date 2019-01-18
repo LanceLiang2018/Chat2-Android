@@ -44,4 +44,6 @@ dependencies {
 	compile 'org.apache.commons:commons-lang3:+'
 	compile 'jp.wasabeef:glide-transformations:+'
 	compile "jp.co.cyberagent.android:gpuimage:+"
+	compile 'com.lzy.net:okserver:+'
+	compile 'com.github.chrisbanes:PhotoView:+'
 }

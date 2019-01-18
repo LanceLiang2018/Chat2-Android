@@ -98,6 +98,34 @@ public class MyDB extends SQLiteOpenHelper
 		db.close();
 	}
 	
+	public void saveMessage(MessageData data) {
+		SQLiteDatabase db = getWritableDatabase();
+		ContentValues val = new ContentValues();
+		val.put("mid", data.mid);
+		val.put("gid", data.gid);
+		val.put("send_time", data.send_time);
+		val.put("username", data.username);
+		val.put("text", data.text);
+		val.put("type", data.type);
+		val.put("head", data.head);
+		db.insert(TB_MESSAGE, null, val);
+		db.close();
+	}
+	
+	public void saveMessage(ItemBeanChat data) {
+		SQLiteDatabase db = getWritableDatabase();
+		ContentValues val = new ContentValues();
+		val.put("mid", data.mid);
+		val.put("gid", data.gid);
+		val.put("send_time", data.send_time);
+		val.put("username", data.username);
+		val.put("text", data.message);
+		val.put("type", data.type);
+		val.put("head", data.head_url);
+		db.insert(TB_MESSAGE, null, val);
+		db.close();
+	}
+	
 	public void moduleTest() {
 		
 	}

@@ -13,6 +13,10 @@ import lance.liang.chat2.ResultData;
 import android.nfc.*;
 import com.lzy.okgo.request.*;
 import java.io.*;
+import com.lzy.okgo.db.*;
+import com.lzy.okserver.upload.*;
+import com.lzy.okserver.*;
+import android.util.*;
 
 public class Communication
 {
@@ -53,9 +57,11 @@ public class Communication
 	PASSWORD = "password",
 	EMAIL = "email",
 	NAME = "name";
+	private Context pcontext = null;
 
 	Communication(Context context)
 	{
+		pcontext = context;
 		init(context);
 	}
 	
@@ -115,23 +121,53 @@ public class Communication
 		}
 		request.execute(callback);
 	}
-
-	public void test(final Context context)
+	
+	public UploadTask upload(String url, String tag, ContentValues parames, StringCallback callback, UploadListener listener)
 	{
+		PostRequest<String> request = OkGo.<String>post(url).tag(this);
+		for (String key: parames.keySet()) {
+			request.params(key, parames.get(key).toString());
+		}
+		//request.execute(callback);
+		UploadTask<String> task = OkUpload.request(tag, request)
+			.save()
+			.register(listener);
+		return task;
+	}
+	
+	public void test() {
 		ContentValues parames = new ContentValues();
-		parames.put("username", "Lan");
-		parames.put("password", "");
-		parames.put("email", "LanceLiang2018@163.com");
-		parames.put("name", "Lan");
-		Communication.getComm(context).post(Communication.CLEAR_ALL, parames, 
-		new StringCallback() {
+		parames.put("auth", Config.get(pcontext).data.user.auth);
+		UploadListener listener = new UploadListener<String>("Tag") {
+			@Override
+			public void onStart(Progress p1){
+				Toast.makeText(pcontext, "Upload Started.", Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void onProgress(Progress p1) {
+				Log.i("Chat 2 Upload Progress", "" + p1.fraction * 100 + "%");
+			}
+
+			@Override
+			public void onError(Progress p1) {
+			}
+
+			@Override
+			public void onFinish(String p1, Progress p2) {
+			}
+
+			@Override
+			public void onRemove(Progress p1) {
+			}
+		};
+		upload("Tag", Communication.BEAT, parames, 
+			new StringCallback() {
 				@Override
-				public void onSuccess(Response<String> response) {
-					String str = response.body().toString();
-					Gson gson = new Gson();
-					ResultData result = gson.fromJson(str, ResultData.class);
-					Toast.makeText(context, "Clear All: " + result.message, Toast.LENGTH_LONG).show();
+				public void onSuccess(Response<String> p1) {
+					Toast.makeText(pcontext, "Upload finish", Toast.LENGTH_LONG).show();
 				}
-			});
+			} 
+			,listener).start();
 	}
 }

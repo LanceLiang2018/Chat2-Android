@@ -28,6 +28,9 @@ import java.util.*;
 
 import android.support.v7.appcompat.R;
 import io.reactivex.Observer;
+import com.lzy.okserver.*;
+import com.lzy.okserver.task.*;
+import com.lzy.okgo.*;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout srl;
@@ -85,6 +88,17 @@ public class MainActivity extends AppCompatActivity {
 		//todo: init glide
 		
 		//new MyDB(this).init();
+		
+		OkGo.getInstance().init(getApplication());
+		
+		OkUpload okupload = OkUpload.getInstance();
+		okupload.getThreadPool().setCorePoolSize(3);
+		okupload.addOnAllTaskEndListener(new XExecutor.OnAllTaskEndListener() {
+				@Override
+				public void onAllTaskEnd() {
+					Toast.makeText(MainActivity.this, "All end.", Toast.LENGTH_SHORT).show();
+				}
+			});
 		
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -466,61 +480,7 @@ public class MainActivity extends AppCompatActivity {
                 mNotificationManager.notify(0, noti);
 				*/
 				
-				
-				RxPermissions rxPermissions = new RxPermissions(this);
-				rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-					.subscribe(new Observer<Boolean>() {
-						@Override
-						public void onSubscribe(Disposable d) {}
-						@Override
-						public void onNext(Boolean aBoolean) {
-							if (aBoolean) {
-								Matisse.from(MainActivity.this)
-									.choose(MimeType.ofImage(), false)
-									.countable(true)
-									.capture(false)
-									//.captureStrategy(
-									//new CaptureStrategy(true, "lance.liang.chat2","test"))
-									.maxSelectable(1)
-									//.addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
-									//.gridExpectedSize(
-									//getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
-									.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-									.thumbnailScale(0.85f)
-									.setOnSelectedListener(new OnSelectedListener() {
-										@Override
-										public void onSelected(@NonNull List<Uri> uriList, @NonNull List<String> pathList) {
-											// DO SOMETHING IMMEDIATELY HERE
-											Log.e("onSelected", "onSelected: pathList=" + pathList);
-										}
-									})
-									.originalEnable(true)
-									.maxOriginalSize(10)
-									.autoHideToolbarOnSingleTap(true)
-									.setOnCheckedListener(new OnCheckedListener() {
-										@Override
-										public void onCheck(boolean isChecked) {
-											// DO SOMETHING IMMEDIATELY HERE
-											Log.e("isChecked", "onCheck: isChecked=" + isChecked);
-										}
-									})
-									.forResult(code_pick);
-							} else {
-								Toast.makeText(MainActivity.this, "Permision denide", Toast.LENGTH_LONG)
-                                    .show();
-							}
-						}
-
-						@Override
-						public void onError(Throwable e) {
-
-						}
-
-						@Override
-						public void onComplete() {
-
-						}
-					});
+				new Communication(this).test();
 				break;
 			default:
 				break;
