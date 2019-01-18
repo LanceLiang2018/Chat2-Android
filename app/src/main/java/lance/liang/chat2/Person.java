@@ -69,7 +69,9 @@ public class Person extends AppCompatActivity
 			.into(image_head);
 		Glide.with(this).load(head_url)
 			.apply(new RequestOptions().placeholder(R.drawable.image_head)
-				   .centerCrop().fitCenter().transform(new PixelationFilterTransformation()))
+				   .centerCrop().fitCenter()
+				   //.transform(new PixelationFilterTransformation()))
+				   .transform(new BlurTransformation(25)))
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(bg);
 			

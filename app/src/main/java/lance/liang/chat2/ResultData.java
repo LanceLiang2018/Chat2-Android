@@ -3,11 +3,15 @@ package lance.liang.chat2;
 import java.util.*;
 
 class MessageData {
-	public int mid, gid, send_time;
+	public int mid, gid, send_time, status = ItemBeanChat.DONE;
 	public String username, text, type, head;
 	MessageData() {}
 	MessageData(int _mid, int _gid, int _send_time, String _username, String _text, String _type, String _head) {
 		mid = _mid; gid = _gid; send_time = _send_time; username = _username; text = _text; type = _type; head = _head;
+	}
+	public MessageData setStatus(int stat) {
+		status = stat;
+		return this;
 	}
 }
 

@@ -317,7 +317,9 @@ public class Chat extends AppCompatActivity
 				//File file = new File(uri);
 				new MyDB(Chat.this).saveMessage(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
 																 path.substring(path.lastIndexOf("/") + 1, path.length()), 
-																 Config.get(Chat.this).data.user.head, "file", ItemBeanChat.SENDING).setSendTime(new MyGetTime().getInt()));
+																 Config.get(Chat.this).data.user.head, "file", ItemBeanChat.SENDING)
+																 .setSendTime(new MyGetTime().getInt())
+																 .setStatus(ItemBeanChat.SENDING));
 				refresh();
 				break;
 			case code_pick:
