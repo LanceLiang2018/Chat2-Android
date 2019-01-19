@@ -17,10 +17,14 @@ import com.bumptech.glide.load.resource.drawable.*;
 import com.bumptech.glide.request.*;
 import com.bumptech.glide.request.target.*;
 import com.bumptech.glide.request.transition.*;
+import com.lzy.okserver.*;
+import com.lzy.okserver.upload.*;
+import java.io.*;
 import java.util.*;
 
 import android.support.v7.appcompat.R;
-import android.app.DownloadManager.*;
+import com.lzy.okgo.callback.*;
+import com.lzy.okgo.model.*;
 //import android.transition.*;
 //import android.support.v7.app.*;
 
@@ -28,10 +32,12 @@ class MainAdapter extends BaseAdapter
 {
 	public List<ItemBeanMain> list;
 	private LayoutInflater inflater;
+	private Context pcontext;
 
 	MainAdapter(Context context, List<ItemBeanMain> ilist) {
 		this.list = ilist;
 		inflater = LayoutInflater.from(context);
+		pcontext = context;
 	}
 
 	@Override
@@ -66,21 +72,15 @@ class MainAdapter extends BaseAdapter
 		
 		
 		text_time.setText(bean.time);
-		if (bean.unread != 0) {
+		if (bean.unread != 0)
 			text_unread.setText("" + bean.unread);
-		} else {
+		else
 			text_unread.setVisibility(View.GONE);
-		}
-		
-		try {
-			RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(view.getResources(), 
-				BitmapFactory.decodeResource(view.getResources(), R.drawable.image_1));
-			roundedBitmapDrawable1.setCircular(true);
-			im.setImageDrawable(roundedBitmapDrawable1);
-		}
-		catch (Exception e) {
-			Log.e("Chat 2", e.getMessage());
-		}
+			
+		Glide.with(pcontext).load(bean.head)
+			.apply(new RequestOptions().circleCrop())
+			.transition(DrawableTransitionOptions.withCrossFade())
+			.into(im);
 		
 		return view;
 	}
@@ -262,6 +262,58 @@ class ChatAdapter extends BaseAdapter
 			((RelativeLayout) gview.findViewById(R.id.itemloadingRelativeLayout_main)).setVisibility(View.GONE);
 		}
 		((LinearLayout) view.findViewById(R.id.itemchatframeLinearLayout_content)).addView(gview);
+		
+		if (bean.tag != null) {
+			if (bean.status == bean.SENDING) {
+				OkUpload ok = OkUpload.getInstance();
+				UploadTask task = ok.getTask(bean.tag);
+				if (task == null) {
+					ContentResolver cr = pcontext.getContentResolver();
+					Uri uri = Uri.parse(bean.tag);
+					String b64 = null;
+					try {
+						InputStream is = cr.openInputStream(uri);
+						byte[] buf = new byte[is.available()];
+						is.read(buf);
+						b64 = Base64.encodeToString(buf, Base64.DEFAULT);
+					} catch (Exception e) {
+						Log.e("Chat 2", e.getMessage());
+						Toast.makeText(pcontext, e.getMessage(), Toast.LENGTH_LONG).show();
+						return view;
+					}
+
+					ContentValues params = new ContentValues();
+					params.put("auth", Config.get(pcontext).data.user.auth);
+					params.put("data", b64);
+					task = Communication.getComm(pcontext).upload(bean.tag, Communication.UPLOAD, params, 
+						new StringCallback() {
+							@Override
+							public void onSuccess(Response<String> p1) {
+								
+							}
+						}, 
+						new UploadListener<String>("Tag") {
+							@Override
+							public void onStart(Progress p1){
+								Toast.makeText(pcontext, "Upload Started.", Toast.LENGTH_LONG).show();
+							}
+
+							@Override
+							public void onProgress(Progress p1) {
+								Log.i("Chat 2 Upload Progress", "" + p1.fraction * 100 + "%");
+							}
+
+							@Override
+							public void onError(Progress p1) {}
+							@Override
+							public void onFinish(String p1, Progress p2) {}
+							@Override
+							public void onRemove(Progress p1) {}
+						});
+					task.start();
+				}
+			}
+		}
 		
 		return view;
 	}

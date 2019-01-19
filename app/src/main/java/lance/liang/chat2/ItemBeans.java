@@ -1,8 +1,9 @@
 package lance.liang.chat2;
+import android.support.v7.widget.*;
 
 class ItemBeanMain {
-	public String title, content, time = "";
-	public int image;
+	public String title, content, time = "", head;
+	public int image = R.drawable.image_1;
 	public int gid, unread = 0;
 
 	ItemBeanMain(int gid, int image, String title, String content) {
@@ -11,12 +12,19 @@ class ItemBeanMain {
 		this.title = title;
 		this.content = content;
 	}
-	ItemBeanMain(int gid, int image, String title, String content, String time, int unread) {
+	ItemBeanMain(int gid, String head, String title, String content, String time, int unread) {
 		this.gid = gid;
-		this.image = image;
+		this.head = head;
 		this.title = title;
 		this.content = content;
 		this.unread = unread;
+		this.time = time;
+	}
+	ItemBeanMain(int gid, String head, String title, String content, String time) {
+		this.gid = gid;
+		this.head = head;
+		this.title = title;
+		this.content = content;
 		this.time = time;
 	}
 }
@@ -37,9 +45,10 @@ class ItemBeanLeft {
 }
 
 class ItemBeanChat {
-	String time, head_url, message, username, type = "text", tag = null;
-	static public final int DONE = 0, SENDING = 1, RECEIVING = 2, GONE = 3;
+	String time, head_url, message, username, type = "text";
+	static public final int DONE = 0, SENDING = 1, RECEIVING = 2;
 	int mid, gid, status = DONE, send_time = 0;
+	String tag = null;
 
 	/*
 	ItemBeanChat(int mid, String usrename, String time, String message, String head_url) {

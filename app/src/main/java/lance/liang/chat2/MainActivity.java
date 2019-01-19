@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 			new ItemBeanLeft("我的信息"),
 			new ItemBeanLeft("新用户"),
 			new ItemBeanLeft("新 Room"),
+			new ItemBeanLeft("新朋友"),
 			new ItemBeanLeft("注销"),
 		},
 		{},
@@ -224,7 +225,38 @@ public class MainActivity extends AppCompatActivity {
 								});
 							build.setNegativeButton("Cancel", null);
 							build.show();
-						} else if (p4 == 3) { // logout
+						} else if (p4 == 3) { // make friends
+							final EditText edit = new EditText(MainActivity.this);
+							DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface p1, int p2) {
+									ContentValues params = new ContentValues();
+									params.put("auth", Config.get(MainActivity.this).data.user.auth);
+									params.put("friend", String.valueOf(edit.getText()));
+									Communication.getComm(MainActivity.this).post(Communication.MAKE_FRIENDS, params, 
+										new StringCallback() {
+											@Override
+											public void onSuccess(Response<String> p1) {
+												ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+												if (result.code != 0) {
+													new AlertDialog.Builder(MainActivity.this)
+														.setMessage(result.message + " (Code: " + result.code + ")")
+														.show();
+													return;
+												}
+												MainActivity.this.recreate();
+											}
+										});
+								}
+							};
+							new AlertDialog.Builder(MainActivity.this)
+								.setTitle("New friends")
+								.setMessage("Enter username:")
+								.setView(edit)
+								.setPositiveButton("Yes", listener)
+								.setNegativeButton("No", null)
+								.show();
+						} else if (p4 == 4) { // logout
 							Config config = Config.get(MainActivity.this);
 							config.data.user.auth = "";
 							config.save();
@@ -325,11 +357,12 @@ public class MainActivity extends AppCompatActivity {
 				public void onSuccess(Response<String> response) {
 					ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
 					if (result.code == 0) {
-						for (ResultData.Data.RoomData room_data: result.data.room_data) {
-							adp.insert(new ItemBeanMain(room_data.gid, R.mipmap.ic_launcher, room_data.name, 
-								room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
-								room_data.latest_time == null ? "" : room_data.latest_time, 
-								room_data.latest_mid));
+						for (ResultData.Data.Info room_data: result.data.room_data) {
+							adp.insert(new ItemBeanMain(room_data.gid, room_data.head, room_data.name, 
+								//room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
+								"Latest message",
+								//room_data.latest_time == null ? "" : room_data.latest_time, 
+								new MyGetTime().remote(room_data.last_post_time)));
 							adp.notifyDataSetChanged();
 						}
 					}
@@ -427,6 +460,36 @@ public class MainActivity extends AppCompatActivity {
 					});
 				build.setNegativeButton("Cancel", null);
 				build.show();
+				break;
+			case R.id.option_join_in:
+				edit = new EditText(this);
+				new AlertDialog.Builder(this)
+					.setMessage("Input gid:")
+					.setView(edit)
+					.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface p1, int p2) {
+							ContentValues parames = new ContentValues();
+							parames.put("auth", Config.get(MainActivity.this).data.user.auth);
+							parames.put("gid", edit.getText().toString());
+							Communication.getComm(MainActivity.this).post(Communication.CREATE_ROOM, parames, 
+								new StringCallback() {
+									@Override
+									public void onSuccess(Response<String> response) {
+										ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
+										if (result.code == 0) {
+											MainActivity.this.Refresh();
+										}
+										else {
+											new AlertDialog.Builder(MainActivity.this)
+												.setMessage(result.message + " (Code: " + result.code + ")");
+										}
+									}
+								});
+						}
+					})
+					.setNegativeButton("Cancel", null)
+					.show();
 				break;
 			case R.id.option_clear_all:
 				/*

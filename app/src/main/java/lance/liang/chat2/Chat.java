@@ -24,6 +24,7 @@ import java.io.*;
 import java.util.*;
 
 import io.reactivex.Observer;
+import com.lzy.okserver.upload.*;
 
 public class Chat extends AppCompatActivity
 {
@@ -126,8 +127,8 @@ public class Chat extends AppCompatActivity
 				public void onRefresh()
 				{
 					Toast.makeText(Chat.this, "Refreshing...", Toast.LENGTH_SHORT).show();
-					adp.insert_back(new ItemBeanChat(0, gid_int, "Lance", "12:00", "Refreshed.", 
-													 "https://s.gravatar.com/avatar/cb135b9ed779f242373ab3a8db99f25a?s=144", "text"));
+					adp.insert(new ItemBeanChat(0, gid_int, "Lance", "12:00", "Refreshed.", 
+												"https://s.gravatar.com/avatar/cb135b9ed779f242373ab3a8db99f25a?s=144", "text"));
 					adp.notifyDataSetChanged();
 					//adp.notifyDataSetInvalidated();
 					srl.setRefreshing(false);
@@ -161,7 +162,7 @@ public class Chat extends AppCompatActivity
 					getMessage();
 					//refresh();
 				}
-			}, 0, 1000);
+			}, 0, 3000);
 
 		btn_more.setOnClickListener(new OnClickListener() {
 				@Override
@@ -311,16 +312,17 @@ public class Chat extends AppCompatActivity
 				
 				Uri uri = data.getData();
 				ContentResolver cr = this.getContentResolver();  
-				//String str = cr.openInputStream().;
 				String path = getRealFilePath(Chat.this, uri);
 				Toast.makeText(Chat.this, path, Toast.LENGTH_LONG).show();
 				//File file = new File(uri);
-				new MyDB(Chat.this).saveMessage(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
-																 path.substring(path.lastIndexOf("/") + 1, path.length()), 
-																 Config.get(Chat.this).data.user.head, "file", ItemBeanChat.SENDING)
-																 .setSendTime(new MyGetTime().getInt())
-																 .setStatus(ItemBeanChat.SENDING));
-				refresh();
+				ItemBeanChat message =new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+													   path.substring(path.lastIndexOf("/") + 1, path.length()), 
+													   Config.get(Chat.this).data.user.head, "file", ItemBeanChat.SENDING).setSendTime(new MyGetTime().getInt())
+					.setTag(uri.toString());
+				new MyDB(Chat.this).saveMessage(message);
+				List<ItemBeanChat> tmp = new ArrayList<>();
+				tmp.add(message);
+				refresh_(tmp);
 				break;
 			case code_pick:
 				if (resultCode == RESULT_OK)
@@ -414,14 +416,30 @@ public class Chat extends AppCompatActivity
 	public void refresh()
 	{
 		List<MessageData> messages = MyDB.get(this).getNewMessages(gid_int);
-		//adp.list.clear();
 		for (MessageData m: messages) {
 			adp.insert(new ItemBeanChat(m));
 		}
 		if (messages.size() > 0)
 			adp.notifyDataSetChanged();
 	}
-	
+	public void refresh_(List<MessageData> messages)
+	{
+		for (MessageData m: messages) {
+			adp.insert(new ItemBeanChat(m));
+		}
+		if (messages.size() > 0)
+			adp.notifyDataSetChanged();
+	}
+
+	public void refresh_(List<ItemBeanChat> messages)
+	{
+		for (ItemBeanChat m: messages) {
+			adp.insert(m);
+		}
+		if (messages.size() > 0)
+			adp.notifyDataSetChanged();
+	}
+
 	public void initMessages() {
 		List<MessageData> messages = MyDB.get(this).getMessages(gid_int, 30, 0);
 		adp.list.clear();
@@ -455,7 +473,7 @@ public class Chat extends AppCompatActivity
 							//}
 							//adp.notifyDataSetChanged();
 							MyDB.get(Chat.this).saveMessage(result.data.message);
-							refresh();
+							refresh_(result.data.message);
 						}
 						else
 						{
@@ -471,12 +489,46 @@ public class Chat extends AppCompatActivity
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.chat_menu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch (item.getItemId())
 		{
 			case android.R.id.home:
 				this.finish();
+				break;
+			case R.id.option_room_info:
+				ContentValues params = new ContentValues();
+				params.put("auth", Config.get(this).data.user.auth);
+				params.put("gid", gid);
+				Communication.getComm(this).post(Communication.GET_ROOM_INFO, params, 
+					new StringCallback() {
+						@Override
+						public void onSuccess(Response<String> p1) {
+							ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+							if (result.code == 0) {
+								List<String> items = new ArrayList<String>();
+								items.add("GID: " + result.data.info.gid);
+								items.add("Name: " + result.data.info.name);
+								items.add("Number of members: " + result.data.info.member_number);
+								items.add("Active time: " + new MyGetTime().remote(result.data.info.last_post_time));
+								items.add("Create at: " + new MyGetTime().remote(result.data.info.create_time));
+								items.add("Head: " + result.data.info.head);
+								
+								new AlertDialog.Builder(Chat.this)
+									.setItems(items.toArray(new String[items.size()]), null)
+									.show();
+								
+							}
+						}
+					});
 				break;
 			default:
 				break;

@@ -45,6 +45,8 @@ public class Communication
 	SET_ROOM_INFO = SERVER + "set_room_info",
 	GET_MEMBERS = SERVER + "get_room_members",
 	
+	MAKE_FRIENDS,
+	
 	UPLOAD = SERVER + "upload",
 	
 	UID = "uid",
@@ -89,6 +91,8 @@ public class Communication
 		SET_ROOM_INFO = SERVER + "set_room_info";
 		GET_MEMBERS = SERVER + "get_room_members";
 		UPLOAD = SERVER + "upload";
+		
+		MAKE_FRIENDS = SERVER + "make_friends";
 	}
 
 	public static Communication getComm(Context context)
