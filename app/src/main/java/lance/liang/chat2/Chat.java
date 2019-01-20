@@ -415,7 +415,14 @@ public class Chat extends AppCompatActivity
 		if (messages.size() > 0)
 			adp.notifyDataSetChanged();
 	}
-	
+	public void refreshNow(List<MessageData> messages)
+	{
+		for (MessageData m: messages) {
+			adp.insert(new ItemBeanChat(m));
+		}
+		if (messages.size() > 0)
+			adp.notifyDataSetChanged();
+	}
 	public void initMessages() {
 		List<MessageData> messages = MyDB.get(this).getMessages(gid_int, 30, 0);
 		adp.list.clear();
@@ -449,7 +456,7 @@ public class Chat extends AppCompatActivity
 							//}
 							//adp.notifyDataSetChanged();
 							MyDB.get(Chat.this).saveMessage(result.data.message);
-							refresh();
+							refreshNow(result.data.message);
 						}
 						else
 						{
