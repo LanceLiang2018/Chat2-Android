@@ -15,22 +15,22 @@ import android.widget.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.request.*;
 import com.google.gson.*;
-import com.lzy.okgo.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
-import com.lzy.okserver.*;
-import com.lzy.okserver.task.*;
 import com.tbruyelle.rxpermissions2.*;
 import com.zhihu.matisse.*;
 import com.zhihu.matisse.listener.*;
 import io.reactivex.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.*;
+import java.text.*;
 import java.util.*;
-import lance.liang.chat2.*;
 
 import android.support.v7.appcompat.R;
 import io.reactivex.Observer;
+import com.lzy.okserver.*;
+import com.lzy.okserver.task.*;
+import com.lzy.okgo.*;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout srl;
@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 			new ItemBeanLeft("我的信息"),
 			new ItemBeanLeft("新用户"),
 			new ItemBeanLeft("新 Room"),
+			new ItemBeanLeft("新朋友"),
 			new ItemBeanLeft("注销"),
 		},
 		{},
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 		//new MyDB(this).init();
 		
 		OkGo.getInstance().init(getApplication());
-
+		
 		OkUpload okupload = OkUpload.getInstance();
 		okupload.getThreadPool().setCorePoolSize(3);
 		okupload.addOnAllTaskEndListener(new XExecutor.OnAllTaskEndListener() {
@@ -224,7 +225,38 @@ public class MainActivity extends AppCompatActivity {
 								});
 							build.setNegativeButton("Cancel", null);
 							build.show();
-						} else if (p4 == 3) { // logout
+						} else if (p4 == 3) { // make friends
+							final EditText edit = new EditText(MainActivity.this);
+							DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface p1, int p2) {
+									ContentValues params = new ContentValues();
+									params.put("auth", Config.get(MainActivity.this).data.user.auth);
+									params.put("friend", String.valueOf(edit.getText()));
+									Communication.getComm(MainActivity.this).post(Communication.MAKE_FRIENDS, params, 
+										new StringCallback() {
+											@Override
+											public void onSuccess(Response<String> p1) {
+												ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+												if (result.code != 0) {
+													new AlertDialog.Builder(MainActivity.this)
+														.setMessage(result.message + " (Code: " + result.code + ")")
+														.show();
+													return;
+												}
+												MainActivity.this.recreate();
+											}
+										});
+								}
+							};
+							new AlertDialog.Builder(MainActivity.this)
+								.setTitle("New friends")
+								.setMessage("Enter username:")
+								.setView(edit)
+								.setPositiveButton("Yes", listener)
+								.setNegativeButton("No", null)
+								.show();
+						} else if (p4 == 4) { // logout
 							Config config = Config.get(MainActivity.this);
 							config.data.user.auth = "";
 							config.save();
@@ -327,10 +359,10 @@ public class MainActivity extends AppCompatActivity {
 					if (result.code == 0) {
 						for (ResultData.Data.Info room_data: result.data.room_data) {
 							adp.insert(new ItemBeanMain(room_data.gid, room_data.head, room_data.name, 
-														//room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
-														"Latest message",
-														//room_data.latest_time == null ? "" : room_data.latest_time, 
-														new MyGetTime().remote(room_data.last_post_time)));
+								//room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
+								"Latest message",
+								//room_data.latest_time == null ? "" : room_data.latest_time, 
+								new MyGetTime().remote(room_data.last_post_time)));
 							adp.notifyDataSetChanged();
 						}
 					}
@@ -429,6 +461,36 @@ public class MainActivity extends AppCompatActivity {
 				build.setNegativeButton("Cancel", null);
 				build.show();
 				break;
+			case R.id.option_join_in:
+				edit = new EditText(this);
+				new AlertDialog.Builder(this)
+					.setMessage("Input gid:")
+					.setView(edit)
+					.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface p1, int p2) {
+							ContentValues parames = new ContentValues();
+							parames.put("auth", Config.get(MainActivity.this).data.user.auth);
+							parames.put("gid", edit.getText().toString());
+							Communication.getComm(MainActivity.this).post(Communication.CREATE_ROOM, parames, 
+								new StringCallback() {
+									@Override
+									public void onSuccess(Response<String> response) {
+										ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
+										if (result.code == 0) {
+											MainActivity.this.Refresh();
+										}
+										else {
+											new AlertDialog.Builder(MainActivity.this)
+												.setMessage(result.message + " (Code: " + result.code + ")");
+										}
+									}
+								});
+						}
+					})
+					.setNegativeButton("Cancel", null)
+					.show();
+				break;
 			case R.id.option_clear_all:
 				/*
 				Communication.getComm(this).get(Communication.CLEAR_ALL, 
@@ -481,61 +543,7 @@ public class MainActivity extends AppCompatActivity {
                 mNotificationManager.notify(0, noti);
 				*/
 				
-				
-				RxPermissions rxPermissions = new RxPermissions(this);
-				rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-					.subscribe(new Observer<Boolean>() {
-						@Override
-						public void onSubscribe(Disposable d) {}
-						@Override
-						public void onNext(Boolean aBoolean) {
-							if (aBoolean) {
-								Matisse.from(MainActivity.this)
-									.choose(MimeType.ofImage(), false)
-									.countable(true)
-									.capture(false)
-									//.captureStrategy(
-									//new CaptureStrategy(true, "lance.liang.chat2","test"))
-									.maxSelectable(1)
-									//.addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
-									//.gridExpectedSize(
-									//getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
-									.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-									.thumbnailScale(0.85f)
-									.setOnSelectedListener(new OnSelectedListener() {
-										@Override
-										public void onSelected(@NonNull List<Uri> uriList, @NonNull List<String> pathList) {
-											// DO SOMETHING IMMEDIATELY HERE
-											Log.e("onSelected", "onSelected: pathList=" + pathList);
-										}
-									})
-									.originalEnable(true)
-									.maxOriginalSize(10)
-									.autoHideToolbarOnSingleTap(true)
-									.setOnCheckedListener(new OnCheckedListener() {
-										@Override
-										public void onCheck(boolean isChecked) {
-											// DO SOMETHING IMMEDIATELY HERE
-											Log.e("isChecked", "onCheck: isChecked=" + isChecked);
-										}
-									})
-									.forResult(code_pick);
-							} else {
-								Toast.makeText(MainActivity.this, "Permision denide", Toast.LENGTH_LONG)
-                                    .show();
-							}
-						}
-
-						@Override
-						public void onError(Throwable e) {
-
-						}
-
-						@Override
-						public void onComplete() {
-
-						}
-					});
+				new Communication(this).test();
 				break;
 			default:
 				break;

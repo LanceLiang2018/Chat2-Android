@@ -6,11 +6,10 @@
 	android:orientation="vertical"
 	android:gravity="center">
 
-	<com.bm.library.PhotoView
-		android:layout_height="match_parent"
-		android:layout_width="match_parent"
-		android:id="@+id/photo_view"
-		android:src="@drawable/image_person_bg"/>
+	<ImageView
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:id="@+id/photo_view"/>
 
 </LinearLayout>
 

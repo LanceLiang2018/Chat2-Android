@@ -28,7 +28,7 @@ public class MyDB extends SQLiteOpenHelper
 		//db.insert(TB_MESSAGE, null, val);
 		//db.close();
 	}
-
+	
 	void init() {
 		SQLiteDatabase db = getWritableDatabase();
 		for (String name: tables)
@@ -48,7 +48,7 @@ public class MyDB extends SQLiteOpenHelper
 	{
 		return new MyDB(context);
 	}
-
+	
 	public List<MessageData> getMessages(int gid, int limit, int offset) {
 		List<MessageData> data = new ArrayList<MessageData>();
 		SQLiteDatabase db = getReadableDatabase();
@@ -58,14 +58,14 @@ public class MyDB extends SQLiteOpenHelper
 			for (cursor.moveToFirst(); !(cursor.isAfterLast()); cursor.moveToNext()){
 				data.add(new MessageData(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), 
 										 cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6))
-						 .setTag(cursor.getString(7)));
+										 .setTag(cursor.getString(7)));
 			}
 		}
 		cursor.close();
 		db.close();
 		return data;
 	}
-
+	
 	public List<MessageData> getNewMessages(int gid) {
 		List<MessageData> data = new ArrayList<MessageData>();
 		int latest = getLatestMid(gid);
@@ -82,7 +82,7 @@ public class MyDB extends SQLiteOpenHelper
 		db.close();
 		return data;
 	}
-
+	
 	public void saveMessage(List<MessageData> data) {
 		SQLiteDatabase db = getWritableDatabase();
 		for (MessageData d: data) {
@@ -98,7 +98,7 @@ public class MyDB extends SQLiteOpenHelper
 		}
 		db.close();
 	}
-
+	
 	public void saveMessage(MessageData data) {
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues val = new ContentValues();
@@ -112,7 +112,7 @@ public class MyDB extends SQLiteOpenHelper
 		db.insert(TB_MESSAGE, null, val);
 		db.close();
 	}
-
+	
 	public void saveMessage(ItemBeanChat data) {
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues val = new ContentValues();
@@ -126,11 +126,11 @@ public class MyDB extends SQLiteOpenHelper
 		db.insert(TB_MESSAGE, null, val);
 		db.close();
 	}
-
+	
 	public void moduleTest() {
-
+		
 	}
-
+	
 	public int getLatestMid(int gid) {
 		SQLiteDatabase db = getReadableDatabase();
 		int latest = 0;

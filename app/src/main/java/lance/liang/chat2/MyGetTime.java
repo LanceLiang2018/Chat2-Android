@@ -6,9 +6,9 @@ import java.util.*;
 public class MyGetTime
 {
 	public String format0 = "HH:mm",
-	format1 = "MM-dd HH:mm",
-	format2 = "yyyy-MM-dd HH:mm";
-
+		format1 = "MM-dd HH:mm",
+		format2 = "yyyy-MM-dd HH:mm";
+		
 	private String format(int time) {
 		int now = getInt();
 		Long stime = Long.parseLong("" + time) * 1000;
@@ -25,7 +25,7 @@ public class MyGetTime
 		}
 		return format0;
 	}
-
+	
 	public String local() {
 		return new SimpleDateFormat(format(getInt()), Locale.CHINA).format(new Date());
 	}

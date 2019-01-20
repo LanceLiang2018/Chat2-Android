@@ -3,7 +3,10 @@ package lance.liang.chat2;
 import android.*;
 import android.content.*;
 import android.content.pm.*;
+import android.database.*;
+import android.net.*;
 import android.os.*;
+import android.provider.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
 import android.util.*;
@@ -18,16 +21,10 @@ import com.zhihu.matisse.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import java.io.*;
-import java.net.*;
-import java.text.*;
 import java.util.*;
 
 import io.reactivex.Observer;
-import org.apache.http.impl.auth.*;
-
-import java.security.MessageDigest;
-import android.net.*;
-import android.service.chooser.*;
+import com.lzy.okserver.upload.*;
 
 public class Chat extends AppCompatActivity
 {
@@ -165,7 +162,7 @@ public class Chat extends AppCompatActivity
 					getMessage();
 					//refresh();
 				}
-			}, 0, 1000);
+			}, 0, 3000);
 
 		btn_more.setOnClickListener(new OnClickListener() {
 				@Override
@@ -234,6 +231,7 @@ public class Chat extends AppCompatActivity
 			case code_file:
 				if (resultCode != RESULT_OK)
 					break;
+				/*
 				//String str = URLDecoder.decode(data.getData().toString());
 				//String path = Uri.parse().
 				Uri uri = data.getData();
@@ -263,10 +261,6 @@ public class Chat extends AppCompatActivity
 									return;
 								final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
 								if (result.code == 0) {
-									/*
-									EditText edit = new EditText(Chat.this);
-									edit.setText(result.data.url);
-									new AlertDialog.Builder(Chat.this).setView(edit).show();*/
 									ContentValues parames = new ContentValues();
 									parames.put("auth", Config.get(Chat.this).data.user.auth);
 									parames.put("text", result.data.upload_result.url);
@@ -296,7 +290,7 @@ public class Chat extends AppCompatActivity
 												ResultData result2 = (new Gson()).fromJson(p1.body(), ResultData.class);
 												if (result2.code == 0)
 												{
-													adp.insert(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+													adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
 																				result.data.upload_result.url, Config.get(Chat.this).data.user.head, "file"));
 													adp.notifyDataSetChanged();
 												}
@@ -314,7 +308,21 @@ public class Chat extends AppCompatActivity
 				}
 				catch (Exception e) {
 					Toast.makeText(Chat.this, e.getMessage(), Toast.LENGTH_LONG).show();
-				}
+				}*/
+				
+				Uri uri = data.getData();
+				ContentResolver cr = this.getContentResolver();  
+				String path = getRealFilePath(Chat.this, uri);
+				Toast.makeText(Chat.this, path, Toast.LENGTH_LONG).show();
+				//File file = new File(uri);
+				ItemBeanChat message =new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+													   path.substring(path.lastIndexOf("/") + 1, path.length()), 
+													   Config.get(Chat.this).data.user.head, "file", ItemBeanChat.SENDING).setSendTime(new MyGetTime().getInt())
+					.setTag(uri.toString());
+				new MyDB(Chat.this).saveMessage(message);
+				List<ItemBeanChat> tmp = new ArrayList<>();
+				tmp.add(message);
+				refreshNowBean(tmp);
 				break;
 			case code_pick:
 				if (resultCode == RESULT_OK)
@@ -408,7 +416,6 @@ public class Chat extends AppCompatActivity
 	public void refresh()
 	{
 		List<MessageData> messages = MyDB.get(this).getNewMessages(gid_int);
-		//adp.list.clear();
 		for (MessageData m: messages) {
 			adp.insert(new ItemBeanChat(m));
 		}
@@ -423,6 +430,15 @@ public class Chat extends AppCompatActivity
 		if (messages.size() > 0)
 			adp.notifyDataSetChanged();
 	}
+	public void refreshNowBean(List<ItemBeanChat> messages)
+	{
+		for (ItemBeanChat m: messages) {
+			adp.insert(m);
+		}
+		if (messages.size() > 0)
+			adp.notifyDataSetChanged();
+	}
+	
 	public void initMessages() {
 		List<MessageData> messages = MyDB.get(this).getMessages(gid_int, 30, 0);
 		adp.list.clear();
@@ -472,12 +488,46 @@ public class Chat extends AppCompatActivity
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.chat_menu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch (item.getItemId())
 		{
 			case android.R.id.home:
 				this.finish();
+				break;
+			case R.id.option_room_info:
+				ContentValues params = new ContentValues();
+				params.put("auth", Config.get(this).data.user.auth);
+				params.put("gid", gid);
+				Communication.getComm(this).post(Communication.GET_ROOM_INFO, params, 
+					new StringCallback() {
+						@Override
+						public void onSuccess(Response<String> p1) {
+							ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+							if (result.code == 0) {
+								List<String> items = new ArrayList<String>();
+								items.add("GID: " + result.data.info.gid);
+								items.add("Name: " + result.data.info.name);
+								items.add("Number of members: " + result.data.info.member_number);
+								items.add("Active time: " + new MyGetTime().remote(result.data.info.last_post_time));
+								items.add("Create at: " + new MyGetTime().remote(result.data.info.create_time));
+								items.add("Head: " + result.data.info.head);
+								
+								new AlertDialog.Builder(Chat.this)
+									.setItems(items.toArray(new String[items.size()]), null)
+									.show();
+								
+							}
+						}
+					});
 				break;
 			default:
 				break;
@@ -495,4 +545,29 @@ public class Chat extends AppCompatActivity
 			timer = null;
 		}
 	}
+	
+	public static String getRealFilePath( final Context context, final Uri uri ) {
+        if ( null == uri ) return null;
+        final String scheme = uri.getScheme();
+        String data = null;
+        if ( scheme == null )
+            data = uri.getPath();
+        else if ( ContentResolver.SCHEME_FILE.equals( scheme ) ) {
+            data = uri.getPath();
+        } else if ( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+            Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
+            if ( null != cursor ) {
+                if ( cursor.moveToFirst() ) {
+                    int index = cursor.getColumnIndex( MediaStore.Images.ImageColumns.DATA );
+                    if ( index > -1 ) {
+                        data = cursor.getString( index );
+                    }
+                }
+                cursor.close();
+            }
+        }
+        return data;
+    }
 }
+
+
