@@ -8,12 +8,13 @@ import android.support.v7.app.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
+import com.bm.library.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.request.*;
 import lance.liang.chat2.*;
 
 import android.support.v7.app.AlertDialog;
-import com.bm.library.*;
+import lance.liang.chat2.R;
 
 public class ImagePreView extends Activity
 {
@@ -26,6 +27,7 @@ public class ImagePreView extends Activity
 		//String url = (String) p1.getTag();
 		String url = getIntent().getExtras().getString("url");
 
+		//final ImageView imview = (ImageView) findViewById(R.id.imageviewImageView);
 		final PhotoView imview = (PhotoView) findViewById(R.id.photo_view);
 		imview.enable();
 		imview.setImageResource(R.drawable.image_person_bg);
@@ -33,15 +35,13 @@ public class ImagePreView extends Activity
 		Glide.with(this).load(url)
 			.apply(new RequestOptions().placeholder(R.drawable.image_1))
 			.into(imview);
-		//imview.setOnClickListener(new OnClickListener() {
-		//		@Override
-		//		public void onClick(View p1) {
-		//			ImagePreView.this.finish();
-		//		}
-		//	});
-		
-		//imview.setOnTouchListener(new ImageZoomListenter());
-		/*
+		imview.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					ImagePreView.this.finish();
+				}
+			});
+		imview.setOnTouchListener(new ImageZoomListenter());
 		imview.setOnLongClickListener(new OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View p1) {
@@ -60,7 +60,6 @@ public class ImagePreView extends Activity
 					return false;
 				}
 			});
-		*/
 	}
 
 	@Override
@@ -76,7 +75,6 @@ class ImageZoomListenter implements OnTouchListener
 	float oldDist;
 	float sx = 0, sy = 0;
 	ImageView imageView = null;
-	float ax = 0, ay = 0;
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event)
@@ -86,8 +84,6 @@ class ImageZoomListenter implements OnTouchListener
 		{
 			sx = imageView.getScaleX();
 			sy = imageView.getScaleY();
-			ax = imageView.getTranslationX();
-			ay = imageView.getTranslationY();
 		}
 		switch (event.getAction() & MotionEvent.ACTION_MASK)
 		{
@@ -119,11 +115,6 @@ class ImageZoomListenter implements OnTouchListener
 						zoom(newDist / oldDist);
 						oldDist = newDist;
 					}
-				}
-				if (mode == 1) {
-					imageView.setTranslationX(event.getX(0));
-					imageView.setTranslationY(event.getY(0));
-					
 				}
 				break;
 		}

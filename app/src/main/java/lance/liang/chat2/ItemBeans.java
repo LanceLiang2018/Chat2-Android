@@ -37,7 +37,7 @@ class ItemBeanLeft {
 		this.image = image;
 		this.title = title;
 	}
-	
+
 	ItemBeanLeft(String title) {
 		this.image = R.drawable.image_blank;
 		this.title = title;
@@ -51,10 +51,10 @@ class ItemBeanChat {
 	String tag = null;
 
 	/*
-	ItemBeanChat(int mid, String usrename, String time, String message, String head_url) {
-		this.mid = mid; this.username = usrename; this.time = time;
-		this.head_url = head_url; this.message = message;
-	}*/
+	 ItemBeanChat(int mid, String usrename, String time, String message, String head_url) {
+	 this.mid = mid; this.username = usrename; this.time = time;
+	 this.head_url = head_url; this.message = message;
+	 }*/
 	ItemBeanChat(int mid, int gid, String username, String time, String message, String head_url, String type) {
 		this.mid = mid; this.username = username; this.time = time;
 		this.head_url = head_url; this.message = message; this.type = type;
@@ -83,6 +83,6 @@ class ItemBeanChat {
 		this.time = new MyGetTime().remote(m.send_time);
 		this.head_url = m.head; this.message = m.text; this.type = m.type;
 	}
-	
+
 }
 

@@ -17,7 +17,8 @@
 			android:layout_width="wrap_content"
 			android:id="@+id/chatListView"
 			android:stackFromBottom="true"
-			android:transcriptMode="alwaysScroll">
+			android:transcriptMode="alwaysScroll"
+			android:dividerHeight="0dp">
 
 		</ListView>
 
