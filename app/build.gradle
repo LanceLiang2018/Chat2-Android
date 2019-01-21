@@ -46,5 +46,5 @@ dependencies {
 	compile "jp.co.cyberagent.android:gpuimage:+"
 	compile 'com.lzy.net:okserver:+'
 	//compile 'com.github.chrisbanes:PhotoView:+'
-	//compile 'com.bm.photoview:library:+'
+	compile 'com.bm.photoview:library:+'
 }

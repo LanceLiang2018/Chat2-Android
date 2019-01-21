@@ -25,6 +25,7 @@ import java.util.*;
 import android.support.v7.appcompat.R;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
+import com.google.gson.*;
 //import android.transition.*;
 //import android.support.v7.app.*;
 
@@ -122,9 +123,12 @@ class ChatAdapter extends BaseAdapter
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view = null, frame = null;
 		final ItemBeanChat bean = list.get(position);
+		
+		if (bean.status == ItemBeanChat.GONE)
+			return new View(pcontext);
 		
 		if (bean.username.equals(Config.get(pcontext).data.user.username))
 			view = inflater.inflate(R.layout.item_chat_frame_me, null);
@@ -212,19 +216,21 @@ class ChatAdapter extends BaseAdapter
 			
 			filename.setText(bean.message);
 			filesize.setText("0.34 Kb");
-			frame.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
+			//frame.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
 			
 			frame.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View p1) {
+						if (bean.username.equals(Config.get(pcontext).data.user.username))
+							return;
 						DownloadManager downloadManager = (DownloadManager) pcontext.getSystemService(Context.DOWNLOAD_SERVICE);
 						if (bean.tag == null)
 							return;
 						Uri url = Uri.parse(bean.tag);
 						DownloadManager.Request request = new DownloadManager.Request(url);
 						request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
-						request.setDestinationInExternalPublicDir("/sdcard/", "filename");
+						request.setDestinationInExternalPublicDir("Download/", bean.message);
 						request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 						downloadManager.enqueue(request);
 					}
@@ -257,60 +263,62 @@ class ChatAdapter extends BaseAdapter
 		View gview = inflater.inflate(R.layout.item_loading, null);
 		LinearLayout back = (LinearLayout) gview.findViewById(R.id.itemloadingLinearLayout_back);
 		back.addView(frame);
-		//((TextView) gview.findViewById(R.id.itemloadingTextView_progress)).setTextColor(Config.get(pcontext).data.settings.colorFt);
+		final RelativeLayout loading_main = (RelativeLayout) gview.findViewById(R.id.itemloadingRelativeLayout_main);
 		if (bean.status == ItemBeanChat.DONE) {
-			((RelativeLayout) gview.findViewById(R.id.itemloadingRelativeLayout_main)).setVisibility(View.GONE);
+			loading_main.setVisibility(View.GONE);
 		}
+		else {
+			loading_main.setVisibility(View.VISIBLE);
+		}
+		final TextView progress = (TextView) gview.findViewById(R.id.itemloadingTextView_progress);
 		((LinearLayout) view.findViewById(R.id.itemchatframeLinearLayout_content)).addView(gview);
 		
 		if (bean.tag != null) {
-			if (bean.status == bean.SENDING) {
+			if (bean.status == bean.PRESEND) {
 				OkUpload ok = OkUpload.getInstance();
-				UploadTask task = ok.getTask(bean.tag);
-				if (task == null) {
-					ContentResolver cr = pcontext.getContentResolver();
-					Uri uri = Uri.parse(bean.tag);
-					String b64 = null;
-					try {
-						InputStream is = cr.openInputStream(uri);
-						byte[] buf = new byte[is.available()];
-						is.read(buf);
-						b64 = Base64.encodeToString(buf, Base64.DEFAULT);
-					} catch (Exception e) {
-						Log.e("Chat 2", e.getMessage());
-						Toast.makeText(pcontext, e.getMessage(), Toast.LENGTH_LONG).show();
-						return view;
-					}
-
-					ContentValues params = new ContentValues();
-					params.put("auth", Config.get(pcontext).data.user.auth);
-					params.put("data", b64);
-					task = Communication.getComm(pcontext).upload(bean.tag, Communication.UPLOAD, params, 
-						new StringCallback() {
+				if (ok.hasTask(bean.tag)) {
+					UploadTask task = ok.getTask(bean.tag);
+					task.register(new UploadListener<String>(bean.tag) {
 							@Override
-							public void onSuccess(Response<String> p1) {
+							public void onStart(Progress p1){}
+							@Override
+							public void onProgress(Progress p1){
+								progress.setText("" + (int)(p1.fraction * 100) + "%");
+							}
+							@Override
+							public void onError(Progress p1){progress.setText("" + (int)(p1.fraction * 100) + "E");
+							}
+							@Override
+							public void onFinish(String p1, Progress p2){
+								bean.status = ItemBeanChat.GONE;
+								MyDB.get(pcontext).updateMessage(new MessageData(bean));
+								list.set(position, bean);
+								notifyDataSetChanged();
 								
+								ResultData result = new Gson().fromJson(p1, ResultData.class);
+								ContentValues params = new ContentValues();
+								params.put("auth", Config.get(pcontext).data.user.auth);
+								params.put("text", result.data.upload_result.url);
+								params.put("message_type", "file");
+								params.put("gid", bean.gid);
+								Communication.getComm(pcontext).post(Communication.SEND_MESSAGE, params, 
+									new StringCallback() {
+										@Override
+										public void onSuccess(Response<String> p1) {
+											if (p1.code() != 200) return;
+											ResultData result2 = new Gson().fromJson(p1.body(), ResultData.class);
+											if (result2.code != 0)
+												new AlertDialog.Builder(pcontext)
+													.setMessage(result2.message + " Code: " + result2.code).show();
+										}
+									});
 							}
-						}, 
-						new UploadListener<String>("Tag") {
 							@Override
-							public void onStart(Progress p1){
-								Toast.makeText(pcontext, "Upload Started.", Toast.LENGTH_LONG).show();
-							}
-
-							@Override
-							public void onProgress(Progress p1) {
-								Log.i("Chat 2 Upload Progress", "" + p1.fraction * 100 + "%");
-							}
-
-							@Override
-							public void onError(Progress p1) {}
-							@Override
-							public void onFinish(String p1, Progress p2) {}
-							@Override
-							public void onRemove(Progress p1) {}
+							public void onRemove(Progress p1){}
 						});
-					task.start();
+					task.save();
+					bean.status = ItemBeanChat.SENDING;
+					MyDB.get(pcontext).updateMessage(new MessageData(bean));
 				}
 			}
 		}

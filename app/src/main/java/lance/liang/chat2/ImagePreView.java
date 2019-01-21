@@ -13,6 +13,7 @@ import com.bumptech.glide.request.*;
 import lance.liang.chat2.*;
 
 import android.support.v7.app.AlertDialog;
+import com.bm.library.*;
 //import com.bm.library.*;
 
 public class ImagePreView extends Activity
@@ -26,10 +27,10 @@ public class ImagePreView extends Activity
 		//String url = (String) p1.getTag();
 		String url = getIntent().getExtras().getString("url");
 
-		//final PhotoView imview = (PhotoView) findViewById(R.id.photo_view);
-		//imview.enable();
-		//imview.setImageResource(R.drawable.image_person_bg);
-		final ImageView imview = (ImageView) findViewById(R.id.photo_view);
+		final PhotoView imview = (PhotoView) findViewById(R.id.photo_view);
+		imview.enable();
+		imview.setImageResource(R.drawable.image_person_bg);
+		//final ImageView imview = (ImageView) findViewById(R.id.photo_view);
 
 		Glide.with(this).load(url)
 			.apply(new RequestOptions().placeholder(R.drawable.image_1))

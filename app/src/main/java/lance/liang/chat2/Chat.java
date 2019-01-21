@@ -16,15 +16,16 @@ import android.widget.*;
 import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
+import com.lzy.okserver.upload.*;
 import com.tbruyelle.rxpermissions2.*;
 import com.zhihu.matisse.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import java.io.*;
 import java.util.*;
+import lance.liang.chat2.*;
 
 import io.reactivex.Observer;
-import com.lzy.okserver.upload.*;
 
 public class Chat extends AppCompatActivity
 {
@@ -59,9 +60,12 @@ public class Chat extends AppCompatActivity
 			ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
 			if (result.code == 0)
 			{
+				/*
 				adp.insert(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
 											text_message.getText().toString(), Config.get(Chat.this).data.user.head, "text"));
 				adp.notifyDataSetChanged();
+				*/
+				getMessage();
 				text_message.setText("");
 			}
 			else
@@ -311,15 +315,35 @@ public class Chat extends AppCompatActivity
 				}*/
 				
 				Uri uri = data.getData();
-				ContentResolver cr = this.getContentResolver();  
 				String path = getRealFilePath(Chat.this, uri);
 				Toast.makeText(Chat.this, path, Toast.LENGTH_LONG).show();
 				//File file = new File(uri);
-				ItemBeanChat message =new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+				int latest_mid = MyDB.get(Chat.this).getLatestMid(gid_int);
+				ItemBeanChat message =new ItemBeanChat(latest_mid, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
 													   path.substring(path.lastIndexOf("/") + 1, path.length()), 
-													   Config.get(Chat.this).data.user.head, "file", ItemBeanChat.SENDING).setSendTime(new MyGetTime().getInt())
-					.setTag(uri.toString());
+													   Config.get(Chat.this).data.user.head, "file", ItemBeanChat.PRESEND).setSendTime(new MyGetTime().getInt())
+					.setTag(path);
 				new MyDB(Chat.this).saveMessage(message);
+				ContentResolver cr = Chat.this.getContentResolver();
+				String b64 = null;
+				try {
+					InputStream is = cr.openInputStream(uri);
+					byte[] buf = new byte[is.available()];
+					is.read(buf);
+					b64 = Base64.encodeToString(buf, Base64.DEFAULT);
+				} catch (Exception e) {
+					Log.e("Chat 2", e.getMessage());
+					Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+					break;
+				}
+
+				ContentValues params = new ContentValues();
+				params.put("auth", Config.get(Chat.this).data.user.auth);
+				params.put("data", b64);
+				params.put("filename", path.substring(path.lastIndexOf("/") + 1, path.length()));
+				UploadTask task = Communication.getComm(Chat.this).uploadNoListener(Communication.UPLOAD, message.tag, params);
+				task.save();
+				task.start();
 				List<ItemBeanChat> tmp = new ArrayList<>();
 				tmp.add(message);
 				refreshNowBean(tmp);
@@ -346,11 +370,11 @@ public class Chat extends AppCompatActivity
 							break;
 						}
 						//String md5 = MD5Utils.byteArrayToHexString(buf2);
-						String b64 = Base64.encodeToString(buf2, Base64.DEFAULT);
+						String b64_image = Base64.encodeToString(buf2, Base64.DEFAULT);
 						
 						ContentValues parames = new ContentValues();
 						parames.put("auth", Config.get(Chat.this).data.user.auth);
-						parames.put("data", b64);
+						parames.put("data", b64_image);
 						parames.put("filename", choose.getLastPathSegment());
 						//parames.put("md5", md5);
 						Communication.getComm(Chat.this).post(Communication.UPLOAD, parames, 

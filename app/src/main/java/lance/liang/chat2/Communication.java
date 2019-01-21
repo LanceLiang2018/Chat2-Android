@@ -17,6 +17,7 @@ import com.lzy.okgo.db.*;
 import com.lzy.okserver.upload.*;
 import com.lzy.okserver.*;
 import android.util.*;
+import com.lzy.okgo.convert.*;
 
 public class Communication
 {
@@ -126,31 +127,44 @@ public class Communication
 		request.execute(callback);
 	}
 	
-	public UploadTask upload(String url, String tag, ContentValues parames, StringCallback callback, UploadListener listener)
+	public UploadTask upload(String url, String tag, ContentValues parames, UploadListener listener)
 	{
 		PostRequest<String> request = OkGo.<String>post(url).tag(this);
 		for (String key: parames.keySet()) {
 			request.params(key, parames.get(key).toString());
 		}
+		request.converter(new StringConvert());
 		//request.execute(callback);
 		UploadTask<String> task = OkUpload.request(tag, request)
 			.save()
 			.register(listener);
 		return task;
 	}
+	public UploadTask uploadNoListener(String url, String tag, ContentValues parames)
+	{
+		PostRequest<String> request = OkGo.<String>post(url).tag(this);
+		for (String key: parames.keySet()) {
+			request.params(key, parames.get(key).toString());
+		}
+		request.converter(new StringConvert());
+		//request.execute(callback);
+		UploadTask<String> task = OkUpload.request(tag, request)
+			.save();
+		return task;
+	}
 	
-	public void test() {
+	static public void test(final Context context) {
 		ContentValues parames = new ContentValues();
-		parames.put("auth", Config.get(pcontext).data.user.auth);
-		UploadListener listener = new UploadListener<String>("Tag") {
+		parames.put("auth", Config.get(context).data.user.auth);
+		UploadListener listener = new UploadListener<String>("myTag") {
 			@Override
 			public void onStart(Progress p1){
-				Toast.makeText(pcontext, "Upload Started.", Toast.LENGTH_LONG).show();
+				Toast.makeText(context, "Upload Started.", Toast.LENGTH_LONG).show();
 			}
 
 			@Override
 			public void onProgress(Progress p1) {
-				Log.i("Chat 2 Upload Progress", "" + p1.fraction * 100 + "%");
+				Log.i("Chat 2 Upload", "" + (int)(p1.fraction * 100) + "%");
 			}
 
 			@Override
@@ -159,19 +173,13 @@ public class Communication
 
 			@Override
 			public void onFinish(String p1, Progress p2) {
+				Log.i("Chat 2 Upload", p1);
 			}
 
 			@Override
 			public void onRemove(Progress p1) {
 			}
 		};
-		upload("Tag", Communication.BEAT, parames, 
-			new StringCallback() {
-				@Override
-				public void onSuccess(Response<String> p1) {
-					Toast.makeText(pcontext, "Upload finish", Toast.LENGTH_LONG).show();
-				}
-			} 
-			,listener).start();
+		Communication.getComm(context).upload(Communication.BEAT, "myTag", parames, listener).start();
 	}
 }

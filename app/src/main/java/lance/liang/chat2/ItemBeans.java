@@ -46,7 +46,7 @@ class ItemBeanLeft {
 
 class ItemBeanChat {
 	String time, head_url, message, username, type = "text";
-	static public final int DONE = 0, SENDING = 1, RECEIVING = 2;
+	static public final int DONE = 0, SENDING = 1, RECEIVING = 2, PRESEND = 3, GONE = 4;
 	int mid, gid, status = DONE, send_time = 0;
 	String tag = null;
 

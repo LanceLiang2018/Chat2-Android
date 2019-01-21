@@ -11,8 +11,24 @@
 
 		<RelativeLayout
 			android:layout_height="wrap_content"
+			android:layout_width="wrap_content">
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:orientation="vertical"
+				android:id="@+id/itemloadingLinearLayout_back">
+
+			</LinearLayout>
+
+		</RelativeLayout>
+
+		<RelativeLayout
+			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:id="@+id/itemloadingRelativeLayout_main">
+			android:id="@+id/itemloadingRelativeLayout_main"
+			android:visibility="visible"
+			android:layout_centerInParent="true">
 
 			<TextView
 				android:layout_height="wrap_content"
@@ -30,20 +46,6 @@
 				android:layout_width="wrap_content"
 				android:layout_centerInParent="true"
 				android:id="@+id/itemloadingProgressBar"/>
-
-		</RelativeLayout>
-
-		<RelativeLayout
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content">
-
-			<LinearLayout
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:orientation="vertical"
-				android:id="@+id/itemloadingLinearLayout_back">
-
-			</LinearLayout>
 
 		</RelativeLayout>
 

@@ -542,8 +542,7 @@ public class MainActivity extends AppCompatActivity {
                 NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 mNotificationManager.notify(0, noti);
 				*/
-				
-				new Communication(this).test();
+				Communication.test(this);
 				break;
 			default:
 				break;
