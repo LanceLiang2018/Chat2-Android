@@ -495,8 +495,15 @@ public class Chat extends AppCompatActivity
 								//								 message.text, message.head, message.type));
 							//}
 							//adp.notifyDataSetChanged();
-							MyDB.get(Chat.this).saveMessage(result.data.message);
-							refreshNow(result.data.message);
+							List<MessageData> tmp = new ArrayList<>();
+							for (MessageData m: result.data.message)
+							{
+								if (m.type.equals("file"))
+									m.tag = m.text;
+								tmp.add(m);
+							}
+							MyDB.get(Chat.this).saveMessage(tmp);
+							refreshNow(tmp);
 						}
 						else
 						{

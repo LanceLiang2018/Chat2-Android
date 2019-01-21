@@ -222,15 +222,15 @@ class ChatAdapter extends BaseAdapter
 
 					@Override
 					public void onClick(View p1) {
-						if (bean.username.equals(Config.get(pcontext).data.user.username))
-							return;
+						//if (bean.username.equals(Config.get(pcontext).data.user.username))
+						//	return;
 						DownloadManager downloadManager = (DownloadManager) pcontext.getSystemService(Context.DOWNLOAD_SERVICE);
 						if (bean.tag == null)
 							return;
 						Uri url = Uri.parse(bean.tag);
 						DownloadManager.Request request = new DownloadManager.Request(url);
 						request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
-						request.setDestinationInExternalPublicDir("Download/", bean.message);
+						request.setDestinationInExternalPublicDir("Download/", bean.tag);
 						request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 						downloadManager.enqueue(request);
 					}
