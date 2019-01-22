@@ -12,59 +12,8 @@
 		<LinearLayout
 			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
-			android:orientation="vertical">
-
-			<RelativeLayout
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content">
-
-				<ImageView
-					android:layout_height="250dp"
-					android:layout_width="match_parent"
-					android:src="@drawable/image_person_bg"
-					android:layout_centerInParent="true"
-					android:id="@+id/personImageView_bg"
-					android:adjustViewBounds="false"
-					android:scaleType="centerCrop"/>
-
-				<LinearLayout
-					android:layout_height="250dp"
-					android:layout_width="match_parent"
-					android:orientation="vertical"
-					android:gravity="center">
-
-					<LinearLayout
-						android:layout_height="wrap_content"
-						android:layout_width="match_parent"
-						android:orientation="vertical"
-						android:gravity="center">
-
-						<ImageView
-							android:layout_height="100dp"
-							android:layout_width="100dp"
-							android:src="@drawable/image_2"
-							android:adjustViewBounds="true"
-							android:scaleType="fitXY"
-							android:id="@+id/personImageView_head"/>
-
-						<TextView
-							android:layout_width="match_parent"
-							android:layout_height="wrap_content"
-							android:textAppearance="?android:attr/textAppearanceLarge"
-							android:text="用户名"
-							android:id="@+id/personTextView_username"
-							android:textColor="#FFFFFF"
-							android:shadowRadius="15"
-							android:shadowColor="#000000"
-							android:gravity="center_horizontal"/>
-
-					</LinearLayout>
-
-				</LinearLayout>
-
-			</RelativeLayout>
-
-		</LinearLayout>
+			android:orientation="vertical"
+			android:id="@+id/personLinearLayout_headview"/>
 
 		<LinearLayout
 			android:layout_height="match_parent"

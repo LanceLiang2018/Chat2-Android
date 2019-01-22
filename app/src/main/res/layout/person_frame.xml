@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="vertical">
+
+		<RelativeLayout
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content">
+
+			<ImageView
+				android:layout_height="250dp"
+				android:layout_width="match_parent"
+				android:src="@drawable/image_person_bg"
+				android:layout_centerInParent="true"
+				android:id="@+id/personImageView_bg"
+				android:adjustViewBounds="false"
+				android:scaleType="centerCrop"/>
+
+			<LinearLayout
+				android:layout_height="250dp"
+				android:layout_width="match_parent"
+				android:orientation="vertical"
+				android:gravity="center"
+				android:padding="10dp">
+
+				<LinearLayout
+					android:layout_height="wrap_content"
+					android:layout_width="match_parent"
+					android:orientation="vertical"
+					android:gravity="center">
+
+					<ImageView
+						android:layout_height="100dp"
+						android:layout_width="100dp"
+						android:src="@drawable/image_2"
+						android:adjustViewBounds="true"
+						android:scaleType="fitXY"
+						android:id="@+id/personImageView_head"/>
+
+					<TextView
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:textAppearance="?android:attr/textAppearanceLarge"
+						android:text="用户名"
+						android:id="@+id/personTextView_username"
+						android:textColor="#FFFFFF"
+						android:shadowRadius="15"
+						android:shadowColor="#000000"
+						android:gravity="center_horizontal"/>
+
+				</LinearLayout>
+
+				<TextView
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Motto"
+					android:shadowColor="#000000"
+					android:shadowRadius="15"
+					android:textColor="#FFFFFF"
+					android:id="@+id/personTextView_motto"/>
+
+			</LinearLayout>
+
+		</RelativeLayout>
+
+	</LinearLayout>
+
+</LinearLayout>
+
