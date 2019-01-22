@@ -8,11 +8,11 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 
-public class ExamplePagerAdapter extends PagerAdapter
+class StringPagerAdapter extends PagerAdapter
 {
     private List<String> mDataList;
 
-    public ExamplePagerAdapter(List<String> dataList) {
+    public StringPagerAdapter(List<String> dataList) {
         mDataList = dataList;
     }
 
