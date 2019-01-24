@@ -31,65 +31,65 @@
 
 			</LinearLayout>
 
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:orientation="horizontal"
+				android:id="@+id/indexpage_counter_bg">
+
 				<LinearLayout
 					android:layout_height="wrap_content"
-					android:layout_width="match_parent"
-					android:orientation="horizontal"
-					android:id="@+id/indexpage_counter_bg">
+					android:layout_width="wrap_content"
+					android:orientation="vertical"
+					android:layout_weight="1.0"
+					android:gravity="center">
 
-					<LinearLayout
-						android:layout_height="wrap_content"
+					<TextView
 						android:layout_width="wrap_content"
-						android:orientation="vertical"
-						android:layout_weight="1.0"
-						android:gravity="center">
-
-						<TextView
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:textAppearance="?android:attr/textAppearanceLarge"
-							android:text="总打印数"
-							android:textColor="#FFFFFF"/>
-
-						<TextView
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:textAppearance="?android:attr/textAppearanceLarge"
-							android:text="20"
-							android:typeface="monospace"
-							android:textSize="50sp"
-							android:textColor="#FFFFFF"
-							android:id="@+id/indexpage_total_count"/>
-
-					</LinearLayout>
-
-					<LinearLayout
 						android:layout_height="wrap_content"
+						android:textAppearance="?android:attr/textAppearanceLarge"
+						android:text="总打印数"
+						android:textColor="#FFFFFF"/>
+
+					<TextView
 						android:layout_width="wrap_content"
-						android:orientation="vertical"
-						android:layout_weight="1.0"
-						android:gravity="center">
-
-						<TextView
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:textAppearance="?android:attr/textAppearanceLarge"
-							android:text="今日打印"
-							android:textColor="#FFFFFF"/>
-
-						<TextView
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:textAppearance="?android:attr/textAppearanceLarge"
-							android:text="30"
-							android:typeface="monospace"
-							android:textSize="50sp"
-							android:textColor="#FFFFFF"
-							android:id="@+id/indexpage_today_count"/>
-
-					</LinearLayout>
+						android:layout_height="wrap_content"
+						android:textAppearance="?android:attr/textAppearanceLarge"
+						android:text="20"
+						android:typeface="monospace"
+						android:textSize="50sp"
+						android:textColor="#FFFFFF"
+						android:id="@+id/indexpage_total_count"/>
 
 				</LinearLayout>
+
+				<LinearLayout
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:orientation="vertical"
+					android:layout_weight="1.0"
+					android:gravity="center">
+
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:textAppearance="?android:attr/textAppearanceLarge"
+						android:text="今日打印"
+						android:textColor="#FFFFFF"/>
+
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:textAppearance="?android:attr/textAppearanceLarge"
+						android:text="30"
+						android:typeface="monospace"
+						android:textSize="50sp"
+						android:textColor="#FFFFFF"
+						android:id="@+id/indexpage_today_count"/>
+
+				</LinearLayout>
+
+			</LinearLayout>
 
 			<LinearLayout
 				android:layout_height="wrap_content"
@@ -100,14 +100,19 @@
 				android:paddingLeft="20dp"
 				android:paddingRight="20dp">
 
-				
+				<LinearLayout
+					android:layout_height="wrap_content"
+					android:layout_width="match_parent"
+					android:orientation="vertical"
+					android:padding="15dp"
+					android:gravity="center"
+					android:id="@+id/indexpage_hitokoto_bg">
+
 					<LinearLayout
 						android:layout_height="wrap_content"
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:orientation="vertical"
-						android:padding="15dp"
-						android:gravity="center"
-						android:id="@+id/indexpage_hitokoto_bg">
+						android:gravity="right">
 
 						<TextView
 							android:layout_width="wrap_content"
@@ -115,9 +120,19 @@
 							android:textAppearance="?android:attr/textAppearanceMedium"
 							android:text="一言"
 							android:textColor="#FFFFFF"
-							android:id="@+id/indexpage_hitikoto"/>
+							android:id="@+id/indexpage_hitokoto"/>
+
+						<TextView
+							android:layout_height="wrap_content"
+							android:layout_width="wrap_content"
+							android:text="-- from"
+							android:textAppearance="?android:attr/textAppearanceSmall"
+							android:id="@+id/indexpage_hitokoto_from"
+							android:textColor="#FFFFFF"/>
 
 					</LinearLayout>
+
+				</LinearLayout>
 
 			</LinearLayout>
 

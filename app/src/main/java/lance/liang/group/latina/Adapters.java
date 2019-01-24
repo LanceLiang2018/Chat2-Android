@@ -22,10 +22,10 @@ import com.lzy.okserver.upload.*;
 import java.io.*;
 import java.util.*;
 
-import android.support.v7.appcompat.R;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import com.google.gson.*;
+import jp.wasabeef.glide.transformations.*;
 //import android.transition.*;
 //import android.support.v7.app.*;
 
@@ -332,7 +332,7 @@ class LeftAdapter extends BaseExpandableListAdapter
 	private List<ItemBeanLeft> list;
 	private List<ItemBeanLeft[]> child;
 	private LayoutInflater inflater;
-
+	
 	@Override
 	public int getGroupCount()
 	{
@@ -381,7 +381,19 @@ class LeftAdapter extends BaseExpandableListAdapter
 		View view = inflater.inflate(R.layout.item_left, null);
 		ImageView im = (ImageView) view.findViewById(R.id.itemleftImageView);
 		TextView text = (TextView) view.findViewById(R.id.itemleftTextView);
-		im.setImageResource(list.get(groupPosition).image);
+		//im.setImageResource(list.get(groupPosition).image);
+		//Bitmap image = BitmapFactory.decodeResource(parent.getContext().getResources(), list.get(groupPosition).image);
+		//int convertColor = Color.parseColor("#FF333333");
+		int toColor = Utils.getAccentColor(parent.getContext());
+		//Bitmap res = Utils.replaceBitmapColor(image, convertColor, toColor);
+		//Glide.with(parent.getContext()).load(res)
+		Bitmap image = (Bitmap) MyApplication.getMyApplication().getObject(list.get(groupPosition).image);
+		//BitmapDrawable drawable = new BitmapDrawable(image);
+		//drawable.setColorFilter(toColor, PorterDuff.Mode.MULTIPLY);
+		Glide.with(parent.getContext()).load(image)
+			.apply(new RequestOptions().override(80)
+			.transform(new ColorFilterTransformation(toColor)))
+			.into(im);
 		text.setText(list.get(groupPosition).title);
 		return view;
 	}

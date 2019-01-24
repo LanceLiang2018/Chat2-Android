@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
 	private EditText edit;
 	public static final int code_login = 0x80, code_signup = 0x81, code_chat = 0x82, code_pick = 0x83;
 	private DrawerLayout drawer;
-	private MainAdapter adp;
+	private MainAdapter adp_rooms;
 	private SwipeRefreshLayout srl;
-	private ListView list;
-	private ExpandableListView left;
+	private ListView list_rooms;
+	private ExpandableListView list_left;
 	List<ItemBeanMain> data = new ArrayList<ItemBeanMain>();
 	private View head_view;
 	private TextView head_username, head_motto;
@@ -84,12 +84,12 @@ public class MainActivity extends AppCompatActivity {
 	
 	
 	private ItemBeanLeft[] left_data = {
-		new ItemBeanLeft(R.drawable.image_head, "我"),
-		new ItemBeanLeft(R.drawable.image_mark, "联系人"),
-		new ItemBeanLeft(R.drawable.image_settings, "设置"),
-		new ItemBeanLeft(R.drawable.image_pan, "网盘"),
-		new ItemBeanLeft(R.drawable.image_star, "插件"),
-		new ItemBeanLeft(R.drawable.image_blank, "退出"),
+		new ItemBeanLeft(R.drawable.icon_people, "我"),
+		new ItemBeanLeft(R.drawable.icon_people, "联系人"),
+		new ItemBeanLeft(R.drawable.icon_settings, "设置"),
+		new ItemBeanLeft(R.drawable.icon_net_disk, "网盘"),
+		new ItemBeanLeft(R.drawable.icon_add_ones, "插件"),
+		new ItemBeanLeft(R.drawable.icon_logout, "退出"),
 	};
 	private ItemBeanLeft[][] left_child_data = {
 		{
@@ -130,31 +130,64 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_viewpager);
 		
+		MyApplication myapp = (MyApplication) this.getApplication();
+
+		//Init icon
+		int[] icons = {R.drawable.icon_add_ones, R.drawable.icon_bad_image, R.drawable.icon_chat_room, R.drawable.icon_exit, 
+			R.drawable.icon_loading, R.drawable.icon_loading_2, R.drawable.icon_login, R.drawable.icon_logout, R.drawable.icon_make_friends, 
+			R.drawable.icon_music_downloader, R.drawable.icon_net_disk, R.drawable.icon_people, R.drawable.icon_place_holder, 
+			R.drawable.icon_printer, R.drawable.icon_settings, R.drawable.icon_sign_up, R.drawable.icon_sign_up_2};
+		
+		for (int id: icons) {
+			Bitmap image = BitmapFactory.decodeResource(this.getResources(), id);
+			int convertColor = Color.parseColor("#FF333333");
+			int toColor = Utils.getAccentColor(this);
+			//Bitmap res = Utils.replaceBitmapColor(image, convertColor, toColor);
+			Bitmap res = image;
+			myapp.putObject(id, res);
+		}
+		
 		LinearLayout index_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.index_page, null);
 		LinearLayout index = (LinearLayout) index_base.findViewById(R.id.index_base);
 		index.removeView(index);
 		page_array.add(index);
 		
 		LinearLayout counter_bg = (LinearLayout) index.findViewById(R.id.indexpage_counter_bg);
-		LinearLayout hitokoto_bg = (LinearLayout) index.findViewById(R.id.indexpage_hitokoto_bg);
-		Bitmap bitmap1 = Bitmap.createBitmap(new int[] {getPrimaryColor(), }, 1, 1, Bitmap.Config.ARGB_8888);
-		Bitmap bitmap2 = Bitmap.createBitmap(new int[] {getAccentColor(), }, 1, 1, Bitmap.Config.ARGB_8888);
+		final LinearLayout hitokoto_bg = (LinearLayout) index.findViewById(R.id.indexpage_hitokoto_bg);
+		Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
+											 1, 1, Bitmap.Config.ARGB_8888);
+		Bitmap bitmap2 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
+											 1, 1, Bitmap.Config.ARGB_8888);
 		
-		final TextView hitokoto = (TextView) index.findViewById(R.id.indexpage_hitikoto);
+		final TextView hitokoto = (TextView) index.findViewById(R.id.indexpage_hitokoto);
+		final TextView hitokoto_from = (TextView) index.findViewById(R.id.indexpage_hitokoto_from);
 		final StringCallback hitokoto_callback = new StringCallback() {
 			@Override
 			public void onSuccess(Response<String> p1) {
-				if (p1.code() != 200)
+				if (p1.code() != 200) {
+					hitokoto.setText("网络错误");
+					hitokoto_from.setText("");
 					return;
+				}
 				HitokotoData data = new Gson().fromJson(p1.body().toString(), HitokotoData.class);
-				hitokoto.setText(data.hitokoto + "\n —— " + data.from);
+				hitokoto.setText(data.hitokoto);
+				hitokoto_from.setText(" —— " + data.from);
+				hitokoto_bg.setTranslationY(-hitokoto_bg.getHeight());
+				hitokoto_bg.animate().translationY(0);
 			}
+			public void onError(Response<String> p1) {
+				hitokoto.setText("网络错误");
+				hitokoto_from.setText("");
+			}
+				
 		};
+		hitokoto_from.setText("");
 		hitokoto.setText("正在加载...");
 		Hitokoto.get(this, hitokoto_callback);
 		hitokoto_bg.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View p1) {
+					hitokoto_from.setText("");
 					hitokoto.setText("正在加载...");
 					Hitokoto.get(MainActivity.this, hitokoto_callback);
 				}
@@ -200,14 +233,14 @@ public class MainActivity extends AppCompatActivity {
 		bar.setDisplayShowCustomEnabled(true);
 		bar.setCustomView(title_view);
 
-		list = (ListView) mainLayout.findViewById(R.id.list_rooms);
-		left = (ExpandableListView) findViewById(R.id.list_left);
+		list_rooms = (ListView) mainLayout.findViewById(R.id.list_rooms);
+		list_left = (ExpandableListView) findViewById(R.id.list_left);
 		drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-		adp = new MainAdapter(this, data);
+		adp_rooms = new MainAdapter(this, data);
 
-		list.setAdapter(adp);
-		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		list_rooms.setAdapter(adp_rooms);
+		list_rooms.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4){
 					Intent intent_room = new Intent();
@@ -224,11 +257,11 @@ public class MainActivity extends AppCompatActivity {
 		//main_empty_base.removeView(main_empty);
 		//((ViewGroup) list.getParent()).addView(main_empty);
 		//list.setEmptyView(main_empty);
-		LinearLayout empty_bg = new LinearLayout(this);
+		//LinearLayout empty_bg = new LinearLayout(this);
 		TextView empty_text = new TextView(this);
 		empty_text.setText("啊嘞？没有内容哦~(*σ´∀`)σ 下拉刷新");
-		empty_bg.addView(empty_text);
-		list.setEmptyView(empty_bg);
+		//empty_bg.addView(empty_text);
+		list_rooms.setEmptyView(empty_text);
 
 		srl = (SwipeRefreshLayout) mainLayout.findViewById(R.id.slr);
 		srl.setEnabled(true);
@@ -251,9 +284,9 @@ public class MainActivity extends AppCompatActivity {
 		head_motto = (TextView) head_view.findViewById(R.id.personTextView_motto);
 		head_bg = (ImageView) head_view.findViewById(R.id.personImageView_bg);
 
-		left.setAdapter(new LeftAdapter(this, left_list, left_child));
-		left.addHeaderView(head_view);
-		left.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+		list_left.setAdapter(new LeftAdapter(this, left_list, left_child));
+		list_left.addHeaderView(head_view);
+		list_left.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
 				@Override
 				public boolean onGroupClick(ExpandableListView p1, View p2, int p3, long p4) {
 					if (p3 == 5) { // exit
@@ -264,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
 					return false;
 				}
 			});
-		left.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+		list_left.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 				@Override
 				public boolean onChildClick(ExpandableListView p1, View p2, int p3, int p4, long p5) {
 					if (p3 == 0) { // me
@@ -438,22 +471,8 @@ public class MainActivity extends AppCompatActivity {
         initMagicIndicator1();
     }
 	
-	private int getPrimaryColor() {
-		TypedValue typedValue = new TypedValue();
-		getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
-		int color = typedValue.data;
-		return color;
-	}
-	
-	private int getAccentColor() {
-		TypedValue typedValue = new TypedValue();
-		getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true);
-		int color = typedValue.data;
-		return color;
-	}
-	
     private void initMagicIndicator1() {
-		int color = getPrimaryColor();
+		int color = Utils.getPrimaryColor(this);
 
         MagicIndicator magicIndicator = (MagicIndicator) findViewById(R.id.magic_indicator1);
         magicIndicator.setBackgroundColor(color);
@@ -461,6 +480,7 @@ public class MainActivity extends AppCompatActivity {
         commonNavigator.setAdjustMode(true);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
 				private List<String> mDataList = Arrays.asList(new String[] {"主页", "打印机", "联系人", "更多"});
+				private int[] mImages = {R.drawable.icon_people, R.drawable.icon_printer, R.drawable.icon_chat_room, R.drawable.icon_login};
 				
 				@Override
 				public int getCount() {
@@ -475,7 +495,10 @@ public class MainActivity extends AppCompatActivity {
 					View customLayout = LayoutInflater.from(context).inflate(R.layout.pager_title_layout, null);
 					final ImageView titleImg = (ImageView) customLayout.findViewById(R.id.title_img);
 					final TextView titleText = (TextView) customLayout.findViewById(R.id.title_text);
-					titleImg.setImageResource(R.drawable.latina);
+					//titleImg.setImageResource(mImages[index]);
+					Glide.with(context).load(MyApplication.getMyApplication().getObject(mImages[index]))
+						.apply(new RequestOptions().transform(new ColorFilterTransformation(Utils.getAccentColor(context))))
+						.into(titleImg);
 					titleText.setText(mDataList.get(index));
 					commonPagerTitleView.setContentView(customLayout);
 
@@ -549,7 +572,7 @@ public class MainActivity extends AppCompatActivity {
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(head_bg);
 
-		adp.list.clear();
+		adp_rooms.list.clear();
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(this).data.user.auth);
 		Communication.getComm(this).post(Communication.GET_ROOMS, parames, 
@@ -559,12 +582,12 @@ public class MainActivity extends AppCompatActivity {
 					ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
 					if (result.code == 0) {
 						for (ResultData.Data.Info room_data: result.data.room_data) {
-							adp.insert(new ItemBeanMain(room_data.gid, room_data.head, room_data.name, 
+							adp_rooms.insert(new ItemBeanMain(room_data.gid, room_data.head, room_data.name, 
 														//room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
 														"Latest message",
 														//room_data.latest_time == null ? "" : room_data.latest_time, 
 														new MyGetTime().remote(room_data.last_post_time)));
-							adp.notifyDataSetChanged();
+							adp_rooms.notifyDataSetChanged();
 						}
 					}
 				}
