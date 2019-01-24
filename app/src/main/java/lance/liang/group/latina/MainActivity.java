@@ -32,6 +32,7 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.*;
 import lance.liang.group.latina.Config;
 import android.support.v4.graphics.drawable.*;
 import android.graphics.drawable.*;
+import android.widget.AdapterView.*;
 
 /*
                 Bitmap btm = BitmapFactory.decodeResource(getResources(),
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 	private MainAdapter adp_rooms;
 	private SwipeRefreshLayout srl;
 	private ListView list_rooms;
-	private ExpandableListView list_left;
+	private ListView list_left;
 	List<ItemBeanMain> data = new ArrayList<ItemBeanMain>();
 	private View head_view;
 	private TextView head_username, head_motto;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 	
 	
 	private ItemBeanLeft[] left_data = {
-		new ItemBeanLeft(R.drawable.icon_people, "我"),
+		new ItemBeanLeft(R.drawable.icon_index, "我"),
 		new ItemBeanLeft(R.drawable.icon_people, "联系人"),
 		new ItemBeanLeft(R.drawable.icon_settings, "设置"),
 		new ItemBeanLeft(R.drawable.icon_net_disk, "网盘"),
@@ -109,6 +110,26 @@ public class MainActivity extends AppCompatActivity {
 		{},
 		{},
 		{},
+	};
+	
+	private OnItemClickListener left_onClickListener = new OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
+			MenuData.LeftMenu bean = (MenuData.LeftMenu) p2.getTag();
+			if (bean == null)
+				return;
+			switch (bean.id) {
+				case MenuData.ID.LEFT_ME:
+					Toast.makeText(MainActivity.this, bean.item.title, Toast.LENGTH_LONG).show();
+					MyApplication.getMyApplication().putObject("data", MenuData.listMe);
+					startActivity(new Intent().setClass(MainActivity.this, Settings.class));
+					break;
+				case MenuData.ID.LEFT_SETTINGS:
+					break;
+				default:
+					break;
+			}
+		}
 	};
 	
     @Override
@@ -234,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 		bar.setCustomView(title_view);
 
 		list_rooms = (ListView) mainLayout.findViewById(R.id.list_rooms);
-		list_left = (ExpandableListView) findViewById(R.id.list_left);
+		list_left = (ListView) findViewById(R.id.list_left);
 		drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
 		adp_rooms = new MainAdapter(this, data);
@@ -274,8 +295,8 @@ public class MainActivity extends AppCompatActivity {
 			});
 		srl.setColorSchemeResources(Config.get(this).data.settings.colorFt);
 
-		List<ItemBeanLeft> left_list = new ArrayList<ItemBeanLeft>(Arrays.asList(left_data));
-		List<ItemBeanLeft[]> left_child = new ArrayList<ItemBeanLeft[]>(Arrays.asList(left_child_data));
+		//List<ItemBeanLeft> left_list = new ArrayList<ItemBeanLeft>(Arrays.asList(left_data));
+		//List<ItemBeanLeft[]> left_child = new ArrayList<ItemBeanLeft[]>(Arrays.asList(left_child_data));
 
 		LayoutInflater inflater = LayoutInflater.from(this);
 		head_view = inflater.inflate(R.layout.person_frame, null);
@@ -284,8 +305,10 @@ public class MainActivity extends AppCompatActivity {
 		head_motto = (TextView) head_view.findViewById(R.id.personTextView_motto);
 		head_bg = (ImageView) head_view.findViewById(R.id.personImageView_bg);
 
-		list_left.setAdapter(new LeftAdapter(this, left_list, left_child));
+		list_left.setAdapter(new LeftAdapter(this));
 		list_left.addHeaderView(head_view);
+		list_left.setOnItemClickListener(left_onClickListener);
+		/*
 		list_left.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
 				@Override
 				public boolean onGroupClick(ExpandableListView p1, View p2, int p3, long p4) {
@@ -381,10 +404,10 @@ public class MainActivity extends AppCompatActivity {
 						}
 					} else if (p3 == 2) { // settings
 						if (p4 == 0) { // theme
-							final String[] disp = {"默认", "荷月", "惊蛰", "霜序", "岁馀"};
-							final int[] vals = {R.style.AppTheme01, R.style.AppTheme02, R.style.AppTheme03, R.style.AppTheme04, R.style.AppTheme05};
-							final int[] valsBg = {R.color.colorBg01, R.color.colorBg02, R.color.colorBg03, R.color.colorBg04, R.color.colorBg05};
-							final int[] valsFt = {R.color.colorFt01, R.color.colorFt02, R.color.colorFt03, R.color.colorFt04, R.color.colorFt05};
+							final String[] disp = {"默认", "荷月", "惊蛰", "霜序", "岁馀", "纯净", "夜行"};
+							final int[] vals = {R.style.AppTheme01, R.style.AppTheme02, R.style.AppTheme03, R.style.AppTheme04, R.style.AppTheme05, R.style.AppTheme06, R.style.AppTheme07};
+							final int[] valsBg = {R.color.colorBg01, R.color.colorBg02, R.color.colorBg03, R.color.colorBg04, R.color.colorBg05, R.color.colorBg06, R.color.colorBg07};
+							final int[] valsFt = {R.color.colorFt01, R.color.colorFt02, R.color.colorFt03, R.color.colorFt04, R.color.colorFt05, R.color.colorFt06, R.color.colorFt07};
 
 							AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 							builder.setTitle("Set Theme")
@@ -433,6 +456,7 @@ public class MainActivity extends AppCompatActivity {
 					return false;
 				}
 			});
+		*/
 
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(this).data.user.auth);
@@ -479,8 +503,8 @@ public class MainActivity extends AppCompatActivity {
         CommonNavigator commonNavigator = new CommonNavigator(this);
         commonNavigator.setAdjustMode(true);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
-				private List<String> mDataList = Arrays.asList(new String[] {"主页", "打印机", "联系人", "更多"});
-				private int[] mImages = {R.drawable.icon_people, R.drawable.icon_printer, R.drawable.icon_chat_room, R.drawable.icon_login};
+				private List<String> mDataList = Arrays.asList(new String[] {"主页", "打印机", "联系人"});
+				private int[] mImages = {R.drawable.icon_index, R.drawable.icon_printer, R.drawable.icon_chat_room};
 				
 				@Override
 				public int getCount() {

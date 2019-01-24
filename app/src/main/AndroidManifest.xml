@@ -33,6 +33,8 @@
         </activity>
 		<activity android:name=".ImagePreView">    
         </activity>
+		<activity android:name=".Settings">    
+        </activity>
 		
     </application>
 	

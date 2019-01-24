@@ -26,6 +26,7 @@ import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import com.google.gson.*;
 import jp.wasabeef.glide.transformations.*;
+import lance.liang.group.latina.MenuData.*;
 //import android.transition.*;
 //import android.support.v7.app.*;
 
@@ -326,7 +327,7 @@ class ChatAdapter extends BaseAdapter
 		return view;
 	}
 }
-
+/*
 class LeftAdapter extends BaseExpandableListAdapter
 {
 	private List<ItemBeanLeft> list;
@@ -420,4 +421,150 @@ class LeftAdapter extends BaseExpandableListAdapter
 	}
 }
 
+*/
+/*
+class LeftAdapter extends BaseAdapter
+{
+	public List<ItemBeanLeft> list;
+	private LayoutInflater inflater;
+	private Context pcontext;
 
+	LeftAdapter(Context context, List<ItemBeanLeft> ilist) {
+		this.list = ilist;
+		inflater = LayoutInflater.from(context);
+		pcontext = context;
+	}
+
+	@Override
+	public int getCount() {
+		return list.size();
+	}
+
+	@Override
+	public Object getItem(int p1) {
+		return list.get(p1);
+	}
+
+	@Override
+	public long getItemId(int p1) {
+		return p1;
+	}
+
+	public void insert(ItemBeanLeft data) {
+		list.add(data);
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		View view = inflater.inflate(R.layout.item_left, null);
+		ItemBeanLeft bean = list.get(position);
+		ImageView im = (ImageView) view.findViewById(R.id.itemleftImageView);
+		//im.setImageResource(bean.image);
+		((TextView) view.findViewById(R.id.itemleftTextView)).setText(bean.title);
+		
+
+		Glide.with(pcontext).load(bean.image)
+			.apply(new RequestOptions())//.transform(new ColorFilterTransformation(MyApplication.getMyApplication().getObject(bean.image))))
+			.transition(DrawableTransitionOptions.withCrossFade())
+			.into(im);
+
+		return view;
+	}
+}
+*/
+class LeftAdapter extends BaseAdapter
+{
+	public List<MenuData.LeftMenu> list;
+	private LayoutInflater inflater;
+	private Context pcontext;
+
+	LeftAdapter(Context context) {
+		//this.list = ilist;
+		list = new ArrayList<MenuData.LeftMenu>();
+		for (MenuData.LeftMenu menu: MenuData.listLeft)
+			list.add(menu);
+		inflater = LayoutInflater.from(context);
+		pcontext = context;
+	}
+
+	@Override
+	public int getCount() {
+		return list.size();
+	}
+
+	@Override
+	public Object getItem(int p1) {
+		return list.get(p1);
+	}
+
+	@Override
+	public long getItemId(int p1) {
+		return p1;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		View view = inflater.inflate(R.layout.item_left, null);
+		MenuData.LeftMenu bean = list.get(position);
+		ImageView im = (ImageView) view.findViewById(R.id.itemleftImageView);
+		//im.setImageResource(bean.image);
+		((TextView) view.findViewById(R.id.itemleftTextView)).setText(bean.item.title);
+
+
+		Glide.with(pcontext).load(bean.item.image)
+			.apply(new RequestOptions())//.transform(new ColorFilterTransformation(MyApplication.getMyApplication().getObject(bean.image))))
+			.transition(DrawableTransitionOptions.withCrossFade())
+			.into(im);
+		
+		view.setTag(bean);
+
+		return view;
+	}
+}
+
+
+class SettingsAdapter extends BaseAdapter {
+	MenuData.Settings[] list;
+	private LayoutInflater inflater;
+	private Context pcontext;
+
+	SettingsAdapter(Context context, MenuData.Settings[] ilist) {
+		this.list = ilist;
+		inflater = LayoutInflater.from(context);
+		pcontext = context;
+	}
+
+	@Override
+	public int getCount() {
+		return list.length;
+	}
+
+	@Override
+	public Object getItem(int p1) {
+		return list[p1];
+	}
+
+	@Override
+	public long getItemId(int p1) {
+		return p1;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		View view = inflater.inflate(R.layout.item_settings, null);
+		MenuData.Settings bean = list[position];
+		ImageView im = (ImageView) view.findViewById(R.id.itemsettingsImageView);
+		TextView title = (TextView) view.findViewById(R.id.itemsettingsTextView);
+
+		title.setText(bean.item.title);
+		Glide.with(pcontext).load(bean.item.image)
+			.apply(new RequestOptions())//.transform(new ColorFilterTransformation(MyApplication.getMyApplication().getObject(bean.image))))
+			.transition(DrawableTransitionOptions.withCrossFade())
+			.into(im);
+		
+		view.setTag(bean);
+		
+		return view;
+	}
+	
+}

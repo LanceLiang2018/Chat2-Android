@@ -37,8 +37,23 @@ class ItemBeanLeft {
 		this.image = image;
 		this.title = title;
 	}
-	
+
 	ItemBeanLeft(String title) {
+		this.image = R.drawable.image_blank;
+		this.title = title;
+	}
+}
+
+class ItemBeanSettings {
+	String title;
+	int image;
+
+	ItemBeanSettings(int image, String title) {
+		this.image = image;
+		this.title = title;
+	}
+
+	ItemBeanSettings(String title) {
 		this.image = R.drawable.image_blank;
 		this.title = title;
 	}

@@ -13,11 +13,17 @@
 	<color name="colorBg03">#FFCB7575</color>
 	<color name="colorFt03">#FFA3C9C7</color>
 	
+	<color name="colorBg04">#FF9DC8C8</color>
+	<color name="colorFt04">#FF9DC8C8</color>
+	
 	<color name="colorBg05">#FF9BAEC8</color>
 	<color name="colorFt05">#FF6AAFE6</color>
 
-	<color name="colorBg04">#FF9DC8C8</color>
-	<color name="colorFt04">#FF9DC8C8</color>
-
+	<color name="colorBg06">#FFFFFFFF</color>
+	<color name="colorFt06">#FF000000</color>
+	
+	<color name="colorBg07">#FF000000</color>
+	<color name="colorFt07">#FFFFFFFF</color>
+	
 	
 </resources>

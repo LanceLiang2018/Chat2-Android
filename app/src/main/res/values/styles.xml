@@ -40,6 +40,15 @@
         <item name="colorPrimaryDark">@color/colorBg05</item>
         <item name="colorAccent">@color/colorFt05</item>
     </style>
+	<style name="AppTheme06" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorBg06</item>
+        <item name="colorPrimaryDark">@color/colorBg06</item>
+        <item name="colorAccent">@color/colorFt06</item>
+    </style>
+	<style name="AppTheme07" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorBg07</item>
+        <item name="colorPrimaryDark">@color/colorBg07</item>
+        <item name="colorAccent">@color/colorFt07</item>
+    </style>
 	
-
 </resources>
