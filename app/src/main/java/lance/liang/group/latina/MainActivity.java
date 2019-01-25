@@ -120,11 +120,12 @@ public class MainActivity extends AppCompatActivity {
 				return;
 			switch (bean.id) {
 				case MenuData.ID.LEFT_ME:
-					Toast.makeText(MainActivity.this, bean.item.title, Toast.LENGTH_LONG).show();
 					MyApplication.getMyApplication().putObject("data", MenuData.listMe);
 					startActivity(new Intent().setClass(MainActivity.this, Settings.class));
 					break;
 				case MenuData.ID.LEFT_SETTINGS:
+					MyApplication.getMyApplication().putObject("data", MenuData.listSettings);
+					startActivity(new Intent().setClass(MainActivity.this, Settings.class));
 					break;
 				default:
 					break;

@@ -15,6 +15,7 @@ import com.lzy.okgo.model.*;
 import com.google.gson.*;
 import android.support.v7.app.*;
 import android.widget.AdapterView.*;
+import lance.liang.group.latina.MenuData.ID;
 
 public class Settings extends AppCompatActivity
 {
@@ -30,7 +31,14 @@ public class Settings extends AppCompatActivity
 		//Bundle bundle = getIntent().getExtras();
 		//MenuData.Settings[] data = (MenuData.Settings[]) bundle.get("data");
 		MenuData.Settings[] data = (MenuData.Settings[]) MyApplication.getMyApplication().getObject("data");
+		/*
+		MenuData.Settings title = (MenuData.Settings) MyApplication.getMyApplication().getObject("title");
 		
+		ActionBar bar = getSupportActionBar();
+		bar.setDisplayHomeAsUpEnabled(true);
+		bar.setHomeButtonEnabled(true);
+		bar.setTitle(title.item.title);
+		*/
 		list = (ListView) findViewById(R.id.settingsListView);
 		list.setAdapter(new SettingsAdapter(this, data));
 		list.setOnItemClickListener(listener);
@@ -43,8 +51,23 @@ public class Settings extends AppCompatActivity
 			if (bean == null)
 				return;
 			switch (bean.id) {
-				case MenuData.ID.ME_MY_INFO:
+				case ID.ME_MY_INFO:
+					myPersonInfo();
+					break;
+				case ID.ME_SET_INFO:
 					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
+					break;
+				case ID.SETTINGS_SERVER:
+					mySetServer();
+					break;
+				case ID.SETTINGS_FONT:
+					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
+					break;
+				case ID.SETTINGS_SPLASH:
+					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
+					break;
+				case ID.SETTINGS_THEME:
+					mySetTheme();
 					break;
 				default:
 					break;
@@ -56,6 +79,64 @@ public class Settings extends AppCompatActivity
 	protected void onDestroy()
 	{
 		super.onDestroy();
+	}
+	
+	private void mySetTheme() {
+		final String[] disp = {"默认", "荷月", "惊蛰", "霜序", "岁馀", "纯净", "夜行"};
+		final int[] vals = {R.style.AppTheme01, R.style.AppTheme02, R.style.AppTheme03, R.style.AppTheme04, R.style.AppTheme05, R.style.AppTheme06, R.style.AppTheme07};
+		final int[] valsBg = {R.color.colorBg01, R.color.colorBg02, R.color.colorBg03, R.color.colorBg04, R.color.colorBg05, R.color.colorBg06, R.color.colorBg07};
+		final int[] valsFt = {R.color.colorFt01, R.color.colorFt02, R.color.colorFt03, R.color.colorFt04, R.color.colorFt05, R.color.colorFt06, R.color.colorFt07};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+		builder.setTitle("Set Theme")
+			.setItems(disp, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					Config config = Config.get(getApplicationContext());
+					config.data.settings.theme = vals[p2];
+					config.data.settings.colorBg = valsBg[p2];
+					config.data.settings.colorFt = valsFt[p2];
+					config.save();
+					Toast.makeText(getApplicationContext(), "Change into theme: " + disp[p2], Toast.LENGTH_LONG).show();
+					Settings.this.recreate();
+				}
+			});
+		builder.show();
+	}
+	private void mySetServer() {
+		String[] disp = {"Remote", "Local"};
+		final String[] vals = {
+			"https://lance-chatroom2.herokuapp.com/", 
+			"http://0.0.0.0:5000/"};
+		AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+		builder.setTitle("Set Host")
+			.setItems(disp, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					Config config = Config.get(getApplicationContext());
+					config.data.settings.server = vals[p2];
+					config.save();
+					Toast.makeText(getApplicationContext(), "Change into host: " + config.data.settings.server, Toast.LENGTH_LONG).show();
+				}
+			});
+		builder.show();
+	}
+	
+	private void myAbout() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+		builder.setTitle("About");
+		builder.setMessage("https://github.com/LanceLiang2018/Chat2-Android/");
+		builder.show();
+	}
+	
+	private void myPersonInfo() {
+		Intent intent = new Intent();
+		Bundle bundle = new Bundle();
+		bundle.putString("username", Config.get(getApplicationContext()).data.user.username);
+		bundle.putString("head_url", Config.get(getApplicationContext()).data.user.head);
+		intent.putExtras(bundle);
+		intent.setClass(getApplicationContext(), Person.class);
+		getApplicationContext().startActivity(intent);
 	}
 }
 
