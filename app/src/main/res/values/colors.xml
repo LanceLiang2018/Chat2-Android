@@ -19,8 +19,8 @@
 	<color name="colorBg05">#FF9BAEC8</color>
 	<color name="colorFt05">#FF6AAFE6</color>
 
-	<color name="colorBg06">#FFFFFFFF</color>
-	<color name="colorFt06">#FF000000</color>
+	<color name="colorBg06">#3E3E3E3E</color>
+	<color name="colorFt06">#7E7E7E7E</color>
 	
 	<color name="colorBg07">#FF000000</color>
 	<color name="colorFt07">#FFFFFFFF</color>

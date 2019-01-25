@@ -64,7 +64,7 @@ public class Settings extends AppCompatActivity
 					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
 					break;
 				case ID.SETTINGS_SPLASH:
-					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
+					mySetSplash();
 					break;
 				case ID.SETTINGS_THEME:
 					mySetTheme();
@@ -87,36 +87,37 @@ public class Settings extends AppCompatActivity
 		final int[] valsBg = {R.color.colorBg01, R.color.colorBg02, R.color.colorBg03, R.color.colorBg04, R.color.colorBg05, R.color.colorBg06, R.color.colorBg07};
 		final int[] valsFt = {R.color.colorFt01, R.color.colorFt02, R.color.colorFt03, R.color.colorFt04, R.color.colorFt05, R.color.colorFt06, R.color.colorFt07};
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+		AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);
 		builder.setTitle("Set Theme")
 			.setItems(disp, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
-					Config config = Config.get(getApplicationContext());
+					Config config = Config.get(Settings.this);
 					config.data.settings.theme = vals[p2];
 					config.data.settings.colorBg = valsBg[p2];
 					config.data.settings.colorFt = valsFt[p2];
 					config.save();
-					Toast.makeText(getApplicationContext(), "Change into theme: " + disp[p2], Toast.LENGTH_LONG).show();
+					Toast.makeText(Settings.this, "Change into theme: " + disp[p2], Toast.LENGTH_LONG).show();
 					Settings.this.recreate();
 				}
 			});
 		builder.show();
 	}
 	private void mySetServer() {
-		String[] disp = {"Remote", "Local"};
+		String[] disp = {"Remote", "Local", "Lance's Server"};
 		final String[] vals = {
 			"https://lance-chatroom2.herokuapp.com/", 
-			"http://0.0.0.0:5000/"};
-		AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+			"http://0.0.0.0:5000/",
+			"http://lanceliang2018.xyz:5000/"};
+		AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);
 		builder.setTitle("Set Host")
 			.setItems(disp, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
-					Config config = Config.get(getApplicationContext());
+					Config config = Config.get(Settings.this);
 					config.data.settings.server = vals[p2];
 					config.save();
-					Toast.makeText(getApplicationContext(), "Change into host: " + config.data.settings.server, Toast.LENGTH_LONG).show();
+					Toast.makeText(Settings.this, "Change into host: " + config.data.settings.server, Toast.LENGTH_LONG).show();
 				}
 			});
 		builder.show();
@@ -137,6 +138,29 @@ public class Settings extends AppCompatActivity
 		intent.putExtras(bundle);
 		intent.setClass(getApplicationContext(), Person.class);
 		getApplicationContext().startActivity(intent);
+	}
+	
+	private void mySetSplash() {
+		new AlertDialog.Builder(Settings.this)
+			.setTitle("Set Splash")
+			.setPositiveButton("Show", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					Config config = Config.get(getApplicationContext());
+					config.data.settings.isShowSplash = 1;
+					config.save();
+				}
+			})
+			.setNegativeButton("Hide", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					Config config = Config.get(getApplicationContext());
+					config.data.settings.isShowSplash = 0;
+					config.save();
+				}
+			})
+			.show();
+			
 	}
 }
 

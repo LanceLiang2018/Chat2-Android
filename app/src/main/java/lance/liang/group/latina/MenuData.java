@@ -30,10 +30,10 @@ public class MenuData
 		MyInfo(new ItemBeanSettings("我的信息"), ID.ME_MY_INFO),
 		SetInfo(new ItemBeanSettings("信息设置"), ID.ME_SET_INFO),
 		
-		SetTheme(new ItemBeanSettings(""), ID.SETTINGS_THEME),
-		SetServer(new ItemBeanSettings(""), ID.SETTINGS_SERVER),
-		SetFont(new ItemBeanSettings(""), ID.SETTINGS_FONT),
-		SetSplash(new ItemBeanSettings(""), ID.SETTINGS_SPLASH);
+		SetTheme(new ItemBeanSettings("主题"), ID.SETTINGS_THEME),
+		SetServer(new ItemBeanSettings("服务器"), ID.SETTINGS_SERVER),
+		SetFont(new ItemBeanSettings("字体"), ID.SETTINGS_FONT),
+		SetSplash(new ItemBeanSettings("Spash"), ID.SETTINGS_SPLASH);
 		ItemBeanSettings item;
 		int id;
 		public Settings(ItemBeanSettings item, int id) {

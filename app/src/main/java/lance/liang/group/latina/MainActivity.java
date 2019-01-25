@@ -33,6 +33,7 @@ import lance.liang.group.latina.Config;
 import android.support.v4.graphics.drawable.*;
 import android.graphics.drawable.*;
 import android.widget.AdapterView.*;
+import android.content.pm.*;
 
 /*
                 Bitmap btm = BitmapFactory.decodeResource(getResources(),
@@ -162,8 +163,8 @@ public class MainActivity extends AppCompatActivity {
 		
 		for (int id: icons) {
 			Bitmap image = BitmapFactory.decodeResource(this.getResources(), id);
-			int convertColor = Color.parseColor("#FF333333");
-			int toColor = Utils.getAccentColor(this);
+			//int convertColor = Color.parseColor("#FF333333");
+			//int toColor = Utils.getAccentColor(this);
 			//Bitmap res = Utils.replaceBitmapColor(image, convertColor, toColor);
 			Bitmap res = image;
 			myapp.putObject(id, res);
@@ -171,18 +172,28 @@ public class MainActivity extends AppCompatActivity {
 		
 		LinearLayout index_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.index_page, null);
 		LinearLayout index = (LinearLayout) index_base.findViewById(R.id.index_base);
-		index.removeView(index);
+		LinearLayout index_box = (LinearLayout) index.findViewById(R.id.indexpage_base_box);
+		index_base.removeView(index);
 		page_array.add(index);
 		
 		LinearLayout counter_bg = (LinearLayout) index.findViewById(R.id.indexpage_counter_bg);
 		final LinearLayout hitokoto_bg = (LinearLayout) index.findViewById(R.id.indexpage_hitokoto_bg);
-		Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
+		//Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
+		Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Color.parseColor("#7e7e7e7e"), }, 
 											 1, 1, Bitmap.Config.ARGB_8888);
-		Bitmap bitmap2 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
+		//Bitmap bitmap2 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
+		Bitmap bitmap2 = Bitmap.createBitmap(new int[] {Color.parseColor("#7e7e7e7e"), }, 
+											 1, 1, Bitmap.Config.ARGB_8888);
+		Bitmap bitmap3 = Bitmap.createBitmap(new int[] {Color.parseColor("#3e3e3e3e"), }, 
+											 1, 1, Bitmap.Config.ARGB_8888);
+		int accentColor = Utils.getAccentColor(MainActivity.this);
+		Bitmap bitmap4 = Bitmap.createBitmap(new int[] {accentColor }, 
 											 1, 1, Bitmap.Config.ARGB_8888);
 		
 		final TextView hitokoto = (TextView) index.findViewById(R.id.indexpage_hitokoto);
 		final TextView hitokoto_from = (TextView) index.findViewById(R.id.indexpage_hitokoto_from);
+		Button index_photo = (Button) index.findViewById(R.id.indexpage_photo);
+		
 		final StringCallback hitokoto_callback = new StringCallback() {
 			@Override
 			public void onSuccess(Response<String> p1) {
@@ -216,11 +227,17 @@ public class MainActivity extends AppCompatActivity {
 			});
 		
 		RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(getResources(), bitmap1);
-		roundedBitmapDrawable1.setCornerRadius(35);
+		roundedBitmapDrawable1.setCornerRadius(15);
 		counter_bg.setBackground(roundedBitmapDrawable1);
 		RoundedBitmapDrawable roundedBitmapDrawable2 = RoundedBitmapDrawableFactory.create(getResources(), bitmap2);
-		roundedBitmapDrawable2.setCornerRadius(35);
+		roundedBitmapDrawable2.setCornerRadius(15);
 		hitokoto_bg.setBackground(roundedBitmapDrawable2);
+		RoundedBitmapDrawable roundedBitmapDrawable3 = RoundedBitmapDrawableFactory.create(getResources(), bitmap3);
+		roundedBitmapDrawable3.setCornerRadius(15);
+		index_box.setBackground(roundedBitmapDrawable3);
+		RoundedBitmapDrawable roundedBitmapDrawable4 = RoundedBitmapDrawableFactory.create(getResources(), bitmap4);
+		roundedBitmapDrawable4.setCornerRadius(15);
+		index_photo.setBackground(roundedBitmapDrawable4);
 		
 		LinearLayout inview = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.main, null);
 		RelativeLayout mainLayout = (RelativeLayout) inview.findViewById(R.id.mainRelativeLayout_main);
@@ -733,6 +750,15 @@ public class MainActivity extends AppCompatActivity {
 				break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	protected void onResume()
+	{
+		if(getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+		//	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
+		super.onResume();
 	}
 }
 				

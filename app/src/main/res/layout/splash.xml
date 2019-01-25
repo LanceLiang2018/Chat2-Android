@@ -7,13 +7,14 @@
 
 	<RelativeLayout
 		android:layout_height="match_parent"
-		android:layout_width="match_parent">
+		android:layout_width="match_parent"
+		android:background="#FF000000">
 
-		<ImageView
+		<VideoView
 			android:layout_height="match_parent"
 			android:layout_width="match_parent"
-			android:id="@+id/splashImageView"
-			android:src="@drawable/latina"/>
+			android:id="@+id/splashVideoView"
+			android:layout_centerInParent="true"/>
 
 	</RelativeLayout>
 
