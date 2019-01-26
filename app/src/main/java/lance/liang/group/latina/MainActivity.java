@@ -71,7 +71,9 @@ public class MainActivity extends AppCompatActivity {
 	private ImageView im_head;
 	private TextView text_title;
 	private EditText edit;
-	public static final int code_login = 0x80, code_signup = 0x81, code_chat = 0x82, code_pick = 0x83;
+	public static final int code_login = 0x80, code_signup = 0x81, 
+							code_chat = 0x82, code_pick = 0x83, 
+							code_settings = 0x84;
 	private DrawerLayout drawer;
 	private MainAdapter adp_rooms;
 	private SwipeRefreshLayout srl;
@@ -82,36 +84,13 @@ public class MainActivity extends AppCompatActivity {
 	private TextView head_username, head_motto;
 	private ImageView head_head, head_bg;
 	List<View> page_array = new ArrayList<>();
+	LinearLayout index_base;
+	LinearLayout index;
+	LinearLayout index_box;
+	TextView hitokoto;
+	TextView hitokoto_from;
+	Button index_photo;
 	
-	
-	
-	private ItemBeanLeft[] left_data = {
-		new ItemBeanLeft(R.drawable.icon_index, "我"),
-		new ItemBeanLeft(R.drawable.icon_people, "联系人"),
-		new ItemBeanLeft(R.drawable.icon_settings, "设置"),
-		new ItemBeanLeft(R.drawable.icon_net_disk, "网盘"),
-		new ItemBeanLeft(R.drawable.icon_add_ones, "插件"),
-		new ItemBeanLeft(R.drawable.icon_logout, "退出"),
-	};
-	private ItemBeanLeft[][] left_child_data = {
-		{
-			new ItemBeanLeft("我的信息"),
-			new ItemBeanLeft("新用户"),
-			new ItemBeanLeft("新 Room"),
-			new ItemBeanLeft("新朋友"),
-			new ItemBeanLeft("注销"),
-		},
-		{},
-		{
-			new ItemBeanLeft("主题"),
-			new ItemBeanLeft("服务器地址"),
-			new ItemBeanLeft("文件保存目录"),
-			new ItemBeanLeft("关于"),
-		},
-		{},
-		{},
-		{},
-	};
 	
 	private OnItemClickListener left_onClickListener = new OnItemClickListener() {
 		@Override
@@ -126,13 +105,14 @@ public class MainActivity extends AppCompatActivity {
 					break;
 				case MenuData.ID.LEFT_SETTINGS:
 					MyApplication.getMyApplication().putObject("data", MenuData.listSettings);
-					startActivity(new Intent().setClass(MainActivity.this, Settings.class));
+					startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class), code_settings);
 					break;
 				default:
 					break;
 			}
 		}
 	};
+	
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,6 +133,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_viewpager);
 		
+		index_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.index_page, null);
+		index = (LinearLayout) index_base.findViewById(R.id.index_base);
+		index_box = (LinearLayout) index.findViewById(R.id.indexpage_base_box);
+		hitokoto = (TextView) index.findViewById(R.id.indexpage_hitokoto);
+		hitokoto_from = (TextView) index.findViewById(R.id.indexpage_hitokoto_from);
+		index_photo = (Button) index.findViewById(R.id.indexpage_photo);
+		
 		MyApplication myapp = (MyApplication) this.getApplication();
 
 		//Init icon
@@ -170,9 +157,6 @@ public class MainActivity extends AppCompatActivity {
 			myapp.putObject(id, res);
 		}
 		
-		LinearLayout index_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.index_page, null);
-		LinearLayout index = (LinearLayout) index_base.findViewById(R.id.index_base);
-		LinearLayout index_box = (LinearLayout) index.findViewById(R.id.indexpage_base_box);
 		index_base.removeView(index);
 		page_array.add(index);
 		
@@ -190,32 +174,34 @@ public class MainActivity extends AppCompatActivity {
 		Bitmap bitmap4 = Bitmap.createBitmap(new int[] {accentColor }, 
 											 1, 1, Bitmap.Config.ARGB_8888);
 		
-		final TextView hitokoto = (TextView) index.findViewById(R.id.indexpage_hitokoto);
-		final TextView hitokoto_from = (TextView) index.findViewById(R.id.indexpage_hitokoto_from);
-		Button index_photo = (Button) index.findViewById(R.id.indexpage_photo);
-		
 		final StringCallback hitokoto_callback = new StringCallback() {
 			@Override
 			public void onSuccess(Response<String> p1) {
 				if (p1.code() != 200) {
 					hitokoto.setText("网络错误");
 					hitokoto_from.setText("");
+					hitokoto_bg.setAlpha(0);
+					hitokoto_bg.animate().alpha(1);
 					return;
 				}
 				HitokotoData data = new Gson().fromJson(p1.body().toString(), HitokotoData.class);
 				hitokoto.setText(data.hitokoto);
 				hitokoto_from.setText(" —— " + data.from);
-				hitokoto_bg.setTranslationY(-hitokoto_bg.getHeight());
-				hitokoto_bg.animate().translationY(0);
+				hitokoto_bg.setAlpha(0);
+				hitokoto_bg.animate().alpha(1);
 			}
 			public void onError(Response<String> p1) {
 				hitokoto.setText("网络错误");
 				hitokoto_from.setText("");
+				hitokoto_bg.setAlpha(0);
+				hitokoto_bg.animate().alpha(1);
 			}
 				
 		};
 		hitokoto_from.setText("");
 		hitokoto.setText("正在加载...");
+		hitokoto_bg.setAlpha(1);
+		hitokoto_bg.animate().alpha(0);
 		Hitokoto.get(this, hitokoto_callback);
 		hitokoto_bg.setOnClickListener(new OnClickListener() {
 				@Override
@@ -223,6 +209,8 @@ public class MainActivity extends AppCompatActivity {
 					hitokoto_from.setText("");
 					hitokoto.setText("正在加载...");
 					Hitokoto.get(MainActivity.this, hitokoto_callback);
+					hitokoto_bg.setAlpha(1);
+					hitokoto_bg.animate().alpha(0);
 				}
 			});
 		
@@ -522,7 +510,7 @@ public class MainActivity extends AppCompatActivity {
         commonNavigator.setAdjustMode(true);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
 				private List<String> mDataList = Arrays.asList(new String[] {"主页", "打印机", "联系人"});
-				private int[] mImages = {R.drawable.icon_index, R.drawable.icon_printer, R.drawable.icon_chat_room};
+				private int[] mImages = {R.drawable.icon_index_2, R.drawable.icon_printer, R.drawable.icon_chat_room};
 				
 				@Override
 				public int getCount() {
@@ -656,11 +644,13 @@ public class MainActivity extends AppCompatActivity {
 				break;
 			case code_pick:
 				//mAdapter.setData(Matisse.obtainResult(data), Matisse.obtainPathResult(data));
-				if (resultCode == RESULT_OK)
-				{
+				if (resultCode == RESULT_OK) {
 					for (String s: Matisse.obtainPathResult(data))
 						Toast.makeText(this, s, Toast.LENGTH_LONG).show();
 				}
+				break;
+			case code_settings:
+				this.recreate();
 				break;
 			default:
 				break;

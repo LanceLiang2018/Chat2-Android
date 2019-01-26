@@ -21,7 +21,7 @@ class HitokotoData {
 
 public class Hitokoto
 {
-	private final static String URL = "https://v1.hitokoto.cn/?c=a";
+	private final static String URL = "https://v1.hitokoto.cn/";
 	public static void get(Context context, StringCallback callback) {
 		Communication.getComm(context).get(URL, callback);
 	}

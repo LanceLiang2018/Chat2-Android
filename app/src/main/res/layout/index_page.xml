@@ -34,7 +34,9 @@
 						android:layout_height="wrap_content"
 						android:layout_width="match_parent"
 						android:orientation="horizontal"
-						android:id="@+id/indexpage_counter_bg">
+						android:id="@+id/indexpage_counter_bg"
+						android:paddingTop="45dp"
+						android:paddingBottom="45dp">
 
 						<LinearLayout
 							android:layout_height="wrap_content"
@@ -115,7 +117,7 @@
 								android:orientation="vertical"
 								android:gravity="center"
 								android:id="@+id/indexpage_hitokoto_bg"
-								android:padding="15dp">
+								android:padding="40dp">
 
 								<LinearLayout
 									android:layout_height="wrap_content"
@@ -126,7 +128,7 @@
 									<TextView
 										android:layout_width="wrap_content"
 										android:layout_height="wrap_content"
-										android:textAppearance="?android:attr/textAppearanceMedium"
+										android:textAppearance="?android:attr/textAppearanceLarge"
 										android:text="一言"
 										android:textColor="#FFFFFF"
 										android:id="@+id/indexpage_hitokoto"/>
