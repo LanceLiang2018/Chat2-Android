@@ -1,20 +1,18 @@
 package lance.liang.group.latina;
 
-import android.app.*;
+import android.content.*;
 import android.os.*;
+import android.support.v7.app.*;
 import android.view.*;
 import android.widget.*;
-import java.util.*;
-import java.util.concurrent.*;
-import android.view.Window.*;
-import java.io.*;
-import android.util.*;
-import android.content.*;
+import com.bumptech.glide.*;
+import com.bumptech.glide.request.*;
+import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
-import com.google.gson.*;
+import jp.wasabeef.glide.transformations.*;
 
-public class Signup extends Activity
+public class Signup extends AppCompatActivity
 {
 	private Button btn;
 	private EditText text_username;
@@ -35,6 +33,18 @@ public class Signup extends Activity
 		text_password = (EditText)findViewById(R.id.signupEditText_password);
 		text_email = (EditText)findViewById(R.id.signupEditText_email);
 		text_conform = (EditText)findViewById(R.id.signupEditText_conform);
+		
+		ActionBar bar = getSupportActionBar();
+		bar.setTitle("Sign up");
+		bar.setDisplayHomeAsUpEnabled(true);
+		bar.setHomeButtonEnabled(true);
+		
+		ImageView bg = (ImageView) findViewById(R.id.signupImageView_bg);
+		Glide.with(this).load(R.drawable.image_background_2)
+			.apply(new RequestOptions()
+				   .centerCrop()
+				   .transform(new BlurTransformation(20)))
+			.into(bg);
 		
 		btn.setOnClickListener(new Button.OnClickListener(){
 				@Override
@@ -102,6 +112,18 @@ public class Signup extends Activity
 	{
 		//dialog.dismiss();
 		super.onDestroy();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case android.R.id.home:
+				this.finish();
+				break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }
 

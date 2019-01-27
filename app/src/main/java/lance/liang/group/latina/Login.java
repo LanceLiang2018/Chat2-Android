@@ -10,7 +10,12 @@ import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import java.io.*;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.*;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import it.sephiroth.android.library.imagezoom.*;
+import com.bumptech.glide.*;
+import com.bumptech.glide.request.*;
+import jp.wasabeef.glide.transformations.*;
 
 public class Login extends AppCompatActivity
 {
@@ -34,6 +39,11 @@ public class Login extends AppCompatActivity
 		btn_login = (Button)findViewById(R.id.loginButton_login);
 		btn_signup = (Button)findViewById(R.id.loginButton_signup);
 
+		ActionBar bar = getSupportActionBar();
+		bar.setTitle("Login");
+		bar.setDisplayHomeAsUpEnabled(true);
+		bar.setHomeButtonEnabled(true);
+		
 		btn_signup.setOnClickListener(new Button.OnClickListener(){
 				@Override
 				public void onClick(View p1)
@@ -95,11 +105,29 @@ public class Login extends AppCompatActivity
 						});
 				}
 			});
+		ImageView bg = (ImageView) findViewById(R.id.loginImageView_bg);
+		Glide.with(this).load(R.drawable.image_background_1)
+			.apply(new RequestOptions()
+				.centerCrop()
+				.transform(new BlurTransformation(20)))
+			.into(bg);
 	}
 	
 	@Override
 	protected void onDestroy()
 	{
 		super.onDestroy();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case android.R.id.home:
+				this.finish();
+				break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

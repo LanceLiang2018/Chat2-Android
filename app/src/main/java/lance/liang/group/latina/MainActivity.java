@@ -96,16 +96,19 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
 			MenuData.LeftMenu bean = (MenuData.LeftMenu) p2.getTag();
+			Bundle bundle = new Bundle();
+			bundle.putString("title", bean.item.title);
+			
 			if (bean == null)
 				return;
 			switch (bean.id) {
 				case MenuData.ID.LEFT_ME:
 					MyApplication.getMyApplication().putObject("data", MenuData.listMe);
-					startActivity(new Intent().setClass(MainActivity.this, Settings.class));
+					startActivity(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle));
 					break;
 				case MenuData.ID.LEFT_SETTINGS:
 					MyApplication.getMyApplication().putObject("data", MenuData.listSettings);
-					startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class), code_settings);
+					startActivity(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle));
 					break;
 				default:
 					break;

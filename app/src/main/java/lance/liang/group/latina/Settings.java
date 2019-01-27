@@ -28,17 +28,15 @@ public class Settings extends AppCompatActivity
 		setContentView(R.layout.settings);
 		
 		
-		//Bundle bundle = getIntent().getExtras();
-		//MenuData.Settings[] data = (MenuData.Settings[]) bundle.get("data");
+		Bundle bundle = getIntent().getExtras();
 		MenuData.Settings[] data = (MenuData.Settings[]) MyApplication.getMyApplication().getObject("data");
-		/*
-		MenuData.Settings title = (MenuData.Settings) MyApplication.getMyApplication().getObject("title");
+		//MenuData.Settings title = (MenuData.Settings) MyApplication.getMyApplication().getObject("title");
 		
 		ActionBar bar = getSupportActionBar();
 		bar.setDisplayHomeAsUpEnabled(true);
 		bar.setHomeButtonEnabled(true);
-		bar.setTitle(title.item.title);
-		*/
+		bar.setTitle(bundle.getString("title"));
+		
 		list = (ListView) findViewById(R.id.settingsListView);
 		list.setAdapter(new SettingsAdapter(this, data));
 		list.setOnItemClickListener(listener);
@@ -53,6 +51,12 @@ public class Settings extends AppCompatActivity
 			switch (bean.id) {
 				case ID.ME_MY_INFO:
 					myPersonInfo();
+					break;
+				case ID.ME_LOGOUT:
+					Config config = Config.get(getApplicationContext());
+					config.data.user.auth = "";
+					config.save();
+					Settings.this.finish();
 					break;
 				case ID.ME_SET_INFO:
 					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
@@ -137,7 +141,7 @@ public class Settings extends AppCompatActivity
 		bundle.putString("head_url", Config.get(getApplicationContext()).data.user.head);
 		intent.putExtras(bundle);
 		intent.setClass(getApplicationContext(), Person.class);
-		getApplicationContext().startActivity(intent);
+		this.startActivity(intent);
 	}
 	
 	private void mySetSplash() {
@@ -161,6 +165,18 @@ public class Settings extends AppCompatActivity
 			})
 			.show();
 			
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case android.R.id.home:
+				this.finish();
+				break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }
 

@@ -1,101 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical"
-	android:gravity="center_vertical">
+	android:layout_height="wrap_content"
+	android:layout_width="wrap_content">
+	
+	<ImageView
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:src="@drawable/image_background_2"
+		android:scaleType="centerCrop"
+		android:id="@+id/signupImageView_bg"/>
 
 	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:gravity="center">
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:orientation="vertical"
+		android:gravity="center_vertical">
 
-		<TextView
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="Sign up"
-			android:textSize="70sp"/>
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:gravity="center">
-
-		<EditText
-			android:inputType="textPersonName"
-			android:layout_width="match_parent"
-			android:ems="10"
-			android:layout_height="wrap_content"
-			android:id="@+id/signupEditText_username"
-			android:hint="用户名"/>
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:gravity="center">
-
-		<EditText
-			android:inputType="textPassword"
-			android:layout_width="match_parent"
-			android:ems="10"
-			android:layout_height="wrap_content"
-			android:id="@+id/signupEditText_password"
-			android:hint="密码"/>
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal">
-
-		<EditText
-			android:inputType="textPassword"
-			android:layout_width="match_parent"
-			android:ems="10"
-			android:layout_height="wrap_content"
-			android:hint="确认密码"
-			android:id="@+id/signupEditText_conform"/>
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:gravity="center">
-
-		<EditText
-			android:inputType="textEmailAddress"
-			android:layout_width="match_parent"
-			android:ems="10"
-			android:layout_height="wrap_content"
-			android:id="@+id/signupEditText_email"
-			android:hint="邮箱"/>
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:gravity="center">
-
-		<Button
+		<LinearLayout
 			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
-			android:text="注册"
-			android:id="@+id/signupButton_signup"/>
+			android:orientation="horizontal"
+			android:gravity="center">
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="Sign up"
+				android:textSize="70sp"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:orientation="horizontal"
+			android:gravity="center">
+
+			<EditText
+				android:inputType="textPersonName"
+				android:layout_width="match_parent"
+				android:ems="10"
+				android:layout_height="wrap_content"
+				android:id="@+id/signupEditText_username"
+				android:hint="用户名"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:orientation="horizontal"
+			android:gravity="center">
+
+			<EditText
+				android:inputType="textPassword"
+				android:layout_width="match_parent"
+				android:ems="10"
+				android:layout_height="wrap_content"
+				android:id="@+id/signupEditText_password"
+				android:hint="密码"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:orientation="horizontal">
+
+			<EditText
+				android:inputType="textPassword"
+				android:layout_width="match_parent"
+				android:ems="10"
+				android:layout_height="wrap_content"
+				android:hint="确认密码"
+				android:id="@+id/signupEditText_conform"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:orientation="horizontal"
+			android:gravity="center">
+
+			<EditText
+				android:inputType="textEmailAddress"
+				android:layout_width="match_parent"
+				android:ems="10"
+				android:layout_height="wrap_content"
+				android:id="@+id/signupEditText_email"
+				android:hint="邮箱"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:orientation="horizontal"
+			android:gravity="center">
+
+			<Button
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:text="注册"
+				android:id="@+id/signupButton_signup"/>
+
+		</LinearLayout>
 
 	</LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
 

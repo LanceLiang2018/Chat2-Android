@@ -59,11 +59,6 @@ public class Chat extends AppCompatActivity
 			ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
 			if (result.code == 0)
 			{
-				/*
-				adp.insert(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
-											text_message.getText().toString(), Config.get(Chat.this).data.user.head, "text"));
-				adp.notifyDataSetChanged();
-				*/
 				getMessage();
 				text_message.setText("");
 			}
