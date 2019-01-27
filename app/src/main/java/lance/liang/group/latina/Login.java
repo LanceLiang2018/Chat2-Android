@@ -75,9 +75,9 @@ public class Login extends AppCompatActivity
 								if (result.code == 0)
 								{
 									Config config = Config.get(Login.this);
-									config.data.user.auth = result.data.auth;
-									config.data.user.username = text_username.getText().toString();
-									config.data.user.head = result.data.head;
+									config.data.user.auth = result.data.user_info.auth;
+									config.data.user.username = result.data.user_info.username;
+									config.data.user.head = result.data.user_info.head;
 									config.save();
 									
 									Intent intent = new Intent();

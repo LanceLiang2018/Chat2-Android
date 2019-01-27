@@ -136,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_viewpager);
 		
+		Communication.test(this);
+		
 		index_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.index_page, null);
 		index = (LinearLayout) index_base.findViewById(R.id.index_base);
 		index_box = (LinearLayout) index.findViewById(R.id.indexpage_base_box);
@@ -608,18 +610,18 @@ public class MainActivity extends AppCompatActivity {
 		adp_rooms.list.clear();
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(this).data.user.auth);
-		Communication.getComm(this).post(Communication.GET_ROOMS, parames, 
+		Communication.getComm(this).post(Communication.GET_ROOM_ALL, parames, 
 			new StringCallback() {
 				@Override
 				public void onSuccess(Response<String> response) {
 					ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
 					if (result.code == 0) {
-						for (ResultData.Data.Info room_data: result.data.room_data) {
+						for (RoomData room_data: result.data.room_data) {
 							adp_rooms.insert(new ItemBeanMain(room_data.gid, room_data.head, room_data.name, 
-														//room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
-														"Latest message",
-														//room_data.latest_time == null ? "" : room_data.latest_time, 
-														new MyGetTime().remote(room_data.last_post_time)));
+															  //room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
+															  "Latest message",
+															  //room_data.latest_time == null ? "" : room_data.latest_time, 
+															  new MyGetTime().remote(room_data.last_post_time)));
 							adp_rooms.notifyDataSetChanged();
 						}
 					}

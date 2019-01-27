@@ -110,9 +110,9 @@ public class Settings extends AppCompatActivity
 	private void mySetServer() {
 		String[] disp = {"Remote", "Local", "Lance's Server"};
 		final String[] vals = {
-			"https://lance-chatroom2.herokuapp.com/", 
-			"http://0.0.0.0:5000/",
-			"http://lanceliang2018.xyz:5000/"};
+			"https://lance-chatroom2.herokuapp.com/v3/api", 
+			"http://0.0.0.0:5000/v3/api",
+			"http://lanceliang2018.xyz:5000/v3/api"};
 		AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);
 		builder.setTitle("Set Host")
 			.setItems(disp, new DialogInterface.OnClickListener() {

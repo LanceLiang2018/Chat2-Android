@@ -474,7 +474,7 @@ public class Chat extends AppCompatActivity
 		parames.put("limit", "30");
 		try
 		{
-			Communication.getComm(Chat.this).post(Communication.GET_NEW_MESSAGE, parames,  
+			Communication.getComm(Chat.this).post(Communication.GET_MESSAGES, parames,  
 				new StringCallback() {
 					@Override
 					public void onSuccess(Response<String> p1)

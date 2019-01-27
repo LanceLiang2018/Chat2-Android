@@ -33,6 +33,7 @@ class PersonData {
 	public String username, head, user_type, motto, email, 
 				auth;	// use when you login
 	public int uid, last_active_time;
+	public List<Integer> rooms;
 }
 
 class UploadData {
@@ -42,24 +43,24 @@ class UploadData {
 public class ResultData
 {
 	public static class Data {
-		public static class NewMessages {
-			public int gid;
-			public int lastest_mid;
-		}
-		public static class Info {
-			public int gid, create_time, member_number, last_post_time;
-			public String name, head;
-		}
+//		public static class NewMessages {
+//			public int gid;
+//			public int lastest_mid;
+//		}
+//		public static class Info {
+//			public int gid, create_time, member_number, last_post_time;
+//			public String name, head;
+//		}
 		public static class UploadResult {
 			public String filename, etag, url;
 		}
 		public List<MessageData> message;
-		public Info info;
-		public String auth;
-		public String head;
-		public String username;
-		public List<Info> room_data;
-		public List<NewMessages> new_messages;
+		public RoomData info;
+//		public String auth;
+//		public String head;
+//		public String username;
+		public PersonData user_info;
+		public List<RoomData> room_data;
 		public UploadResult upload_result;
 	}
 	public int code;
