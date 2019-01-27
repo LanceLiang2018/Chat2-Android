@@ -24,6 +24,21 @@ class MessageData {
 	}
 }
 
+class RoomData {
+	public int gid, create_time, member_number, last_post_time;
+	public String name, head, room_type;
+}
+
+class PersonData {
+	public String username, head, user_type, motto, email, 
+				auth;	// use when you login
+	public int uid, last_active_time;
+}
+
+class UploadData {
+	public String filename, etag, url;
+}
+
 public class ResultData
 {
 	public static class Data {
@@ -35,16 +50,6 @@ public class ResultData
 			public int gid, create_time, member_number, last_post_time;
 			public String name, head;
 		}
-		/*
-		public static class RoomData {
-			public String name;
-			public int gid;
-			public int latest_mid;
-			public String latest_msg;
-			public String latest_time;
-			public int last_post_time, member_number;
-			public String room_type, head;
-		}*/
 		public static class UploadResult {
 			public String filename, etag, url;
 		}
@@ -53,12 +58,9 @@ public class ResultData
 		public String auth;
 		public String head;
 		public String username;
-		//public List<RoomData> room_data;
 		public List<Info> room_data;
 		public List<NewMessages> new_messages;
 		public UploadResult upload_result;
-		
-		//public String md5, filrname, etag, url;
 	}
 	public int code;
 	public String message;

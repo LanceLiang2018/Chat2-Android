@@ -9,8 +9,10 @@ import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import java.io.*;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.*;
 
-public class Login extends Activity
+public class Login extends AppCompatActivity
 {
 	private TextView text_username;
 	private TextView text_password;

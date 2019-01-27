@@ -1,80 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical"
-	android:gravity="center_vertical">
+	android:layout_height="wrap_content"
+	android:layout_width="wrap_content">
 
 	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:gravity="center">
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:orientation="vertical"
+		android:gravity="center_horizontal"
+		android:id="@+id/loginLinearLayout1">
 
-		<TextView
+		<LinearLayout
 			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="Login"
-			android:textSize="70sp"/>
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:gravity="center"
-		android:layout_marginLeft="10dp">
-
-		<EditText
-			android:inputType="textPersonName"
 			android:layout_width="match_parent"
-			android:ems="10"
+			android:orientation="horizontal"
+			android:gravity="center">
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="Welcome"
+				android:textSize="70sp"/>
+
+		</LinearLayout>
+
+		<LinearLayout
 			android:layout_height="wrap_content"
-			android:id="@+id/loginEditText_username"
-			android:hint="用户名"/>
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:gravity="center"
-		android:layout_marginLeft="10dp">
-
-		<EditText
-			android:inputType="textPassword"
 			android:layout_width="match_parent"
-			android:ems="10"
+			android:orientation="horizontal"
+			android:gravity="center"
+			android:layout_marginLeft="10dp">
+
+			<EditText
+				android:inputType="textPersonName"
+				android:layout_width="match_parent"
+				android:ems="10"
+				android:layout_height="wrap_content"
+				android:id="@+id/loginEditText_username"
+				android:hint="用户名"/>
+
+		</LinearLayout>
+
+		<LinearLayout
 			android:layout_height="wrap_content"
-			android:id="@+id/loginEditText_password"
-			android:hint="密码"/>
+			android:layout_width="match_parent"
+			android:orientation="horizontal"
+			android:gravity="center"
+			android:layout_marginLeft="10dp">
+
+			<EditText
+				android:inputType="textPassword"
+				android:layout_width="match_parent"
+				android:ems="10"
+				android:layout_height="wrap_content"
+				android:id="@+id/loginEditText_password"
+				android:hint="密码"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:orientation="horizontal"
+			android:gravity="center">
+
+			<Button
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="注册"
+				android:layout_weight="1.0"
+				android:id="@+id/loginButton_signup"/>
+
+			<Button
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="登录"
+				android:layout_weight="1.0"
+				android:id="@+id/loginButton_login"/>
+
+		</LinearLayout>
 
 	</LinearLayout>
 
-	<LinearLayout
-		android:layout_height="wrap_content"
+	<ImageView
+		android:layout_height="match_parent"
 		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:gravity="center">
+		android:src="@drawable/image_background_1"/>
 
-		<Button
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="注册"
-			android:layout_weight="1.0"
-			android:id="@+id/loginButton_signup"/>
-
-		<Button
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="登录"
-			android:layout_weight="1.0"
-			android:id="@+id/loginButton_login"/>
-
-	</LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
 
