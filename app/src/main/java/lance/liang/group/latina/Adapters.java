@@ -580,11 +580,13 @@ class LeftAdapter extends BaseAdapter
 		((TextView) view.findViewById(R.id.itemleftTextView)).setText(bean.item.title);
 
 
+		/*
 		Glide.with(pcontext).load(bean.item.image)
 			.apply(new RequestOptions())//.transform(new ColorFilterTransformation(MyApplication.getMyApplication().getObject(bean.image))))
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(im);
-		
+		*/
+		im.setImageResource(bean.item.image);
 		view.setTag(bean);
 
 		return view;

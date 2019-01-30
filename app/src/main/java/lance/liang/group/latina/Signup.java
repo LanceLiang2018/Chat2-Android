@@ -6,6 +6,7 @@ import android.support.v7.app.*;
 import android.view.*;
 import android.widget.*;
 import com.bumptech.glide.*;
+import com.bumptech.glide.load.resource.drawable.*;
 import com.bumptech.glide.request.*;
 import com.google.gson.*;
 import com.lzy.okgo.callback.*;
@@ -40,6 +41,7 @@ public class Signup extends AppCompatActivity
 		check_printer = (CheckBox) findViewById(R.id.signupCheckBox_is_printer);
 		
 		check_read.setChecked(true);
+		check_read.setText("I have read License");
 		
 		ActionBar bar = getSupportActionBar();
 		bar.setTitle("Sign up");
@@ -51,13 +53,14 @@ public class Signup extends AppCompatActivity
 			.apply(new RequestOptions()
 				   .centerCrop()
 				   .transform(new BlurTransformation(20)))
+			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(bg);
 		
 		btn.setOnClickListener(new Button.OnClickListener(){
 				@Override
 				public void onClick(View p1) {
 					if (!check_read.isChecked()) {
-						new AlertDialog.Builder(Signup.this).setMessage("READ IT PLEASE!").show();
+						new AlertDialog.Builder(Signup.this).setMessage("Check the \"Read it\" box please").show();
 						return;
 					}
 					String s1 = text_password.getText().toString();

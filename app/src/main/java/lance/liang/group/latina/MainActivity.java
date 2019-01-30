@@ -456,9 +456,12 @@ public class MainActivity extends AppCompatActivity {
 					final ImageView titleImg = (ImageView) customLayout.findViewById(R.id.title_img);
 					final TextView titleText = (TextView) customLayout.findViewById(R.id.title_text);
 					//titleImg.setImageResource(mImages[index]);
+					/*
 					Glide.with(context).load(MyApplication.getMyApplication().getObject(mImages[index]))
 						.apply(new RequestOptions().transform(new ColorFilterTransformation(Utils.getAccentColor(context))))
 						.into(titleImg);
+					*/
+					titleImg.setImageResource(mImages[index]);
 					titleText.setText(mDataList.get(index));
 					commonPagerTitleView.setContentView(customLayout);
 

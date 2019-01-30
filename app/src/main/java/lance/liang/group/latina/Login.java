@@ -1,20 +1,16 @@
 package lance.liang.group.latina;
 
-import android.app.*;
 import android.content.*;
 import android.os.*;
+import android.support.v7.app.*;
 import android.view.*;
 import android.widget.*;
+import com.bumptech.glide.*;
+import com.bumptech.glide.load.resource.drawable.*;
+import com.bumptech.glide.request.*;
 import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
-import java.io.*;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import it.sephiroth.android.library.imagezoom.*;
-import com.bumptech.glide.*;
-import com.bumptech.glide.request.*;
 import jp.wasabeef.glide.transformations.*;
 
 public class Login extends AppCompatActivity
@@ -110,6 +106,7 @@ public class Login extends AppCompatActivity
 			.apply(new RequestOptions()
 				.centerCrop()
 				.transform(new BlurTransformation(20)))
+			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(bg);
 	}
 	
