@@ -34,35 +34,11 @@ import android.support.v4.graphics.drawable.*;
 import android.graphics.drawable.*;
 import android.widget.AdapterView.*;
 import android.content.pm.*;
-
-/*
-                Bitmap btm = BitmapFactory.decodeResource(getResources(),
-														  R.drawable.image_2);
-                Intent intent = new Intent(MainActivity.this,
-										   MainActivity.class);
-
-                PendingIntent pendingIntent = PendingIntent.getActivity(
-					MainActivity.this, 0, intent,
-					PendingIntent.FLAG_CANCEL_CURRENT);
-
-                Notification noti = new NotificationCompat.Builder(
-					MainActivity.this)
-					.setSmallIcon(R.drawable.image_1)
-					.setLargeIcon(btm)
-					.setNumber(13)
-					.setDefaults(Notification.DEFAULT_LIGHTS)
-					.setContentIntent(pendingIntent)
-					.setStyle(
-					new NotificationCompat.InboxStyle()
-					.addLine("M.Twain Lunch?")
-					.setBigContentTitle("6 new message"))
-					.build();
-
-                NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mNotificationManager.notify(0, noti);
-				*/
-
-				
+import com.tbruyelle.rxpermissions2.*;
+import com.zhihu.matisse.*;
+import io.reactivex.*;
+import io.reactivex.Observer;
+import io.reactivex.disposables.*;				
 
 public class MainActivity extends AppCompatActivity {
     private MainPagerAdapter mainPagerAdapter;
@@ -96,23 +72,27 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
 			MenuData.LeftMenu bean = (MenuData.LeftMenu) p2.getTag();
+			if (bean == null)
+				return;
+			
 			Bundle bundle = new Bundle();
 			bundle.putString("title", bean.item.title);
 			
-			if (bean == null)
-				return;
 			switch (bean.id) {
 				case MenuData.ID.LEFT_ME:
 					MyApplication.getMyApplication().putObject("data", MenuData.listMe);
-					startActivity(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle));
 					break;
 				case MenuData.ID.LEFT_SETTINGS:
 					MyApplication.getMyApplication().putObject("data", MenuData.listSettings);
-					startActivity(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle));
+					break;
+				case MenuData.ID.LEFT_PEOPLE:
+					MyApplication.getMyApplication().putObject("data", MenuData.listPeople);
 					break;
 				default:
-					break;
+					return;
+					//break;
 			}
+			startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle), code_settings);
 		}
 	};
 	
@@ -122,8 +102,23 @@ public class MainActivity extends AppCompatActivity {
 		Log.i("Chat 2", "Started.");
 		setTheme(Config.get(this).data.settings.theme);
 		
-		OkGo.getInstance().init(getApplication());
-
+		RxPermissions rxPermissions = new RxPermissions(MainActivity.this);
+		rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+			.subscribe(new Observer<Boolean>() {
+				@Override
+				public void onError(Throwable p1)
+				{}
+				@Override
+				public void onComplete()
+				{}
+				@Override
+				public void onSubscribe(Disposable d)
+				{}
+				@Override
+				public void onNext(Boolean aBoolean)
+				{}});
+		
+		
 		OkUpload okupload = OkUpload.getInstance();
 		okupload.getThreadPool().setCorePoolSize(3);
 		okupload.addOnAllTaskEndListener(new XExecutor.OnAllTaskEndListener() {
@@ -131,12 +126,15 @@ public class MainActivity extends AppCompatActivity {
 				public void onAllTaskEnd() {
 					Toast.makeText(MainActivity.this, "All end.", Toast.LENGTH_SHORT).show();
 				}
+				
 			});
 		
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_viewpager);
 		
-		Communication.test(this);
+		//Communication.test(this);
+		
+		// Index
 		
 		index_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.index_page, null);
 		index = (LinearLayout) index_base.findViewById(R.id.index_base);
@@ -194,6 +192,9 @@ public class MainActivity extends AppCompatActivity {
 				hitokoto_from.setText(" —— " + data.from);
 				hitokoto_bg.setAlpha(0);
 				hitokoto_bg.animate().alpha(1);
+				if ((int)(MyApplication.getMyApplication().getObject("hitokoto_click")) > 20) {
+					new AlertDialog.Builder(MainActivity.this).setMessage("so kawayi kodo~").show();
+				}
 			}
 			public void onError(Response<String> p1) {
 				hitokoto.setText("网络错误");
@@ -208,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
 		hitokoto_bg.setAlpha(1);
 		hitokoto_bg.animate().alpha(0);
 		Hitokoto.get(this, hitokoto_callback);
+		MyApplication.getMyApplication().putObject("hitokoto_click", 0);
 		hitokoto_bg.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View p1) {
@@ -237,12 +239,14 @@ public class MainActivity extends AppCompatActivity {
 		mainLayout.removeView(mainLayout);
 		page_array.add(mainLayout);
 		
+		// ActionBar
+		
 		bar = getSupportActionBar();
 		View title_view = LayoutInflater.from(this).inflate(R.layout.title_main, null);
 		im_head = (ImageView)title_view.findViewById(R.id.titlemainImageButton_head);
 		text_title = (TextView)title_view.findViewById(R.id.titlemainTextView_title);
 		
-		View.OnClickListener onclick = new OnClickListener() {
+		View.OnClickListener title_onclick = new OnClickListener() {
 			@Override
 			public void onClick(View p1) {
 				if (drawer.isDrawerOpen(Gravity.LEFT))
@@ -252,18 +256,15 @@ public class MainActivity extends AppCompatActivity {
 			}
 		};
 
-		im_head.setOnClickListener(onclick);
-		text_title.setOnClickListener(onclick);
-		//Glide.with(this).load(Config.get(MainActivity.this).data.user.head).into(im_head);
-		//Glide.with(this).load(R.drawable.image_2).into(im_head);
-		//RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.image_2));
-		//roundedBitmapDrawable1.setCircular(true);
-		//im_head.setImageDrawable(roundedBitmapDrawable1);
-
+		im_head.setOnClickListener(title_onclick);
+		text_title.setOnClickListener(title_onclick);
+		
 		bar.setDisplayShowTitleEnabled(false);
 		bar.setDisplayHomeAsUpEnabled(false);
 		bar.setDisplayShowCustomEnabled(true);
 		bar.setCustomView(title_view);
+		
+		// List rooms
 
 		list_rooms = (ListView) mainLayout.findViewById(R.id.list_rooms);
 		list_left = (ListView) findViewById(R.id.list_left);
@@ -291,16 +292,19 @@ public class MainActivity extends AppCompatActivity {
 		//list.setEmptyView(main_empty);
 		//LinearLayout empty_bg = new LinearLayout(this);
 		TextView empty_text = new TextView(this);
+			//Some thing wrong
 		empty_text.setText("啊嘞？没有内容哦~(*σ´∀`)σ 下拉刷新");
 		//empty_bg.addView(empty_text);
 		list_rooms.setEmptyView(empty_text);
 
+		// SRL
+		
 		srl = (SwipeRefreshLayout) mainLayout.findViewById(R.id.slr);
 		srl.setEnabled(true);
 		srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 				@Override
 				public void onRefresh() {
-					MainActivity.this.Refresh();
+					MainActivity.this.refresh();
 					srl.setRefreshing(false);
 				}
 			});
@@ -308,6 +312,8 @@ public class MainActivity extends AppCompatActivity {
 
 		//List<ItemBeanLeft> left_list = new ArrayList<ItemBeanLeft>(Arrays.asList(left_data));
 		//List<ItemBeanLeft[]> left_child = new ArrayList<ItemBeanLeft[]>(Arrays.asList(left_child_data));
+		
+		// Left person
 
 		LayoutInflater inflater = LayoutInflater.from(this);
 		head_view = inflater.inflate(R.layout.person_frame, null);
@@ -315,6 +321,20 @@ public class MainActivity extends AppCompatActivity {
 		head_username = (TextView) head_view.findViewById(R.id.personTextView_username);
 		head_motto = (TextView) head_view.findViewById(R.id.personTextView_motto);
 		head_bg = (ImageView) head_view.findViewById(R.id.personImageView_bg);
+		
+		head_head.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					//Bundle bundle = new Bundle();
+					//bundle.putString("username", bean.username);
+					//bundle.putString("head_url", bean.head_url);
+					MyApplication.getMyApplication().putObject("username", Config.get(getApplicationContext()).data.user.username);
+					Intent intent = new Intent();
+					intent.setClass(MainActivity.this, Person.class);
+					//intent.putExtras(bundle);
+					startActivity(intent);
+				}
+			});
 
 		list_left.setAdapter(new LeftAdapter(this));
 		list_left.addHeaderView(head_view);
@@ -469,6 +489,7 @@ public class MainActivity extends AppCompatActivity {
 			});
 		*/
 
+		/*
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(this).data.user.auth);
 		Communication.getComm(this).post(Communication.BEAT, parames, 
@@ -484,9 +505,9 @@ public class MainActivity extends AppCompatActivity {
 						startActivityForResult(intent_login, code_login);
 					}
 				}
-			});
+			});*/
 
-		Refresh();
+		refresh();
 		
 		/*
 		for (int i=0; i<3; i++) {
@@ -581,7 +602,7 @@ public class MainActivity extends AppCompatActivity {
         ViewPagerHelper.bind(magicIndicator, mViewPager);
     }
 	
-	public void Refresh()
+	public void refresh()
 	{
 		// Here errors.
 		RequestOptions options = new RequestOptions()
@@ -625,6 +646,13 @@ public class MainActivity extends AppCompatActivity {
 							adp_rooms.notifyDataSetChanged();
 						}
 					}
+					if (result.code == 2)
+					{
+						Toast.makeText(MainActivity.this, "Login Failed.", Toast.LENGTH_SHORT).show();
+						Intent intent_login = new Intent();
+						intent_login.setClass(MainActivity.this, Login.class);
+						startActivityForResult(intent_login, code_login);
+					}
 				}
 			});
 	}
@@ -640,7 +668,7 @@ public class MainActivity extends AppCompatActivity {
 				try {
 					String str = data.getStringExtra("command");
 					if (str == "Refresh") {
-						this.Refresh();
+						this.refresh();
 					}
 				}
 				catch (Exception e) {
@@ -679,67 +707,14 @@ public class MainActivity extends AppCompatActivity {
 				this.finish();
 				break;
 			case R.id.option_new_room:
-				edit = new EditText(this);
-				AlertDialog.Builder build = new AlertDialog.Builder(this);
-				build.setTitle("Input the name of Room:");
-				build.setView(edit);
-				build.setPositiveButton("OK", new AlertDialog.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface p1, int p2) {
-							ContentValues parames = new ContentValues();
-							parames.put("auth", Config.get(MainActivity.this).data.user.auth);
-							parames.put("name", edit.getText().toString());
-							Communication.getComm(MainActivity.this).post(Communication.CREATE_ROOM, parames, 
-								new StringCallback() {
-									@Override
-									public void onSuccess(Response<String> response) {
-										ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
-										if (result.code == 0) {
-											Log.d("Chat 2", "Create Room: name:" + result.data.info.name + " gid: " + result.data.info.gid);
-											MainActivity.this.Refresh();
-										}
-										else {
-											Log.e("Chat 2", result.message + "(Code: " + result.code + ")");
-										}
-									}
-								});
-						}
-					});
-				build.setNegativeButton("Cancel", null);
-				build.show();
+				Settings.myNewRoom(this);
 				break;
 			case R.id.option_join_in:
-				edit = new EditText(this);
-				new AlertDialog.Builder(this)
-					.setMessage("Input gid:")
-					.setView(edit)
-					.setPositiveButton("OK", new AlertDialog.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface p1, int p2) {
-							ContentValues parames = new ContentValues();
-							parames.put("auth", Config.get(MainActivity.this).data.user.auth);
-							parames.put("gid", edit.getText().toString());
-							Communication.getComm(MainActivity.this).post(Communication.CREATE_ROOM, parames, 
-								new StringCallback() {
-									@Override
-									public void onSuccess(Response<String> response) {
-										ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
-										if (result.code == 0) {
-											MainActivity.this.Refresh();
-										}
-										else {
-											new AlertDialog.Builder(MainActivity.this)
-												.setMessage(result.message + " (Code: " + result.code + ")");
-										}
-									}
-								});
-						}
-					})
-					.setNegativeButton("Cancel", null)
-					.show();
+				Settings.myJoinIn(this);
 				break;
 			case R.id.option_clear_all:
-				Communication.test(this);
+				//Communication.test(this);
+				Communication.getComm(this).get(Communication.SERVER + "/clear_all", null);
 				break;
 			default:
 				break;

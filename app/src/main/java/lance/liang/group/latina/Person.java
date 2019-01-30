@@ -45,9 +45,11 @@ public class Person extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.person);
 		
-		Bundle bundle = getIntent().getExtras();
-		username = bundle.getString("username");
-		head_url = bundle.getString("head_url");
+		//Bundle bundle = getIntent().getExtras();
+		//username = bundle.getString("username");
+		//head_url = bundle.getString("head_url");
+		username = (String) MyApplication.getMyApplication().getObject("username");
+		//head_url = (String) MyApplication.getMyApplication().getObject("head_url");
 		
 		LayoutInflater inflater = LayoutInflater.from(this);
 		View frame = inflater.inflate(R.layout.person_frame, null);
@@ -56,60 +58,66 @@ public class Person extends AppCompatActivity
 		text_username = (TextView) frame.findViewById(R.id.personTextView_username);
 		text_motto = (TextView) frame.findViewById(R.id.personTextView_motto);
 		
+		
 		LinearLayout head_view = (LinearLayout) findViewById(R.id.personLinearLayout_headview);
 		head_view.addView(frame);
 
-		//text_motto = (TextView) findViewById(R.id.personTextView_sign);
+		//text_motto = (TextView) findViewById(R.id.personTextView_motto);
+		text_email = (TextView) findViewById(R.id.personTextView_email);
 		text_last_time = (TextView) findViewById(R.id.personTextView_last_login);
 		text_uid = (TextView) findViewById(R.id.personTextView_uid);
 		bg = (ImageView) findViewById(R.id.personImageView_bg);
 		
 		text_username.setText(username);
 		
-		Glide.with(this).load(head_url)
-			.apply(new RequestOptions().placeholder(R.drawable.image_head)
-				   .circleCrop())
-			.transition(DrawableTransitionOptions.withCrossFade())
-			.into(image_head);
-		Glide.with(this).load(head_url)
-			.apply(new RequestOptions().placeholder(R.drawable.image_head)
-				   .centerCrop().fitCenter().transform(new BlurTransformation(20)))
-			.transition(DrawableTransitionOptions.withCrossFade())
-			.into(bg);
+		Communication.getComm(this).postWithAuth(Communication.GET_USER, new Content().put("username", username).val, 
+			new StringCallback() {
+				@Override
+				public void onSuccess(Response<String> p1) {
+					ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+					if (result.code != 0) {
+						Toast.makeText(Person.this, result.message, Toast.LENGTH_LONG).show();
+						return;
+					}
+					head_url = result.data.user_info.head;
+					Glide.with(Person.this).load(head_url)
+						.apply(new RequestOptions().placeholder(R.drawable.image_head)
+							   .circleCrop())
+						.transition(DrawableTransitionOptions.withCrossFade())
+						.into(image_head);
+					Glide.with(Person.this).load(head_url)
+						.apply(new RequestOptions().placeholder(R.drawable.image_head)
+							   .centerCrop().fitCenter().transform(new BlurTransformation(20)))
+						.transition(DrawableTransitionOptions.withCrossFade())
+						.into(bg);
+					text_motto.setText(result.data.user_info.motto);
+					text_email.setText(result.data.user_info.email);
+					text_last_time.setText(new MyGetTime().remote(result.data.user_info.last_active_time));
+					text_uid.setText("" + result.data.user_info.uid);
+				}
+			});
 			
 		image_head.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View p1) {
-					RxPermissions rxPermissions = new RxPermissions(Person.this);
-					rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-						.subscribe(new Observer<Boolean>() {
-							@Override
-							public void onError(Throwable p1)
-							{}
-							@Override
-							public void onComplete()
-							{}
-							@Override
-							public void onSubscribe(Disposable d)
-							{}
-							@Override
-							public void onNext(Boolean aBoolean)
-							{
-								if (aBoolean)
-								{
-									Matisse.from(Person.this)
-										.choose(MimeType.ofImage(), false)
-										.countable(false)
-										.capture(false)
-										.maxSelectable(1)
-										.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-										.thumbnailScale(0.85f)
-										//.originalEnable(true)
-										//.maxOriginalSize(10)
-										.autoHideToolbarOnSingleTap(true)
-										.forResult(code_pick);
-								}
-							}});
+					if (username.equals(Config.get(getApplicationContext()).data.user.username)) {
+						Matisse.from(Person.this)
+							.choose(MimeType.ofImage(), false)
+							.countable(false)
+							.capture(false)
+							.maxSelectable(1)
+							.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+							.thumbnailScale(0.85f)
+							//.originalEnable(true)
+							// max 4 mb
+							.maxOriginalSize(4)
+							.autoHideToolbarOnSingleTap(true)
+							.forResult(code_pick);
+					} else {
+						Bundle bundle = new Bundle();
+						bundle.putString("url", head_url);
+						startActivity(new Intent().setClass(Person.this, ImagePreView.class));
+					}
 				}
 			});
 	}
@@ -143,7 +151,15 @@ public class Person extends AppCompatActivity
 								return;
 							ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
 							if (result.code == 0) {
-								
+								ContentValues params2 = new ContentValues();
+								params2.put("head", result.data.upload_result.url);
+								Communication.getComm(Person.this).postWithAuth(Communication.SET_USER, params2, 
+									new StringCallback() {
+										@Override
+										public void onSuccess(Response<String> p1) {
+											Person.this.recreate();
+										}
+									});
 							}
 						}
 					});

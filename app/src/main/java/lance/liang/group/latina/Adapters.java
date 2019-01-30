@@ -27,6 +27,7 @@ import com.lzy.okgo.model.*;
 import com.google.gson.*;
 import jp.wasabeef.glide.transformations.*;
 import lance.liang.group.latina.MenuData.*;
+import java.text.*;
 //import android.transition.*;
 //import android.support.v7.app.*;
 
@@ -93,11 +94,14 @@ class ChatAdapter extends BaseAdapter
 	public List<ItemBeanChat> list;
 	private LayoutInflater inflater;
 	Context pcontext;
+	private NumberFormat numberFormat;
 
 	ChatAdapter(Context context, List<ItemBeanChat> ilist) {
 		this.list = ilist;
 		inflater = LayoutInflater.from(context);
 		pcontext = context;
+		numberFormat = NumberFormat.getPercentInstance();
+		numberFormat.setMinimumFractionDigits(2);
 	}
 
 	@Override
@@ -251,12 +255,13 @@ class ChatAdapter extends BaseAdapter
 		head.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View p1) {
-					Bundle bundle = new Bundle();
-					bundle.putString("username", bean.username);
-					bundle.putString("head_url", bean.head_url);
+					//Bundle bundle = new Bundle();
+					//bundle.putString("username", bean.username);
+					//bundle.putString("head_url", bean.head_url);
+					MyApplication.getMyApplication().putObject("username", bean.username);
 					Intent intent = new Intent();
 					intent.setClass(pcontext, Person.class);
-					intent.putExtras(bundle);
+					//intent.putExtras(bundle);
 					pcontext.startActivity(intent);
 				}
 			});
@@ -284,7 +289,8 @@ class ChatAdapter extends BaseAdapter
 							public void onStart(Progress p1){}
 							@Override
 							public void onProgress(Progress p1){
-								progress.setText("" + (int)(p1.fraction * 100) + "%");
+								//progress.setText("" + (int)(p1.fraction * 100) + "%");
+								progress.setText(numberFormat.format(p1.fraction));
 							}
 							@Override
 							public void onError(Progress p1){progress.setText("" + (int)(p1.fraction * 100) + "E");

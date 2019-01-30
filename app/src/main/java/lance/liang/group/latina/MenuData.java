@@ -8,6 +8,7 @@ public class MenuData
 		final public static int LEFT_ME = 9, LEFT_PRINTER = 1, LEFT_PEOPLE = 2, LEFT_SETTINGS = 3, 
 		LEFT_MORE = 4, LEFT_HELP = 5, LEFT_ABOUT = 6,
 		ME_MY_INFO = 7, ME_SET_INFO = 8, ME_LOGOUT = 13,
+		ME_MAKE_FRIENDS = 14, ME_NEW_ROOM = 15, ME_NEW_USER = 16,
 		SETTINGS_THEME = 9, SETTINGS_SPLASH = 10, SETTINGS_FONT = 11, SETTINGS_SERVER = 12;
 	};
 	
@@ -29,6 +30,9 @@ public class MenuData
 	public static enum Settings {
 		MyInfo(new ItemBeanSettings("我的信息"), ID.ME_MY_INFO),
 		SetInfo(new ItemBeanSettings("信息设置"), ID.ME_SET_INFO),
+		MakeFriends(new ItemBeanSettings("Make Friends"), ID.ME_MAKE_FRIENDS),
+		NewRoom(new ItemBeanSettings("New Room"), ID.ME_NEW_ROOM),
+		NewUser(new ItemBeanSettings("New User"), ID.ME_NEW_USER),
 		Logout(new ItemBeanSettings("Logout"), ID.ME_LOGOUT),
 		
 		SetTheme(new ItemBeanSettings("主题"), ID.SETTINGS_THEME),
@@ -53,6 +57,10 @@ public class MenuData
 	
 	public static Settings[] listMe = {
 		Settings.MyInfo, Settings.SetInfo, Settings.Logout,
+	};
+	
+	public static Settings[] listPeople = {
+		Settings.NewUser, Settings.MakeFriends, Settings.NewRoom, 
 	};
 	
 	public static Settings[] listSettings = {

@@ -54,4 +54,24 @@ public class Utils
 		return color;
 	}
 	
+	public static ContentValues ContentPut(String key, String dat) {
+		ContentValues val = new ContentValues();
+		val.put(key, dat);
+		return val;
+	}
+	public static ContentValues ContentPut(ContentValues val, String key, String dat) {
+		val.put(key, dat);
+		return val;
+	}
 }
+class Content {
+	public ContentValues val;
+	Content() {
+		val = new ContentValues();
+	}
+	public Content put(String key, String data) {
+		val.put(key, data);
+		return this;
+	}
+}
+

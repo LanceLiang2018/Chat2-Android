@@ -25,6 +25,7 @@ import java.io.*;
 import java.util.*;
 
 import io.reactivex.Observer;
+import android.widget.AdapterView.*;
 
 public class Chat extends AppCompatActivity
 {
@@ -59,7 +60,7 @@ public class Chat extends AppCompatActivity
 			ResultData result = (new Gson()).fromJson(p1.body(), ResultData.class);
 			if (result.code == 0)
 			{
-				getMessage();
+				//getMessage();
 				text_message.setText("");
 			}
 			else
@@ -70,6 +71,74 @@ public class Chat extends AppCompatActivity
 			}
 		}
 	};
+	
+	static final String baseDir = "/sdcard/";
+
+	private String[] getFileList(String path) {
+		File dir = new File(path);
+		List<String> res = new ArrayList<String>();
+		if (!dir.exists()) {
+			return res.toArray(new String[res.size()]);
+		}
+		File[] files = dir.listFiles();
+		for (File f: files) {
+			res.add(f.getAbsolutePath());
+		}
+		return res.toArray(new String[res.size()]);
+	}
+	private void startAlertDialog(String path) {
+		final String[] files = getFileList(path);
+		String[] names = new String[files.length];
+		for (int i=0; i<files.length; i++) {
+			names[i] = files[i].substring(files[i].lastIndexOf("/") + 1, files[i].length());
+		}
+		new AlertDialog.Builder(this).setTitle("Select a file:")
+			.setItems(names, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					File inFile = new File(files[p2]);
+					if (inFile.isDirectory()) {
+						startAlertDialog(files[p2]);
+						return;
+					}
+					Toast.makeText(getApplicationContext(), "Choose: " + files[p2], Toast.LENGTH_LONG).show();
+					String path = files[p2];
+					Uri uri = Uri.parse("file://" + path);
+					int latest_mid = MyDB.get(Chat.this).getLatestMid(gid_int);
+					ItemBeanChat message = new ItemBeanChat(latest_mid, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+														   path.substring(path.lastIndexOf("/") + 1, path.length()), 
+														   Config.get(Chat.this).data.user.head, "file", ItemBeanChat.PRESEND).setSendTime(new MyGetTime().getInt())
+						.setTag(path);
+					new MyDB(Chat.this).saveMessage(message);
+					ContentResolver cr = Chat.this.getContentResolver();
+					String b64 = null;
+					try {
+						InputStream is = cr.openInputStream(uri);
+						byte[] buf = new byte[is.available()];
+						is.read(buf);
+						b64 = Base64.encodeToString(buf, Base64.DEFAULT);
+					} catch (Exception e) {
+						Log.e("Chat 2", e.getMessage());
+						Toast.makeText(Chat.this, e.getMessage(), Toast.LENGTH_LONG).show();
+						return;
+					}
+
+					ContentValues params = new ContentValues();
+					params.put("auth", Config.get(Chat.this).data.user.auth);
+					params.put("data", b64);
+					params.put("filename", path.substring(path.lastIndexOf("/") + 1, path.length()));
+					UploadTask task = Communication.getComm(Chat.this).uploadNoListener(Communication.UPLOAD, message.tag, params);
+					task.extra1(new SendMessage.MessageToSend().toJson());
+					task.save();
+					task.start();
+					List<ItemBeanChat> tmp = new ArrayList<>();
+					tmp.add(message);
+					refreshNowBean(tmp);
+					
+				}
+			})
+			.show();
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -206,10 +275,12 @@ public class Chat extends AppCompatActivity
 								}
 								else if (p2 == 1)
 								{ // file
-									Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-									intent.setType("*/*");
-									intent.addCategory(Intent.CATEGORY_OPENABLE);
-									Chat.this.startActivityForResult(intent, code_file);
+									//Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+									//intent.setType("*/*");
+									//intent.addCategory(Intent.CATEGORY_OPENABLE);
+									//Chat.this.startActivityForResult(intent, code_file);
+									startAlertDialog(baseDir);
+									
 								}
 							}
 						});
@@ -330,7 +401,7 @@ public class Chat extends AppCompatActivity
 					Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 					break;
 				}
-
+				
 				ContentValues params = new ContentValues();
 				params.put("auth", Config.get(Chat.this).data.user.auth);
 				params.put("data", b64);
@@ -408,9 +479,9 @@ public class Chat extends AppCompatActivity
 													ResultData result2 = (new Gson()).fromJson(p1.body(), ResultData.class);
 													if (result2.code == 0)
 													{
-														adp.insert(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
-																					result.data.upload_result.url, Config.get(Chat.this).data.user.head, "image"));
-														adp.notifyDataSetChanged();
+														//adp.insert(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+														//							result.data.upload_result.url, Config.get(Chat.this).data.user.head, "image"));
+														//adp.notifyDataSetChanged();
 													}
 													else
 													{
@@ -545,6 +616,7 @@ public class Chat extends AppCompatActivity
 								items.add("Active time: " + new MyGetTime().remote(result.data.info.last_post_time));
 								items.add("Create at: " + new MyGetTime().remote(result.data.info.create_time));
 								items.add("Head: " + result.data.info.head);
+								items.add("Room type: " + result.data.info.room_type);
 								
 								new AlertDialog.Builder(Chat.this)
 									.setItems(items.toArray(new String[items.size()]), null)
@@ -580,7 +652,8 @@ public class Chat extends AppCompatActivity
         else if ( ContentResolver.SCHEME_FILE.equals( scheme ) ) {
             data = uri.getPath();
         } else if ( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
-            Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
+            //Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
+            Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Files.FileColumns.DATA }, null, null, null );
             if ( null != cursor ) {
                 if ( cursor.moveToFirst() ) {
                     int index = cursor.getColumnIndex( MediaStore.Images.ImageColumns.DATA );

@@ -22,6 +22,8 @@ public class ImagePreView extends Activity
 	{
 		setTheme(Config.get(this).data.settings.theme);
 		super.onCreate(savedInstanceState);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//隐藏状态栏 
+		
 		setContentView(R.layout.image_view);
 		//String url = (String) p1.getTag();
 		String url = getIntent().getExtras().getString("url");

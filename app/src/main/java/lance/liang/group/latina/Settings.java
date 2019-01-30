@@ -61,6 +61,17 @@ public class Settings extends AppCompatActivity
 				case ID.ME_SET_INFO:
 					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
 					break;
+				case ID.ME_MAKE_FRIENDS:
+					makeFriends();
+					break;
+				case ID.ME_NEW_ROOM:
+					myNewRoom();
+					break;
+				case ID.ME_NEW_USER:
+					Intent intent_signup = new Intent();
+					intent_signup.setClass(Settings.this, Signup.class);
+					startActivity(intent_signup);
+					break;
 				case ID.SETTINGS_SERVER:
 					mySetServer();
 					break;
@@ -83,6 +94,181 @@ public class Settings extends AppCompatActivity
 	protected void onDestroy()
 	{
 		super.onDestroy();
+	}
+	
+	public static void myNewRoom(final Context context) {
+		final EditText edit = new EditText(context);
+		final CheckBox check = new CheckBox(context);
+		check.setText("Establish a public room for all users");
+		check.setSelected(false);
+		LinearLayout view = new LinearLayout(context);
+		AlertDialog.Builder build = new AlertDialog.Builder(context);
+		view.setOrientation(LinearLayout.VERTICAL);
+		view.addView(edit);
+		view.addView(check);
+		build.setTitle("Input the name of Room:");
+		build.setView(view);
+		build.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					ContentValues parames = new ContentValues();
+					parames.put("auth", Config.get(context).data.user.auth);
+					parames.put("room_type", check.isChecked()?"all":"public");
+					parames.put("name", edit.getText().toString());
+					Communication.getComm(context).post(Communication.CREATE_ROOM, parames, 
+						new StringCallback() {
+							@Override
+							public void onSuccess(Response<String> response) {
+								ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
+								if (result.code == 0) {
+									Log.d("Chat 2", "Create Room: name:" + result.data.info.name + " gid: " + result.data.info.gid);
+									//Settings.this.recreate();
+								}
+								else {
+									Log.e("Chat 2", result.message + "(Code: " + result.code + ")");
+								}
+							}
+						});
+				}
+			});
+		build.setNegativeButton("Cancel", null);
+		build.show();
+	}
+	
+	public static void myJoinIn(final Context context) {
+		final EditText edit = new EditText(context);
+		new AlertDialog.Builder(context)
+			.setMessage("Input gid:")
+			.setView(edit)
+			.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					ContentValues parames = new ContentValues();
+					parames.put("auth", Config.get(context).data.user.auth);
+					parames.put("gid", edit.getText().toString());
+					Communication.getComm(context).post(Communication.JOIN_IN, parames, 
+						new StringCallback() {
+							@Override
+							public void onSuccess(Response<String> response) {
+								ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
+								if (result.code == 0) {
+									//MainActivity.this.refresh();
+								}
+								else {
+									new AlertDialog.Builder(context)
+										.setMessage(result.message + " (Code: " + result.code + ")");
+								}
+							}
+						});
+				}
+			})
+			.setNegativeButton("Cancel", null)
+			.show();
+	}
+	
+	private void myJoinIn() {
+		final EditText edit = new EditText(this);
+		final Context context = getApplicationContext();
+		new AlertDialog.Builder(this)
+			.setMessage("Input gid:")
+			.setView(edit)
+			.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					ContentValues parames = new ContentValues();
+					parames.put("auth", Config.get(Settings.this).data.user.auth);
+					parames.put("gid", edit.getText().toString());
+					Communication.getComm(context).post(Communication.JOIN_IN, parames, 
+						new StringCallback() {
+							@Override
+							public void onSuccess(Response<String> response) {
+								ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
+								if (result.code == 0) {
+									Settings.this.recreate();
+								}
+								else {
+									new AlertDialog.Builder(context)
+										.setMessage(result.message + " (Code: " + result.code + ")");
+								}
+							}
+						});
+				}
+			})
+			.setNegativeButton("Cancel", null)
+			.show();
+	}
+	
+	private void myNewRoom() {
+		final EditText edit = new EditText(Settings.this);
+		final CheckBox check = new CheckBox(this);
+		check.setText("Establish a public room for all users");
+		check.setSelected(false);
+		LinearLayout view = new LinearLayout(this);
+		AlertDialog.Builder build = new AlertDialog.Builder(Settings.this);
+		view.setOrientation(LinearLayout.VERTICAL);
+		view.addView(edit);
+		view.addView(check);
+		build.setTitle("Input the name of Room:");
+		build.setView(view);
+		build.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					ContentValues parames = new ContentValues();
+					parames.put("auth", Config.get(Settings.this).data.user.auth);
+					parames.put("room_type", check.isChecked()?"all":"public");
+					parames.put("name", edit.getText().toString());
+					Communication.getComm(Settings.this).post(Communication.CREATE_ROOM, parames, 
+						new StringCallback() {
+							@Override
+							public void onSuccess(Response<String> response) {
+								ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
+								if (result.code == 0) {
+									Log.d("Chat 2", "Create Room: name:" + result.data.info.name + " gid: " + result.data.info.gid);
+									Settings.this.recreate();
+								}
+								else {
+									Log.e("Chat 2", result.message + "(Code: " + result.code + ")");
+								}
+							}
+						});
+				}
+			});
+		build.setNegativeButton("Cancel", null);
+		build.show();
+	}
+	
+	private void makeFriends() {
+		final EditText edit = new EditText(Settings.this);
+		DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface p1, int p2) {
+				ContentValues params = new ContentValues();
+				params.put("auth", Config.get(Settings.this).data.user.auth);
+				params.put("friend", String.valueOf(edit.getText()));
+				Communication.getComm(Settings.this).post(Communication.MAKE_FRIENDS, params, 
+					new StringCallback() {
+						@Override
+						public void onSuccess(Response<String> p1) {
+							ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+							if (result.code != 0) {
+								new AlertDialog.Builder(Settings.this)
+									.setMessage(result.message + " (Code: " + result.code + ")")
+									.show();
+								return;
+							}
+							Settings.this.recreate();
+						}
+					});
+			}
+		};
+		new AlertDialog.Builder(Settings.this)
+			.setTitle("New friends")
+			.setMessage("Enter username:")
+			.setView(edit)
+			.setPositiveButton("Yes", listener)
+			.setNegativeButton("No", null)
+			.show();
+		
 	}
 	
 	private void mySetTheme() {

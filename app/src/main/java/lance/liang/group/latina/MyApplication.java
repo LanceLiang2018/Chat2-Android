@@ -1,6 +1,7 @@
 package lance.liang.group.latina;
 import android.app.*;
 import android.content.*;
+import com.lzy.okgo.*;
 import java.util.*;
 
 public class MyApplication extends Application
@@ -13,6 +14,8 @@ public class MyApplication extends Application
 	{
 		super.onCreate();
 		instance = this;
+		OkGo.getInstance().init(this);
+		//Toast.makeText(this, "MyApplication Started.", Toast.LENGTH_LONG).show();
 	}
 	
 	public Object getObject(Object obj) {
@@ -25,5 +28,9 @@ public class MyApplication extends Application
 	
 	public static MyApplication getMyApplication() {
 		return instance;
+	}
+	
+	public Context getContext() {
+		return getApplicationContext();
 	}
 }

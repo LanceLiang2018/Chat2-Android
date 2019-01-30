@@ -198,14 +198,15 @@ public class Communication
 	GET_HEAD = "get_head",
 	CLEAR_ALL = "clear_all",
 
+	GET_USER = "get_user",
 	SET_USER = "set_user",
 	JOIN_IN = "join_in",
 
 	CREATE_ROOM = "create_room",
 	GET_ROOM = "get_room",
 	GET_ROOM_ALL = "get_room_all",
-	GET_ROOM_INFO = "get_room_info",
-	SET_ROOM_INFO = "set_room_info",
+	GET_ROOM_INFO = "get_room",
+	SET_ROOM_INFO = "set_room",
 	GET_FILES = "get_files",
 	
 	MAKE_FRIENDS = "make_friends",
@@ -229,7 +230,7 @@ public class Communication
 		pcontext = context;
 		init(context);
 	}
-	
+
 	private void init(Context context)
 	{
 		this.SERVER = Config.get(context).data.settings.server;
@@ -274,9 +275,10 @@ public class Communication
 		post(action, parames, callback);
 	}
 	
-	public UploadTask upload(String url, String tag, ContentValues parames, UploadListener listener)
+	public UploadTask upload(String action, String tag, ContentValues parames, UploadListener listener)
 	{
-		PostRequest<String> request = OkGo.<String>post(url).tag(this);
+		parames.put("action", action);
+		PostRequest<String> request = OkGo.<String>post(SERVER).tag(this);
 		for (String key: parames.keySet()) {
 			request.params(key, parames.get(key).toString());
 		}
@@ -287,9 +289,10 @@ public class Communication
 			.register(listener);
 		return task;
 	}
-	public UploadTask uploadNoListener(String url, String tag, ContentValues parames)
+	public UploadTask uploadNoListener(String action, String tag, ContentValues parames)
 	{
-		PostRequest<String> request = OkGo.<String>post(url).tag(this);
+		parames.put("action", action);
+		PostRequest<String> request = OkGo.<String>post(SERVER).tag(this);
 		for (String key: parames.keySet()) {
 			request.params(key, parames.get(key).toString());
 		}
