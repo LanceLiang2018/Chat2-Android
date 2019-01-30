@@ -23,6 +23,8 @@ class ConfigData
 		public int colorBg = R.color.colorBg01;
 		public int colorFt = R.color.colorFt01;
 		public int isShowSplash = 1;
+		
+		public String defaultPrinter = "Printer";
 	}
 	public Settings settings = new Settings();
 	public UserData user = new UserData();

@@ -9,7 +9,8 @@ public class MenuData
 		LEFT_MORE = 4, LEFT_HELP = 5, LEFT_ABOUT = 6,
 		ME_MY_INFO = 7, ME_SET_INFO = 8, ME_LOGOUT = 13,
 		ME_MAKE_FRIENDS = 14, ME_NEW_ROOM = 15, ME_NEW_USER = 16,
-		SETTINGS_THEME = 9, SETTINGS_SPLASH = 10, SETTINGS_FONT = 11, SETTINGS_SERVER = 12;
+		SETTINGS_THEME = 9, SETTINGS_SPLASH = 10, SETTINGS_FONT = 11, SETTINGS_SERVER = 12, 
+		PRINTER_DEFAULT = 17, PRINTER_ADD = 18;
 	};
 	
 	public static enum LeftMenu {
@@ -38,7 +39,10 @@ public class MenuData
 		SetTheme(new ItemBeanSettings("主题"), ID.SETTINGS_THEME),
 		SetServer(new ItemBeanSettings("服务器"), ID.SETTINGS_SERVER),
 		SetFont(new ItemBeanSettings("字体"), ID.SETTINGS_FONT),
-		SetSplash(new ItemBeanSettings("Spash"), ID.SETTINGS_SPLASH);
+		SetSplash(new ItemBeanSettings("Spash"), ID.SETTINGS_SPLASH),
+		
+		SetDefaultPrinter(new ItemBeanSettings("Default Printer"), ID.PRINTER_DEFAULT),
+		AddPrinter(new ItemBeanSettings("Add New Printer"), ID.PRINTER_ADD);
 		ItemBeanSettings item;
 		int id;
 		public Settings(ItemBeanSettings item, int id) {
@@ -65,5 +69,9 @@ public class MenuData
 	
 	public static Settings[] listSettings = {
 		Settings.SetTheme, Settings.SetServer, Settings.SetSplash, Settings.SetFont,
+	};
+	
+	public static Settings[] listPrinter = {
+		Settings.SetDefaultPrinter, Settings.AddPrinter,
 	};
 }

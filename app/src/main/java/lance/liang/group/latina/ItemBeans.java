@@ -2,7 +2,7 @@ package lance.liang.group.latina;
 import android.support.v7.widget.*;
 
 class ItemBeanMain {
-	public String title, content, time = "", head;
+	public String title, content, time = "", head, room_type = "public";
 	public int image = R.drawable.image_1;
 	public int gid, unread = 0;
 
@@ -26,6 +26,11 @@ class ItemBeanMain {
 		this.title = title;
 		this.content = content;
 		this.time = time;
+	}
+	
+	ItemBeanMain setRoomType(String type) {
+		room_type = type;
+		return this;
 	}
 }
 

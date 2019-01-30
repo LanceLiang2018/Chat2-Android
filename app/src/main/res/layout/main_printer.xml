@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:orientation="vertical">
+
+	<RelativeLayout
+		xmlns:tools="http://schemas.android.com/tools"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:clipToPadding="false"
+		android:fitsSystemWindows="true"
+		android:id="@+id/mainRelativeLayout_printer">
+
+		<android.support.v4.widget.SwipeRefreshLayout
+			android:id="@+id/slr_printer"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent">
+
+			<ListView
+				android:id="@+id/list_rooms_printer"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"/>
+
+		</android.support.v4.widget.SwipeRefreshLayout>
+
+	</RelativeLayout>
+
+</LinearLayout>
+

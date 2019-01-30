@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 	private ActionBar bar;
 	private ImageView im_head;
 	private TextView text_title;
-	private EditText edit;
 	public static final int code_login = 0x80, code_signup = 0x81, 
 							code_chat = 0x82, code_pick = 0x83, 
 							code_settings = 0x84;
@@ -56,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 	private ListView list_rooms;
 	private ListView list_left;
 	List<ItemBeanMain> data = new ArrayList<ItemBeanMain>();
+	List<ItemBeanMain> data_printer = new ArrayList<ItemBeanMain>();
 	private View head_view;
 	private TextView head_username, head_motto;
 	private ImageView head_head, head_bg;
@@ -66,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
 	TextView hitokoto;
 	TextView hitokoto_from;
 	Button index_photo;
+	private ListView list_printer;
+	private PeopleAdapter adp_rooms_printer;
+	private SwipeRefreshLayout srl_printer;
 	
 	
 	private OnItemClickListener left_onClickListener = new OnItemClickListener() {
@@ -88,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
 				case MenuData.ID.LEFT_PEOPLE:
 					MyApplication.getMyApplication().putObject("data", MenuData.listPeople);
 					break;
+				case MenuData.ID.LEFT_PRINTER:
+					MyApplication.getMyApplication().putObject("data", MenuData.listPrinter);
+					break;
 				default:
 					return;
 					//break;
@@ -95,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 			startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle), code_settings);
 		}
 	};
-	
+
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
 				public void onAllTaskEnd() {
 					Toast.makeText(MainActivity.this, "All end.", Toast.LENGTH_SHORT).show();
 				}
-				
 			});
 		
         super.onCreate(savedInstanceState);
@@ -187,14 +192,26 @@ public class MainActivity extends AppCompatActivity {
 					hitokoto_bg.animate().alpha(1);
 					return;
 				}
-				HitokotoData data = new Gson().fromJson(p1.body().toString(), HitokotoData.class);
+				HitokotoData data = new HitokotoData();
+				try {
+					data = new Gson().fromJson(p1.body().toString(), HitokotoData.class);
+				} catch (JsonSyntaxException e) {
+					hitokoto.setText("API错误");
+					hitokoto_from.setText("");
+					hitokoto_bg.setAlpha(0);
+					hitokoto_bg.animate().alpha(1);
+					return;
+				}
 				hitokoto.setText(data.hitokoto);
 				hitokoto_from.setText(" —— " + data.from);
 				hitokoto_bg.setAlpha(0);
 				hitokoto_bg.animate().alpha(1);
-				if ((int)(MyApplication.getMyApplication().getObject("hitokoto_click")) > 20) {
+				int hitokoto_count = (int)(MyApplication.getMyApplication().getObject("hitokoto_click"));
+				if (hitokoto_count > 20) {
 					new AlertDialog.Builder(MainActivity.this).setMessage("so kawayi kodo~").show();
 				}
+				hitokoto_count = hitokoto_count + 1;
+				MyApplication.getMyApplication().putObject("hitokoto_click", hitokoto_count);
 			}
 			public void onError(Response<String> p1) {
 				hitokoto.setText("网络错误");
@@ -234,9 +251,18 @@ public class MainActivity extends AppCompatActivity {
 		roundedBitmapDrawable4.setCornerRadius(15);
 		index_photo.setBackground(roundedBitmapDrawable4);
 		
+		// Main Printer Layout
+		
+		LinearLayout inview_printer = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.main_printer, null);
+		RelativeLayout mainLayout_printer = (RelativeLayout) inview_printer.findViewById(R.id.mainRelativeLayout_printer);
+		inview_printer.removeView(mainLayout_printer);
+		page_array.add(mainLayout_printer);
+		
+		// Main People Layout
+
 		LinearLayout inview = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.main, null);
 		RelativeLayout mainLayout = (RelativeLayout) inview.findViewById(R.id.mainRelativeLayout_main);
-		mainLayout.removeView(mainLayout);
+		inview.removeView(mainLayout);
 		page_array.add(mainLayout);
 		
 		// ActionBar
@@ -267,12 +293,16 @@ public class MainActivity extends AppCompatActivity {
 		// List rooms
 
 		list_rooms = (ListView) mainLayout.findViewById(R.id.list_rooms);
+		list_printer = (ListView) mainLayout_printer.findViewById(R.id.list_rooms_printer);
+		
 		list_left = (ListView) findViewById(R.id.list_left);
 		drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
 		adp_rooms = new MainAdapter(this, data);
+		adp_rooms_printer = new PeopleAdapter(this, data_printer);
 
 		list_rooms.setAdapter(adp_rooms);
+		list_printer.setAdapter(adp_rooms_printer);
 		list_rooms.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4){
@@ -285,6 +315,18 @@ public class MainActivity extends AppCompatActivity {
 					startActivityForResult(intent_room, code_chat);
 				}
 			});
+		list_printer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4){
+					Intent intent_room = new Intent();
+					intent_room.setClass(MainActivity.this, Chat.class);
+					Bundle bundle=new Bundle();
+					bundle.putString("name", data_printer.get(p3).title);
+					bundle.putInt("gid", data_printer.get(p3).gid);
+					intent_room.putExtras(bundle);
+					startActivityForResult(intent_room, code_chat);
+				}
+			});
 		//LinearLayout main_empty_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.main_empry, null);
 		//RelativeLayout main_empty = (RelativeLayout) main_empty_base.findViewById(R.id.mainempryRelativeLayout);
 		//main_empty_base.removeView(main_empty);
@@ -292,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
 		//list.setEmptyView(main_empty);
 		//LinearLayout empty_bg = new LinearLayout(this);
 		TextView empty_text = new TextView(this);
-			//Some thing wrong
+			// #!# Some thing wrong
 		empty_text.setText("啊嘞？没有内容哦~(*σ´∀`)σ 下拉刷新");
 		//empty_bg.addView(empty_text);
 		list_rooms.setEmptyView(empty_text);
@@ -309,7 +351,18 @@ public class MainActivity extends AppCompatActivity {
 				}
 			});
 		srl.setColorSchemeResources(Config.get(this).data.settings.colorFt);
-
+		
+		srl_printer = (SwipeRefreshLayout) mainLayout_printer.findViewById(R.id.slr_printer);
+		srl_printer.setEnabled(true);
+		srl_printer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+				@Override
+				public void onRefresh() {
+					MainActivity.this.refresh();
+					srl_printer.setRefreshing(false);
+				}
+			});
+		srl_printer.setColorSchemeResources(Config.get(this).data.settings.colorFt);
+		
 		//List<ItemBeanLeft> left_list = new ArrayList<ItemBeanLeft>(Arrays.asList(left_data));
 		//List<ItemBeanLeft[]> left_child = new ArrayList<ItemBeanLeft[]>(Arrays.asList(left_child_data));
 		
@@ -339,156 +392,7 @@ public class MainActivity extends AppCompatActivity {
 		list_left.setAdapter(new LeftAdapter(this));
 		list_left.addHeaderView(head_view);
 		list_left.setOnItemClickListener(left_onClickListener);
-		/*
-		list_left.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-				@Override
-				public boolean onGroupClick(ExpandableListView p1, View p2, int p3, long p4) {
-					if (p3 == 5) { // exit
-						MainActivity.this.finish();
-					} else if (p3 == 4) { // add-ones
-						Toast.makeText(MainActivity.this, "No add-ones yet.", Toast.LENGTH_SHORT).show();
-					}
-					return false;
-				}
-			});
-		list_left.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-				@Override
-				public boolean onChildClick(ExpandableListView p1, View p2, int p3, int p4, long p5) {
-					if (p3 == 0) { // me
-						if (p4 == 0) { // info
-							Intent intent = new Intent();
-							Bundle bundle = new Bundle();
-							bundle.putString("username", Config.get(MainActivity.this).data.user.username);
-							bundle.putString("head_url", Config.get(MainActivity.this).data.user.head);
-							intent.putExtras(bundle);
-							intent.setClass(MainActivity.this, Person.class);
-							MainActivity.this.startActivity(intent);
-						} else if (p4 == 1) { // new user
-							Intent intent_signup = new Intent();
-							intent_signup.setClass(MainActivity.this, Signup.class);
-							startActivityForResult(intent_signup, code_signup);
-						} else if (p4 == 2) { // new room
-							edit = new EditText(MainActivity.this);
-							AlertDialog.Builder build = new AlertDialog.Builder(MainActivity.this);
-							build.setTitle("Input the name of Room:");
-							build.setView(edit);
-							build.setPositiveButton("OK", new AlertDialog.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface p1, int p2) {
-										ContentValues parames = new ContentValues();
-										parames.put("auth", Config.get(MainActivity.this).data.user.auth);
-										parames.put("name", edit.getText().toString());
-										Communication.getComm(MainActivity.this).post(Communication.CREATE_ROOM, parames, 
-											new StringCallback() {
-												@Override
-												public void onSuccess(Response<String> response) {
-													ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
-													if (result.code == 0) {
-														Log.d("Chat 2", "Create Room: name:" + result.data.info.name + " gid: " + result.data.info.gid);
-														MainActivity.this.Refresh();
-													}
-													else {
-														Log.e("Chat 2", result.message + "(Code: " + result.code + ")");
-													}
-												}
-											});
-									}
-								});
-							build.setNegativeButton("Cancel", null);
-							build.show();
-						} else if (p4 == 3) { // make friends
-							final EditText edit = new EditText(MainActivity.this);
-							DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface p1, int p2) {
-									ContentValues params = new ContentValues();
-									params.put("auth", Config.get(MainActivity.this).data.user.auth);
-									params.put("friend", String.valueOf(edit.getText()));
-									Communication.getComm(MainActivity.this).post(Communication.MAKE_FRIENDS, params, 
-										new StringCallback() {
-											@Override
-											public void onSuccess(Response<String> p1) {
-												ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
-												if (result.code != 0) {
-													new AlertDialog.Builder(MainActivity.this)
-														.setMessage(result.message + " (Code: " + result.code + ")")
-														.show();
-													return;
-												}
-												MainActivity.this.recreate();
-											}
-										});
-								}
-							};
-							new AlertDialog.Builder(MainActivity.this)
-								.setTitle("New friends")
-								.setMessage("Enter username:")
-								.setView(edit)
-								.setPositiveButton("Yes", listener)
-								.setNegativeButton("No", null)
-								.show();
-						} else if (p4 == 4) { // logout
-							Config config = Config.get(MainActivity.this);
-							config.data.user.auth = "";
-							config.save();
-							MainActivity.this.recreate();
-						}
-					} else if (p3 == 2) { // settings
-						if (p4 == 0) { // theme
-							final String[] disp = {"默认", "荷月", "惊蛰", "霜序", "岁馀", "纯净", "夜行"};
-							final int[] vals = {R.style.AppTheme01, R.style.AppTheme02, R.style.AppTheme03, R.style.AppTheme04, R.style.AppTheme05, R.style.AppTheme06, R.style.AppTheme07};
-							final int[] valsBg = {R.color.colorBg01, R.color.colorBg02, R.color.colorBg03, R.color.colorBg04, R.color.colorBg05, R.color.colorBg06, R.color.colorBg07};
-							final int[] valsFt = {R.color.colorFt01, R.color.colorFt02, R.color.colorFt03, R.color.colorFt04, R.color.colorFt05, R.color.colorFt06, R.color.colorFt07};
-
-							AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-							builder.setTitle("Set Theme")
-								.setItems(disp, new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface p1, int p2) {
-										Config config = Config.get(MainActivity.this);
-										config.data.settings.theme = vals[p2];
-										config.data.settings.colorBg = valsBg[p2];
-										config.data.settings.colorFt = valsFt[p2];
-										config.save();
-										Toast.makeText(MainActivity.this, "Change into theme: " + disp[p2], Toast.LENGTH_LONG).show();
-										MainActivity.this.recreate();
-									}
-								});
-							builder.show();
-						} else if (p4 == 1) { // host
-							String[] disp = {"Remote", "Local"};
-							final String[] vals = {
-								"https://lance-chatroom2.herokuapp.com/", 
-								"http://0.0.0.0:5000/"};
-							AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-							builder.setTitle("Set Host")
-								.setItems(disp, new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface p1, int p2) {
-										Config config = Config.get(MainActivity.this);
-										config.data.settings.server = vals[p2];
-										config.save();
-										Toast.makeText(MainActivity.this, "Change into host: " + config.data.settings.server, Toast.LENGTH_LONG).show();
-										MainActivity.this.recreate();
-									}
-								});
-							builder.show();
-						} else if (p4 == 2) { // save-dir
-
-						} else if (p4 == 3) { // about
-							AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-							builder.setTitle("About");
-							builder.setMessage("https://github.com/LanceLiang2018/Chat2-Android/");
-							builder.show();
-						}
-					} else if (p3 == 4) { // add-ones
-
-					}
-					return false;
-				}
-			});
-		*/
-
+		
 		/*
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(this).data.user.auth);
@@ -629,6 +533,7 @@ public class MainActivity extends AppCompatActivity {
 			.into(head_bg);
 
 		adp_rooms.list.clear();
+		adp_rooms_printer.list.clear();
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(this).data.user.auth);
 		Communication.getComm(this).post(Communication.GET_ROOM_ALL, parames, 
@@ -642,8 +547,16 @@ public class MainActivity extends AppCompatActivity {
 															  //room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
 															  "Latest message",
 															  //room_data.latest_time == null ? "" : room_data.latest_time, 
-															  new MyGetTime().remote(room_data.last_post_time)));
+															  new MyGetTime().remote(room_data.last_post_time))
+															  .setRoomType(room_data.room_type));
 							adp_rooms.notifyDataSetChanged();
+							adp_rooms_printer.insert(new ItemBeanMain(room_data.gid, room_data.head, room_data.name, 
+																	 //room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
+																	 "Latest message",
+																	 //room_data.latest_time == null ? "" : room_data.latest_time, 
+																	 new MyGetTime().remote(room_data.last_post_time))
+																	 .setRoomType(room_data.room_type));
+							adp_rooms_printer.notifyDataSetChanged();
 						}
 					}
 					if (result.code == 2)

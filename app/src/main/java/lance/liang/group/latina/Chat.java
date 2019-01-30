@@ -72,7 +72,7 @@ public class Chat extends AppCompatActivity
 		}
 	};
 	
-	static final String baseDir = "/sdcard/";
+	static final String baseDir = Environment.getExternalStorageDirectory().getPath();//"/storage/emulated/0/";//"/sdcard/";
 
 	private String[] getFileList(String path) {
 		File dir = new File(path);
@@ -165,6 +165,7 @@ public class Chat extends AppCompatActivity
 		//btn_send.setBackgroundColor(Config.get(this).data.settings.colorFt);
 		//btn_more.setBackgroundResource(Config.get(this).data.settings.colorFt);
 		
+		/*
 		RxPermissions rxPermissions = new RxPermissions(this);
 		rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 			.subscribe(new Observer<Boolean>() {
@@ -179,6 +180,7 @@ public class Chat extends AppCompatActivity
 				@Override
 				public void onComplete() {}
 			});
+		*/
 
 		adp = new ChatAdapter(this, data);
 		list_message.setAdapter(adp);

@@ -57,7 +57,7 @@ class MainAdapter extends BaseAdapter
 	public long getItemId(int p1) {
 		return p1;
 	}
-	
+
 	public void insert(ItemBeanMain data) {
 		list.add(data);
 	}
@@ -66,25 +66,88 @@ class MainAdapter extends BaseAdapter
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = inflater.inflate(R.layout.item_main, null);
 		ItemBeanMain bean = list.get(position);
+		if (bean.room_type.equals("printer"))
+			return new View(pcontext);
 		ImageView im = (ImageView) view.findViewById(R.id.itemmainImageView);
 		//im.setImageResource(bean.image);
 		((TextView) view.findViewById(R.id.itemmainTextView_title)).setText(bean.title);
 		((TextView) view.findViewById(R.id.itemmainTextView_content)).setText(bean.content);
 		TextView text_unread = (TextView) view.findViewById(R.id.itemmainTextView_unread);
 		TextView text_time = (TextView) view.findViewById(R.id.itemmainTextView_time);
-		
-		
+
+
 		text_time.setText(bean.time);
 		if (bean.unread != 0)
 			text_unread.setText("" + bean.unread);
 		else
 			text_unread.setVisibility(View.GONE);
-			
+
 		Glide.with(pcontext).load(bean.head)
 			.apply(new RequestOptions().circleCrop())
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(im);
-		
+
+		return view;
+	}
+}
+
+
+class PeopleAdapter extends BaseAdapter
+{
+	public List<ItemBeanMain> list;
+	private LayoutInflater inflater;
+	private Context pcontext;
+
+	PeopleAdapter(Context context, List<ItemBeanMain> ilist) {
+		this.list = ilist;
+		inflater = LayoutInflater.from(context);
+		pcontext = context;
+	}
+
+	@Override
+	public int getCount() {
+		return list.size();
+	}
+
+	@Override
+	public Object getItem(int p1) {
+		return list.get(p1);
+	}
+
+	@Override
+	public long getItemId(int p1) {
+		return p1;
+	}
+
+	public void insert(ItemBeanMain data) {
+		list.add(data);
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		View view = inflater.inflate(R.layout.item_main, null);
+		ItemBeanMain bean = list.get(position);
+		if (!bean.room_type.equals("printer"))
+			return new View(pcontext);
+		ImageView im = (ImageView) view.findViewById(R.id.itemmainImageView);
+		//im.setImageResource(bean.image);
+		((TextView) view.findViewById(R.id.itemmainTextView_title)).setText(bean.title);
+		((TextView) view.findViewById(R.id.itemmainTextView_content)).setText(bean.content);
+		TextView text_unread = (TextView) view.findViewById(R.id.itemmainTextView_unread);
+		TextView text_time = (TextView) view.findViewById(R.id.itemmainTextView_time);
+
+
+		text_time.setText(bean.time);
+		if (bean.unread != 0)
+			text_unread.setText("" + bean.unread);
+		else
+			text_unread.setVisibility(View.GONE);
+
+		Glide.with(pcontext).load(bean.head)
+			.apply(new RequestOptions().circleCrop())
+			.transition(DrawableTransitionOptions.withCrossFade())
+			.into(im);
+
 		return view;
 	}
 }

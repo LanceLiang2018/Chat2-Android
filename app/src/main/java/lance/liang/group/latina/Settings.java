@@ -84,6 +84,12 @@ public class Settings extends AppCompatActivity
 				case ID.SETTINGS_THEME:
 					mySetTheme();
 					break;
+				case ID.PRINTER_ADD:
+					myAddPrinter();
+					break;
+				case ID.PRINTER_DEFAULT:
+					mySetDefaultPrinter();
+					break;
 				default:
 					break;
 			}
@@ -94,6 +100,27 @@ public class Settings extends AppCompatActivity
 	protected void onDestroy()
 	{
 		super.onDestroy();
+	}
+	
+	public void mySetDefaultPrinter() {
+		final EditText edit = new EditText(this);
+		edit.setText(Config.get(this).data.settings.defaultPrinter);
+		new AlertDialog.Builder(this).setTitle("Enter Defalut Printer Name:")
+			.setView(edit)
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					Config config = Config.get(getApplicationContext());
+					config.data.settings.defaultPrinter = edit.getText().toString();
+					config.save();
+				}
+			})
+			.setNegativeButton("Cancel", null)
+			.show();
+	}
+	
+	public void myAddPrinter() {
+		makeFriends();
 	}
 	
 	public static void myNewRoom(final Context context) {
@@ -262,8 +289,7 @@ public class Settings extends AppCompatActivity
 			}
 		};
 		new AlertDialog.Builder(Settings.this)
-			.setTitle("New friends")
-			.setMessage("Enter username:")
+			.setTitle("Enter username:")
 			.setView(edit)
 			.setPositiveButton("Yes", listener)
 			.setNegativeButton("No", null)

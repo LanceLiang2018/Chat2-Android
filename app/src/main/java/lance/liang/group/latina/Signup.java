@@ -20,6 +20,8 @@ public class Signup extends AppCompatActivity
 	private EditText text_email;
 	private AlertDialog dialog;
 	private EditText text_conform;
+	private CheckBox check_read;
+	private CheckBox check_printer;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -33,6 +35,11 @@ public class Signup extends AppCompatActivity
 		text_password = (EditText)findViewById(R.id.signupEditText_password);
 		text_email = (EditText)findViewById(R.id.signupEditText_email);
 		text_conform = (EditText)findViewById(R.id.signupEditText_conform);
+		
+		check_read = (CheckBox) findViewById(R.id.signupCheckBox_read_it);
+		check_printer = (CheckBox) findViewById(R.id.signupCheckBox_is_printer);
+		
+		check_read.setChecked(true);
 		
 		ActionBar bar = getSupportActionBar();
 		bar.setTitle("Sign up");
@@ -49,6 +56,10 @@ public class Signup extends AppCompatActivity
 		btn.setOnClickListener(new Button.OnClickListener(){
 				@Override
 				public void onClick(View p1) {
+					if (!check_read.isChecked()) {
+						new AlertDialog.Builder(Signup.this).setMessage("READ IT PLEASE!").show();
+						return;
+					}
 					String s1 = text_password.getText().toString();
 					String s2 = text_conform.getText().toString();
 					if (!s1.equals(s2)) {
@@ -68,6 +79,8 @@ public class Signup extends AppCompatActivity
 					parames.put(Communication.EMAIL, text_email.getText().toString());
 					parames.put(Communication.PASSWORD, text_password.getText().toString());
 					parames.put(Communication.NAME, text_username.getText().toString());
+					if (check_printer.isChecked())
+						parames.put("user_type", "printer");
 					Communication.getComm(Signup.this).post(Communication.SIGNUP, parames, 
 						new StringCallback() {
 							@Override
