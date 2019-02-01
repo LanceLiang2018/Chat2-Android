@@ -38,7 +38,8 @@ import com.tbruyelle.rxpermissions2.*;
 import com.zhihu.matisse.*;
 import io.reactivex.*;
 import io.reactivex.Observer;
-import io.reactivex.disposables.*;				
+import io.reactivex.disposables.*;
+import com.bumptech.glide.load.engine.*;				
 
 public class MainActivity extends AppCompatActivity {
     private MainPagerAdapter mainPagerAdapter;
@@ -436,7 +437,8 @@ public class MainActivity extends AppCompatActivity {
 		
 		ImageView bgimage = (ImageView) findViewById(R.id.mainviewpagerImageView_bgimage);
 		Glide.with(this).load(getExternalFilesDir("Background").getAbsolutePath() + "/background")
-			.apply(new RequestOptions().transform(new BlurTransformation(20)))
+			.apply(new RequestOptions().transform(new BlurTransformation(20))
+				.diskCacheStrategy(DiskCacheStrategy.NONE))
 			.into(bgimage);
 
         initMagicIndicator1();
