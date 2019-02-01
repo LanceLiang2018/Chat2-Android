@@ -81,13 +81,14 @@ public class MyDB extends SQLiteOpenHelper
 		List<MessageData> data = new ArrayList<MessageData>();
 		int latest = getLatestMid(gid);
 		SQLiteDatabase db = getReadableDatabase();
-		Cursor cursor = db.rawQuery("SELECT mid, gid, send_time, username, text, type, head, status FROM " + TB_MESSAGE + 
+		Cursor cursor = db.rawQuery("SELECT mid, gid, send_time, username, text, type, head, status, tag FROM " + TB_MESSAGE + 
 									" WHERE gid = ? AND mid > ? ORDER BY mid", new String[] {"" + gid, "" + latest});
 		if (!cursor.equals(null)){
 			for (cursor.moveToFirst(); !(cursor.isAfterLast()); cursor.moveToNext()){
 				data.add(new MessageData(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), 
 										 cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6))
-										 .setStatus(cursor.getInt(7)));
+										 .setStatus(cursor.getInt(7))
+										 .setTag(cursor.getString(8)));
 			}
 		}
 		cursor.close();
@@ -96,20 +97,9 @@ public class MyDB extends SQLiteOpenHelper
 	}
 	
 	public void saveMessage(List<MessageData> data) {
-		SQLiteDatabase db = getWritableDatabase();
 		for (MessageData d: data) {
-			ContentValues val = new ContentValues();
-			val.put("mid", d.mid);
-			val.put("gid", d.gid);
-			val.put("send_time", d.send_time);
-			val.put("username", d.username);
-			val.put("text", d.text);
-			val.put("type", d.type);
-			val.put("head", d.head);
-			val.put("status", d.status);
-			db.insert(TB_MESSAGE, null, val);
+			saveMessage(d);
 		}
-		db.close();
 	}
 	
 	public void saveMessage(MessageData data) {
@@ -123,6 +113,7 @@ public class MyDB extends SQLiteOpenHelper
 		val.put("type", data.type);
 		val.put("head", data.head);
 		val.put("status", data.status);
+		val.put("tag", data.tag);
 		db.insert(TB_MESSAGE, null, val);
 		db.close();
 	}

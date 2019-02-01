@@ -30,10 +30,11 @@ class RoomData {
 }
 
 class PersonData {
-	public String username, head, user_type, motto, email, 
-				auth;	// use when you login
-	public int uid, last_active_time;
-	public List<Integer> rooms;
+	public String username = "", head = "", user_type = "", motto = "", email = "", 
+				auth = "";	// use when you login
+	public int uid = 0, last_active_time = 0;
+	//public List<Integer> rooms = new ArrayList<Integer>();
+	public int[] rooms = new int[] {1};
 }
 
 class UploadData {

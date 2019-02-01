@@ -35,6 +35,7 @@ public class Person extends AppCompatActivity
 	ImageView image_head;
 	TextView text_motto, text_email, text_username, text_last_time, text_uid;
 	ImageView bg;
+	Button make_friends;
 	
 	final int code_pick = 0x61;
 	
@@ -67,6 +68,10 @@ public class Person extends AppCompatActivity
 		text_last_time = (TextView) findViewById(R.id.personTextView_last_login);
 		text_uid = (TextView) findViewById(R.id.personTextView_uid);
 		bg = (ImageView) findViewById(R.id.personImageView_bg);
+		make_friends = (Button) findViewById(R.id.personButton_say);
+		
+		if (username.equals(Config.get(this).data.user.username))
+			make_friends.setVisibility(View.GONE);
 		
 		text_username.setText(username);
 		
@@ -101,23 +106,67 @@ public class Person extends AppCompatActivity
 				@Override
 				public void onClick(View p1) {
 					if (username.equals(Config.get(getApplicationContext()).data.user.username)) {
-						Matisse.from(Person.this)
-							.choose(MimeType.ofImage(), false)
-							.countable(false)
-							.capture(false)
-							.maxSelectable(1)
-							.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-							.thumbnailScale(0.85f)
-							//.originalEnable(true)
-							// max 4 mb
-							.maxOriginalSize(4)
-							.autoHideToolbarOnSingleTap(true)
-							.forResult(code_pick);
+						RxPermissions rxPermissions = new RxPermissions(Person.this);
+						rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+							.subscribe(new Observer<Boolean>() {
+								@Override
+								public void onError(Throwable p1)
+								{}
+								@Override
+								public void onComplete()
+								{}
+								@Override
+								public void onSubscribe(Disposable d)
+								{}
+								@Override
+								public void onNext(Boolean aBoolean)
+								{
+									if (aBoolean) {
+										Matisse.from(Person.this)
+											.choose(MimeType.ofImage(), false)
+											.countable(false)
+											.capture(false)
+											.maxSelectable(1)
+											.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+											.thumbnailScale(0.85f)
+											//.originalEnable(true)
+											.maxOriginalSize(2)
+											.autoHideToolbarOnSingleTap(true)
+											.forResult(code_pick);
+									}
+								}});
 					} else {
 						Bundle bundle = new Bundle();
 						bundle.putString("url", head_url);
-						startActivity(new Intent().setClass(Person.this, ImagePreView.class));
+						startActivity(new Intent().setClass(Person.this, ImagePreView.class).putExtras(bundle));
 					}
+				}
+			});
+		
+		make_friends.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					new AlertDialog.Builder(Person.this)
+						.setMessage("Add him/she into frends?")
+						.setNegativeButton("No", null)
+						.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface p1, int p2) {
+								Communication.getComm(getApplicationContext()).postWithAuth(Communication.MAKE_FRIENDS, 
+									Utils.ContentPut("friend", text_username.getText().toString()), 
+									new StringCallback() {
+										@Override
+										public void onSuccess(Response<String> p1) {
+											ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+											if (result.code == 0)
+												new AlertDialog.Builder(getApplicationContext())
+													.setMessage("OK")
+													.show();
+										}
+									});
+							}
+						})
+						.show();
 				}
 			});
 	}
@@ -129,7 +178,9 @@ public class Person extends AppCompatActivity
 		if (resultCode != RESULT_OK)
 			return;
 		if (requestCode == code_pick) {
-			Uri uri = data.getData();
+			//Uri uri = data.getData();
+			Uri uri = Matisse.obtainResult(data).get(0);
+			String path = Matisse.obtainPathResult(data).get(0);
 			Toast.makeText(this, "Got Uri: " + uri, Toast.LENGTH_LONG).show();
 			ContentResolver cr = this.getContentResolver();  
 			try {
@@ -141,6 +192,7 @@ public class Person extends AppCompatActivity
 
 				ContentValues parames = new ContentValues();
 				parames.put("auth", Config.get(Person.this).data.user.auth);
+				parames.put("filename", path.substring(path.lastIndexOf("/")+1, path.length()));
 				parames.put("data", b64);
 				//parames.put("md5", md5);
 				Communication.getComm(Person.this).post(Communication.UPLOAD, parames, 
@@ -149,7 +201,7 @@ public class Person extends AppCompatActivity
 						public void onSuccess(Response<String> p1) {
 							if (p1.code() != 200)
 								return;
-							ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+							final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
 							if (result.code == 0) {
 								ContentValues params2 = new ContentValues();
 								params2.put("head", result.data.upload_result.url);
@@ -157,6 +209,9 @@ public class Person extends AppCompatActivity
 									new StringCallback() {
 										@Override
 										public void onSuccess(Response<String> p1) {
+											Config config = Config.get(getApplicationContext());
+											config.data.user.head = result.data.upload_result.url;
+											config.save();
 											Person.this.recreate();
 										}
 									});

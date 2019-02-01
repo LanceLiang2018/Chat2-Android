@@ -94,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
 				case MenuData.ID.LEFT_PRINTER:
 					MyApplication.getMyApplication().putObject("data", MenuData.listPrinter);
 					break;
+				case MenuData.ID.LEFT_MORE:
+					MyApplication.getMyApplication().putObject("data", MenuData.listAdds);
+					break;
 				default:
 					return;
 					//break;
@@ -295,6 +298,9 @@ public class MainActivity extends AppCompatActivity {
 		list_rooms = (ListView) mainLayout.findViewById(R.id.list_rooms);
 		list_printer = (ListView) mainLayout_printer.findViewById(R.id.list_rooms_printer);
 		
+		//list_rooms.setDividerHeight(0);
+		//list_printer.setDividerHeight(0);
+		
 		list_left = (ListView) findViewById(R.id.list_left);
 		drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -427,6 +433,11 @@ public class MainActivity extends AppCompatActivity {
 		
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(mainPagerAdapter);
+		
+		ImageView bgimage = (ImageView) findViewById(R.id.mainviewpagerImageView_bgimage);
+		Glide.with(this).load(R.drawable.tengyuan)
+			.apply(new RequestOptions().transform(new BlurTransformation(20)))
+			.into(bgimage);
 
         initMagicIndicator1();
     }
@@ -546,21 +557,50 @@ public class MainActivity extends AppCompatActivity {
 					ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
 					if (result.code == 0) {
 						for (RoomData room_data: result.data.room_data) {
-							adp_rooms.insert(new ItemBeanMain(room_data.gid, room_data.head, room_data.name, 
+							String name = room_data.name;
+							String[] split = name.split("\\|");
+							String[] heads = room_data.head.split("\\|");
+							String head = room_data.head;
+							String name_me = Config.get(getApplicationContext()).data.user.username, name_friend = "Friend";
+							if (split.length > 0) {
+								if (split[0].equals(name_me)) {
+									name_friend = split[1];
+									head = heads[0];
+								} else {
+									name_friend = split[0];
+									head = heads[1];
+								}
+							}
+
+							adp_rooms.insert(new ItemBeanMain(room_data.gid, head, name_friend, 
 															  //room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
 															  "Latest message",
 															  //room_data.latest_time == null ? "" : room_data.latest_time, 
 															  new MyGetTime().remote(room_data.last_post_time))
-															  .setRoomType(room_data.room_type));
+															  .setRoomType(room_data.room_type)
+															  .setTimeSrc(room_data.last_post_time));
 							adp_rooms.notifyDataSetChanged();
-							adp_rooms_printer.insert(new ItemBeanMain(room_data.gid, room_data.head, room_data.name, 
+							adp_rooms_printer.insert(new ItemBeanMain(room_data.gid, head, name_friend, 
 																	 //room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
 																	 "Latest message",
 																	 //room_data.latest_time == null ? "" : room_data.latest_time, 
 																	 new MyGetTime().remote(room_data.last_post_time))
-																	 .setRoomType(room_data.room_type));
+																	 .setRoomType(room_data.room_type)
+																	 .setTimeSrc(room_data.last_post_time));
 							adp_rooms_printer.notifyDataSetChanged();
 						}
+						Collections.sort(adp_rooms.list, new Comparator<ItemBeanMain>() {
+								@Override
+								public int compare(ItemBeanMain p1, ItemBeanMain p2) {
+									return ("" + p2.timesrc).compareTo("" + p1.timesrc);
+								}
+							});
+						Collections.sort(adp_rooms_printer.list, new Comparator<ItemBeanMain>() {
+								@Override
+								public int compare(ItemBeanMain p1, ItemBeanMain p2) {
+									return ("" + p2.timesrc).compareTo("" + p1.timesrc);
+								}
+							});
 					}
 					if (result.code == 2)
 					{
@@ -568,6 +608,20 @@ public class MainActivity extends AppCompatActivity {
 						Intent intent_login = new Intent();
 						intent_login.setClass(MainActivity.this, Login.class);
 						startActivityForResult(intent_login, code_login);
+					}
+				}
+			});
+		
+		Communication.getComm(getApplicationContext()).postWithAuth(Communication.GET_USER, new ContentValues(), 
+			new StringCallback() {
+				@Override
+				public void onSuccess(Response<String> p1) {
+					if (p1.code() != 200) {return; }
+					ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+					if (result.code == 0) {
+						Config config = Config.get(getApplicationContext());
+						config.data.user.username = result.data.user_info.username;
+						
 					}
 				}
 			});
@@ -583,7 +637,7 @@ public class MainActivity extends AppCompatActivity {
 			case code_login:
 				try {
 					String str = data.getStringExtra("command");
-					if (str == "Refresh") {
+					if (str.equals("Refresh")) {
 						this.refresh();
 					}
 				}
@@ -599,7 +653,18 @@ public class MainActivity extends AppCompatActivity {
 				}
 				break;
 			case code_settings:
-				this.recreate();
+				try {
+					String str = data.getStringExtra("command");
+					if (str.equals("Recreate")) {
+						this.recreate();
+					}
+					if (str.equals("Refresh")) {
+						this.refresh();
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 				break;
 			default:
 				break;

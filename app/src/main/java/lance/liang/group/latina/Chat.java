@@ -84,6 +84,7 @@ public class Chat extends AppCompatActivity
 		for (File f: files) {
 			res.add(f.getAbsolutePath());
 		}
+		Collections.sort(res);
 		return res.toArray(new String[res.size()]);
 	}
 	private void startAlertDialog(String path) {
@@ -151,6 +152,23 @@ public class Chat extends AppCompatActivity
 		gid = "" + gid_int;
 
 		setContentView(R.layout.chat);
+		
+		RxPermissions rxPermissions = new RxPermissions(Chat.this);
+		rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+			.subscribe(new Observer<Boolean>() {
+				@Override
+				public void onError(Throwable p1)
+				{Chat.this.finish();}
+				@Override
+				public void onComplete()
+				{}
+				@Override
+				public void onSubscribe(Disposable d)
+				{}
+				@Override
+				public void onNext(Boolean aBoolean)
+				{}});
+		
 		bar = getSupportActionBar();
 		bar.setDisplayHomeAsUpEnabled(true);
 		bar.setHomeButtonEnabled(true);
@@ -184,6 +202,8 @@ public class Chat extends AppCompatActivity
 
 		adp = new ChatAdapter(this, data);
 		list_message.setAdapter(adp);
+		
+		list_message.setDividerHeight(0);
 
 		//refresh();
 		//getMessage();
@@ -281,8 +301,21 @@ public class Chat extends AppCompatActivity
 									//intent.setType("*/*");
 									//intent.addCategory(Intent.CATEGORY_OPENABLE);
 									//Chat.this.startActivityForResult(intent, code_file);
-									startAlertDialog(baseDir);
-									
+									RxPermissions rxPermissions = new RxPermissions(Chat.this);
+									rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+										.subscribe(new Observer<Boolean>() {
+											@Override
+											public void onError(Throwable p1)
+											{}
+											@Override
+											public void onComplete()
+											{}
+											@Override
+											public void onSubscribe(Disposable d)
+											{}
+											@Override
+											public void onNext(Boolean aBoolean)
+											{ if (aBoolean) startAlertDialog(baseDir); }});
 								}
 							}
 						});
@@ -565,8 +598,10 @@ public class Chat extends AppCompatActivity
 							List<MessageData> tmp = new ArrayList<>();
 							for (MessageData m: result.data.message)
 							{
-								if (m.type.equals("file"))
+								if (m.type.equals("file")) {
 									m.tag = m.text;
+									m.text = m.text.substring(m.text.lastIndexOf("/") + 1, m.text.length());
+								}
 								tmp.add(m);
 							}
 							MyDB.get(Chat.this).saveMessage(tmp);

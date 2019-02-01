@@ -56,39 +56,66 @@ public class Settings extends AppCompatActivity
 					Config config = Config.get(getApplicationContext());
 					config.data.user.auth = "";
 					config.save();
+					setResult(0, new Intent().putExtra("command", "Recreate"));
 					Settings.this.finish();
 					break;
 				case ID.ME_SET_INFO:
 					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
+					setResult(0, new Intent().putExtra("command", "Refresh"));
+					//Settings.this.finish();
 					break;
 				case ID.ME_MAKE_FRIENDS:
 					makeFriends();
+					setResult(0, new Intent().putExtra("command", "Refresh"));
+					//Settings.this.finish();
 					break;
 				case ID.ME_NEW_ROOM:
 					myNewRoom();
+					setResult(0, new Intent().putExtra("command", "Refresh"));
+					//Settings.this.finish();
 					break;
 				case ID.ME_NEW_USER:
 					Intent intent_signup = new Intent();
 					intent_signup.setClass(Settings.this, Signup.class);
 					startActivity(intent_signup);
 					break;
+				case ID.ME_LOGIN:
+					Intent intent_login = new Intent();
+					intent_login.setClass(Settings.this, Login.class);
+					startActivity(intent_login);
+					break;
 				case ID.SETTINGS_SERVER:
 					mySetServer();
+					setResult(0, new Intent().putExtra("command", "Recreate"));
+					//Settings.this.finish();
 					break;
 				case ID.SETTINGS_FONT:
 					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
+					setResult(0, new Intent().putExtra("command", "Refresh"));
+					//Settings.this.finish();
 					break;
 				case ID.SETTINGS_SPLASH:
 					mySetSplash();
+					setResult(0, new Intent().putExtra("command", "Refresh"));
+					//Settings.this.finish();
 					break;
 				case ID.SETTINGS_THEME:
 					mySetTheme();
+					setResult(0, new Intent().putExtra("command", "Recreate"));
+					//Settings.this.finish();
 					break;
 				case ID.PRINTER_ADD:
 					myAddPrinter();
+					setResult(0, new Intent().putExtra("command", "Refresh"));
+					//Settings.this.finish();
 					break;
 				case ID.PRINTER_DEFAULT:
 					mySetDefaultPrinter();
+					setResult(0, new Intent().putExtra("command", "Refresh"));
+					//Settings.this.finish();
+					break;
+				case ID.ADDS_MY_FILES:
+					myFiles();
 					break;
 				default:
 					break;
@@ -100,6 +127,18 @@ public class Settings extends AppCompatActivity
 	protected void onDestroy()
 	{
 		super.onDestroy();
+	}
+	
+	public void myFiles() {
+		Communication.getComm(this).postWithAuth(Communication.GET_FILES, new ContentValues(), 
+			new StringCallback() {
+				@Override
+				public void onSuccess(Response<String> p1) {
+					new AlertDialog.Builder(Settings.this)
+						.setMessage(p1.body())
+						.show();
+				}
+			});
 	}
 	
 	public void mySetDefaultPrinter() {
@@ -320,9 +359,10 @@ public class Settings extends AppCompatActivity
 		builder.show();
 	}
 	private void mySetServer() {
-		String[] disp = {"Remote", "Local", "Lance's Server"};
+		String[] disp = {"Remote", "Debug", "Local", "Lance's Server"};
 		final String[] vals = {
 			"https://lance-chatroom2.herokuapp.com/v3/api", 
+			"https://lance-latina-debug.herokuapp.com/v3/api", 
 			"http://0.0.0.0:5000/v3/api",
 			"http://lanceliang2018.xyz:5000/v3/api"};
 		AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);

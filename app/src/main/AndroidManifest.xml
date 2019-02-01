@@ -14,7 +14,8 @@
         android:theme="@style/AppTheme"
 		android:largeHeap="true"
 		android:name=".MyApplication">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+			android:largeHeap="true">
         </activity>
 		<activity android:name=".Splash">
 			<intent-filter>
@@ -26,11 +27,14 @@
 			android:name=".Chat"
 			android:largeHeap="true">    
         </activity>
-		<activity android:name=".Login">    
+		<activity android:name=".Login"
+			android:largeHeap="true">    
         </activity>
-		<activity android:name=".Signup">    
+		<activity android:name=".Signup"
+			android:largeHeap="true">    
         </activity>
-		<activity android:name=".Person">    
+		<activity android:name=".Person"
+			android:largeHeap="true">    
         </activity>
 		<activity android:name=".ImagePreView">    
         </activity>

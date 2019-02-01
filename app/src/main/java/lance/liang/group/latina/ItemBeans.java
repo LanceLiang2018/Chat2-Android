@@ -4,7 +4,7 @@ import android.support.v7.widget.*;
 class ItemBeanMain {
 	public String title, content, time = "", head, room_type = "public";
 	public int image = R.drawable.image_1;
-	public int gid, unread = 0;
+	public int gid, unread = 0, timesrc = 0;
 
 	ItemBeanMain(int gid, int image, String title, String content) {
 		this.gid = gid;
@@ -26,6 +26,11 @@ class ItemBeanMain {
 		this.title = title;
 		this.content = content;
 		this.time = time;
+	}
+	
+	ItemBeanMain setTimeSrc(int timesrc) {
+		this.timesrc = timesrc;
+		return this;
 	}
 	
 	ItemBeanMain setRoomType(String type) {
@@ -102,6 +107,8 @@ class ItemBeanChat {
 		this.mid = m.mid; this.username = m.username; //this.time = m.send_time;
 		this.time = new MyGetTime().remote(m.send_time);
 		this.head_url = m.head; this.message = m.text; this.type = m.type;
+		this.send_time = m.send_time;
+		setTag(m.tag);
 	}
 	
 }

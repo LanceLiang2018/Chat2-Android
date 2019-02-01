@@ -5,14 +5,16 @@ import android.util.*;
 import com.google.gson.*;
 import java.io.*;
 import android.widget.*;
+import android.os.*;
 
 class ConfigData
 {
+	/*
 	static class UserData
 	{
 		public String username = "", auth = "", head = "", motto = "Motto~";
 		public int uid = 0, lastest = 0;
-	}
+	}*/
 	static class Settings
 	{
 		//public String server = "https://lance-chatroom2.herokuapp.com/";
@@ -25,9 +27,11 @@ class ConfigData
 		public int isShowSplash = 1;
 		
 		public String defaultPrinter = "Printer";
+		
+		public String savePath = "Latina/";
 	}
 	public Settings settings = new Settings();
-	public UserData user = new UserData();
+	public PersonData user = new PersonData();
 }
 
 public class Config
@@ -66,6 +70,13 @@ public class Config
 			//Log.v("Chat 2", "Load(): " + str);
 			//Toast.makeText(context, str, Toast.LENGTH_LONG).show();
 			data = (new Gson()).fromJson(str, ConfigData.class);
+			
+			if (data.settings.savePath.equals("Latina/"))
+				data.settings.savePath = data.settings.savePath + data.user.username;
+			File saveFile = new File(data.settings.savePath);
+			if (!saveFile.exists()) {
+				saveFile.mkdirs();
+			}
 		}
 		catch (IOException e) {
 			init();

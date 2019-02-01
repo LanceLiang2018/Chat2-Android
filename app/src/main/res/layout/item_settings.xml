@@ -1,40 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="55dp"
-	android:orientation="horizontal"
-	android:gravity="center_vertical"
-	android:padding="10dp">
+	android:layout_height="wrap_content"
+	android:layout_width="match_parent">
 
 	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:orientation="horizontal">
-
-		<ImageView
-			android:layout_height="30dp"
-			android:layout_width="30dp"
-			android:src="@drawable/image_blank"
-			android:scaleType="fitXY"
-			android:id="@+id/itemsettingsImageView"/>
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
-		android:orientation="horizontal">
+		android:layout_height="55dp"
+		android:orientation="horizontal"
+		android:gravity="center_vertical"
+		android:padding="10dp"
+		android:layout_centerInParent="true">
 
-		<TextView
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:orientation="horizontal">
+
+			<ImageView
+				android:layout_height="30dp"
+				android:layout_width="30dp"
+				android:src="@drawable/image_blank"
+				android:scaleType="fitXY"
+				android:id="@+id/itemsettingsImageView"/>
+
+		</LinearLayout>
+
+		<RelativeLayout
 			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
-			android:text="Text"
-			android:layout_marginLeft="20dp"
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:id="@+id/itemsettingsTextView"/>
+			android:paddingLeft="15dp">
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:orientation="horizontal"
+				android:layout_alignParentStart="true">
+
+				<TextView
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Text"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:id="@+id/itemsettingsTextView"/>
+
+			</LinearLayout>
+
+		</RelativeLayout>
 
 	</LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
 

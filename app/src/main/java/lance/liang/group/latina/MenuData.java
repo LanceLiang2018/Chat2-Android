@@ -7,10 +7,11 @@ public class MenuData
 	public static class ID {
 		final public static int LEFT_ME = 9, LEFT_PRINTER = 1, LEFT_PEOPLE = 2, LEFT_SETTINGS = 3, 
 		LEFT_MORE = 4, LEFT_HELP = 5, LEFT_ABOUT = 6,
-		ME_MY_INFO = 7, ME_SET_INFO = 8, ME_LOGOUT = 13,
+		ME_MY_INFO = 7, ME_SET_INFO = 8, ME_LOGOUT = 13, ME_LOGIN = 19,
 		ME_MAKE_FRIENDS = 14, ME_NEW_ROOM = 15, ME_NEW_USER = 16,
 		SETTINGS_THEME = 9, SETTINGS_SPLASH = 10, SETTINGS_FONT = 11, SETTINGS_SERVER = 12, 
-		PRINTER_DEFAULT = 17, PRINTER_ADD = 18;
+		PRINTER_DEFAULT = 17, PRINTER_ADD = 18,
+		ADDS_MY_FILES = 20;
 	};
 	
 	public static enum LeftMenu {
@@ -35,6 +36,7 @@ public class MenuData
 		NewRoom(new ItemBeanSettings("New Room"), ID.ME_NEW_ROOM),
 		NewUser(new ItemBeanSettings("New User"), ID.ME_NEW_USER),
 		Logout(new ItemBeanSettings("Logout"), ID.ME_LOGOUT),
+		Login(new ItemBeanSettings("Login"), ID.ME_LOGIN),
 		
 		SetTheme(new ItemBeanSettings("主题"), ID.SETTINGS_THEME),
 		SetServer(new ItemBeanSettings("服务器"), ID.SETTINGS_SERVER),
@@ -42,7 +44,9 @@ public class MenuData
 		SetSplash(new ItemBeanSettings("Spash"), ID.SETTINGS_SPLASH),
 		
 		SetDefaultPrinter(new ItemBeanSettings("Default Printer"), ID.PRINTER_DEFAULT),
-		AddPrinter(new ItemBeanSettings("Add New Printer"), ID.PRINTER_ADD);
+		AddPrinter(new ItemBeanSettings("Add New Printer"), ID.PRINTER_ADD),
+		
+		MyFiles(new ItemBeanSettings("My Files"), ID.ADDS_MY_FILES);
 		ItemBeanSettings item;
 		int id;
 		public Settings(ItemBeanSettings item, int id) {
@@ -60,7 +64,7 @@ public class MenuData
 	};
 	
 	public static Settings[] listMe = {
-		Settings.MyInfo, Settings.SetInfo, Settings.Logout,
+		Settings.Login, Settings.MyInfo, Settings.SetInfo, Settings.Logout,
 	};
 	
 	public static Settings[] listPeople = {
@@ -73,5 +77,9 @@ public class MenuData
 	
 	public static Settings[] listPrinter = {
 		Settings.SetDefaultPrinter, Settings.AddPrinter,
+	};
+	
+	public static Settings[] listAdds = {
+		Settings.MyFiles, 
 	};
 }

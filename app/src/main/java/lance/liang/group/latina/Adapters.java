@@ -59,7 +59,8 @@ class MainAdapter extends BaseAdapter
 	}
 
 	public void insert(ItemBeanMain data) {
-		list.add(data);
+		if (!data.room_type.equals("printer"))
+			list.add(data);
 	}
 
 	@Override
@@ -120,7 +121,8 @@ class PeopleAdapter extends BaseAdapter
 	}
 
 	public void insert(ItemBeanMain data) {
-		list.add(data);
+		if (data.room_type.equals("printer"))
+			list.add(data);
 	}
 
 	@Override
@@ -204,8 +206,19 @@ class ChatAdapter extends BaseAdapter
 			view = inflater.inflate(R.layout.item_chat_frame, null);
 		
 		((TextView) view.findViewById(R.id.itemchatframeTextView_username)).setText(bean.username);
-		((TextView) view.findViewById(R.id.itemchatframeTextView_time)).setText(bean.time);
+		//((TextView) view.findViewById(R.id.itemchatframeTextView_time)).setText(bean.time);
 		ImageView head = (ImageView) view.findViewById(R.id.itemchatframeImageView_head);
+		
+		String str_time = bean.time;
+		TextView text_time = (TextView) view.findViewById(R.id.itemchatframeTextView_time);
+		text_time.setText(str_time);
+		if (position != 0) {
+			ItemBeanChat prebean = list.get(position - 1);
+			if (prebean.send_time + 5 * 60 > bean.send_time) {
+				text_time.setVisibility(View.GONE);
+			}
+		}
+		
 		
 		Glide.with(pcontext)
 			.load(bean.head_url)
@@ -286,6 +299,8 @@ class ChatAdapter extends BaseAdapter
 			filesize.setText("0.34 Kb");
 			//frame.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
 			
+			frame.setTag(bean.tag);
+			
 			frame.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -293,12 +308,13 @@ class ChatAdapter extends BaseAdapter
 						//if (bean.username.equals(Config.get(pcontext).data.user.username))
 						//	return;
 						DownloadManager downloadManager = (DownloadManager) pcontext.getSystemService(Context.DOWNLOAD_SERVICE);
-						if (bean.tag == null)
+						String tag = (String)(p1.getTag());
+						if (tag == null)
 							return;
-						Uri url = Uri.parse(bean.tag);
+						Uri url = Uri.parse(tag);
 						DownloadManager.Request request = new DownloadManager.Request(url);
 						request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
-						request.setDestinationInExternalPublicDir("Download/", bean.tag);
+						request.setDestinationInExternalPublicDir(Config.get(pcontext).data.settings.savePath, tag.substring(tag.lastIndexOf("/") + 1, tag.length()));
 						request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 						downloadManager.enqueue(request);
 					}
