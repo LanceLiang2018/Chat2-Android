@@ -41,6 +41,10 @@ class UploadData {
 	public String filename, etag, url;
 }
 
+class FileData {
+	public String username, url, filename;
+}
+
 public class ResultData
 {
 	public static class Data {
@@ -63,6 +67,7 @@ public class ResultData
 		public PersonData user_info;
 		public List<RoomData> room_data;
 		public UploadResult upload_result;
+		public List<FileData> files;
 	}
 	public int code;
 	public String message;

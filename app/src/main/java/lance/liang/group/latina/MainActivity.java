@@ -435,7 +435,7 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(mainPagerAdapter);
 		
 		ImageView bgimage = (ImageView) findViewById(R.id.mainviewpagerImageView_bgimage);
-		Glide.with(this).load(R.drawable.tengyuan)
+		Glide.with(this).load(getExternalFilesDir("Background").getAbsolutePath() + "/background")
 			.apply(new RequestOptions().transform(new BlurTransformation(20)))
 			.into(bgimage);
 

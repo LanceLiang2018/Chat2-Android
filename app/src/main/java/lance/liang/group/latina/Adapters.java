@@ -610,6 +610,61 @@ class LeftAdapter extends BaseAdapter
 }
 
 
+class FilesAdapter extends BaseAdapter {
+	public List<FileData> list;
+	private LayoutInflater inflater;
+	private Context pcontext;
+
+	FilesAdapter(Context context, List<FileData> ilist) {
+		this.list = ilist;
+		//list = new ArrayList<FileData>();
+		inflater = LayoutInflater.from(context);
+		pcontext = context;
+	}
+
+	@Override
+	public int getCount() {
+		return list.size();
+	}
+
+	@Override
+	public Object getItem(int p1) {
+		return list.get(p1);
+	}
+
+	@Override
+	public long getItemId(int p1) {
+		return p1;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		View view = inflater.inflate(R.layout.item_files, null);
+		final FileData bean = list.get(position);
+		TextView filename = (TextView) view.findViewById(R.id.itemfilesTextView_filename);
+		TextView url = (TextView) view.findViewById(R.id.itemfilesTextView_url);
+		
+		filename.setText(bean.filename);
+		url.setText(bean.filename);
+		
+		view.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					DownloadManager downloadManager = (DownloadManager) pcontext.getSystemService(Context.DOWNLOAD_SERVICE);
+					Uri url = Uri.parse(bean.url);
+					DownloadManager.Request request = new DownloadManager.Request(url);
+					request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
+					request.setDestinationInExternalPublicDir(Config.get(pcontext).data.settings.savePath, bean.filename);
+					request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+					downloadManager.enqueue(request);
+				}
+			});
+
+		return view;
+	}
+
+}
+
 class SettingsAdapter extends BaseAdapter {
 	MenuData.Settings[] list;
 	private LayoutInflater inflater;
@@ -648,10 +703,10 @@ class SettingsAdapter extends BaseAdapter {
 			.apply(new RequestOptions())//.transform(new ColorFilterTransformation(MyApplication.getMyApplication().getObject(bean.image))))
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(im);
-		
+
 		view.setTag(bean);
-		
+
 		return view;
 	}
-	
+
 }

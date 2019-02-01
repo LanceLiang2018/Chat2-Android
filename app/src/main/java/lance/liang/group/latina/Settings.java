@@ -1,32 +1,39 @@
 package lance.liang.group.latina;
 
-import android.app.AlertDialog;
+import android.*;
+import android.app.*;
+import android.content.*;
+import android.content.pm.*;
+import android.net.*;
 import android.os.*;
+import android.support.v7.app.*;
+import android.util.*;
 import android.view.*;
 import android.widget.*;
-import java.util.*;
-import java.util.concurrent.*;
-import android.view.Window.*;
-import java.io.*;
-import android.util.*;
-import android.content.*;
+import android.widget.AdapterView.*;
+import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
-import com.google.gson.*;
-import android.support.v7.app.*;
-import android.widget.AdapterView.*;
-import lance.liang.group.latina.MenuData.ID;
+import com.tbruyelle.rxpermissions2.*;
+import com.zhihu.matisse.*;
+import io.reactivex.*;
+import io.reactivex.disposables.*;
+import lance.liang.group.latina.MenuData.*;
+
+import android.app.AlertDialog;
+import android.support.v7.app.ActionBar;
+import java.io.*;
 
 public class Settings extends AppCompatActivity
 {
 	ListView list;
+	int pick_bg = 0x60;
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		setTheme(Config.get(this).data.settings.theme);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings);
-		
 		
 		Bundle bundle = getIntent().getExtras();
 		MenuData.Settings[] data = (MenuData.Settings[]) MyApplication.getMyApplication().getObject("data");
@@ -117,6 +124,36 @@ public class Settings extends AppCompatActivity
 				case ID.ADDS_MY_FILES:
 					myFiles();
 					break;
+				case ID.SETTINGS_BG:
+					RxPermissions rxPermissions = new RxPermissions(Settings.this);
+					rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+						.subscribe(new Observer<Boolean>() {
+							@Override
+							public void onError(Throwable p1)
+							{Settings.this.finish();}
+							@Override
+							public void onComplete()
+							{}
+							@Override
+							public void onSubscribe(Disposable d)
+							{}
+							@Override
+							public void onNext(Boolean aBoolean)
+							{
+								Matisse.from(Settings.this)
+									.choose(MimeType.ofImage(), false)
+									.countable(false)
+									.capture(false)
+									.maxSelectable(1)
+									.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+									.thumbnailScale(0.85f)
+									//.originalEnable(true)
+									//.maxOriginalSize(10)
+									.autoHideToolbarOnSingleTap(true)
+									.forResult(pick_bg);
+								
+							}});
+					break;
 				default:
 					break;
 			}
@@ -130,15 +167,7 @@ public class Settings extends AppCompatActivity
 	}
 	
 	public void myFiles() {
-		Communication.getComm(this).postWithAuth(Communication.GET_FILES, new ContentValues(), 
-			new StringCallback() {
-				@Override
-				public void onSuccess(Response<String> p1) {
-					new AlertDialog.Builder(Settings.this)
-						.setMessage(p1.body())
-						.show();
-				}
-			});
+		startActivity(new Intent().setClass(Settings.this, MyFiles.class));
 	}
 	
 	public void mySetDefaultPrinter() {
@@ -429,6 +458,31 @@ public class Settings extends AppCompatActivity
 				break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == pick_bg && resultCode == RESULT_OK) {
+			Uri uri = Matisse.obtainResult(data).get(0);
+			ContentResolver cr2 = this.getContentResolver();  
+			InputStream is = null;
+			byte[] buf2 = null;
+			try {
+				is = cr2.openInputStream(uri);
+				buf2 = new byte[is.available()];
+				is.read(buf2);
+				File bg = new File(getExternalFilesDir("Background").getAbsolutePath() + "/background");
+				if (!bg.exists())
+					bg.createNewFile();
+				BufferedOutputStream bis = new BufferedOutputStream(new FileOutputStream(bg));
+				bis.write(buf2);
+				bis.close();
+				Toast.makeText(this, "Restart the app please...", Toast.LENGTH_LONG).show();
+			}
+			catch (Exception e) { return; }
+		}
 	}
 }
 

@@ -25,6 +25,7 @@ class ConfigData
 		public int colorBg = R.color.colorBg01;
 		public int colorFt = R.color.colorFt01;
 		public int isShowSplash = 1;
+		public int firstStart = 1;
 		
 		public String defaultPrinter = "Printer";
 		
@@ -78,7 +79,7 @@ public class Config
 				saveFile.mkdirs();
 			}
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			init();
 			load();
 			Log.e("Chat 2", e.getMessage());

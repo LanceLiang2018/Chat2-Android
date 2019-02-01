@@ -19,6 +19,12 @@ public class Splash extends AppCompatActivity
 		
 		VideoView vv = (VideoView) findViewById(R.id.splashVideoView);
 		
+		if (Config.get(this).data.settings.firstStart == 1) {
+			Config config = Config.get(this);
+			config.data.settings.firstStart = 0;
+			config.save();
+		}
+		
 		if (Config.get(this).data.settings.isShowSplash == 1)
 		{
 			Thread myThread = new Thread() {//创建子线程 
@@ -44,9 +50,9 @@ public class Splash extends AppCompatActivity
 			Intent it = new Intent(getApplicationContext(), MainActivity.class);//启动MainActivity 
 			startActivity(it);
 			finish();//关闭当前活动 
-			return;
+			//return;
 		}
-		File video = new File(getExternalFilesDir("Slpash").getAbsolutePath() + "/splash.mp4");
+		File video = new File(getExternalFilesDir("Splash").getAbsolutePath() + "/splash.mp4");
 		if (!video.exists()) {
 			try {
 				InputStream is = getResources().getAssets().open("splash.mp4");
@@ -66,6 +72,24 @@ public class Splash extends AppCompatActivity
 		}
 		vv.setVideoPath(video.getAbsolutePath());
 		vv.start();
+		File bg = new File(getExternalFilesDir("Background").getAbsolutePath() + "/background");
+		if (!bg.exists()) {
+			try {
+				InputStream is = getResources().getAssets().open("tengyuan.gif");
+				byte[] buf = new byte[is.available()];
+				is.read(buf);
+				is.close();
+				bg.createNewFile();
+				BufferedOutputStream bis = new BufferedOutputStream(new FileOutputStream(bg));
+				bis.write(buf);
+				bis.close();
+			}
+			catch (IOException e) {
+				Log.e("Latina", e.getMessage());
+				return;
+			}
+		}
+		
 	}
 
 	@Override

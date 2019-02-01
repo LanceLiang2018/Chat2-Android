@@ -38,7 +38,9 @@
         </activity>
 		<activity android:name=".ImagePreView">    
         </activity>
-		<activity android:name=".Settings">    
+		<activity android:name=".Settings">
+        </activity>
+		<activity android:name=".MyFiles">
         </activity>
 		
     </application>

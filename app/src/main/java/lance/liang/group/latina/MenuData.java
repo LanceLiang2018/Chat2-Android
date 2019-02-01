@@ -9,7 +9,7 @@ public class MenuData
 		LEFT_MORE = 4, LEFT_HELP = 5, LEFT_ABOUT = 6,
 		ME_MY_INFO = 7, ME_SET_INFO = 8, ME_LOGOUT = 13, ME_LOGIN = 19,
 		ME_MAKE_FRIENDS = 14, ME_NEW_ROOM = 15, ME_NEW_USER = 16,
-		SETTINGS_THEME = 9, SETTINGS_SPLASH = 10, SETTINGS_FONT = 11, SETTINGS_SERVER = 12, 
+		SETTINGS_THEME = 9, SETTINGS_SPLASH = 10, SETTINGS_FONT = 11, SETTINGS_SERVER = 12, SETTINGS_BG = 21, 
 		PRINTER_DEFAULT = 17, PRINTER_ADD = 18,
 		ADDS_MY_FILES = 20;
 	};
@@ -42,6 +42,7 @@ public class MenuData
 		SetServer(new ItemBeanSettings("服务器"), ID.SETTINGS_SERVER),
 		SetFont(new ItemBeanSettings("字体"), ID.SETTINGS_FONT),
 		SetSplash(new ItemBeanSettings("Spash"), ID.SETTINGS_SPLASH),
+		SetBg(new ItemBeanSettings("Background"), ID.SETTINGS_BG),
 		
 		SetDefaultPrinter(new ItemBeanSettings("Default Printer"), ID.PRINTER_DEFAULT),
 		AddPrinter(new ItemBeanSettings("Add New Printer"), ID.PRINTER_ADD),
@@ -72,7 +73,7 @@ public class MenuData
 	};
 	
 	public static Settings[] listSettings = {
-		Settings.SetTheme, Settings.SetServer, Settings.SetSplash, Settings.SetFont,
+		Settings.SetTheme, Settings.SetServer, Settings.SetSplash, Settings.SetFont, Settings.SetBg, 
 	};
 	
 	public static Settings[] listPrinter = {
