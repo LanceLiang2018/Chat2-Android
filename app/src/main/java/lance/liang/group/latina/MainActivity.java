@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 	LinearLayout index_box;
 	TextView hitokoto;
 	TextView hitokoto_from;
-	Button index_photo;
+	ImageView index_photo;
 	private ListView list_printer;
 	private PeopleAdapter adp_rooms_printer;
 	private SwipeRefreshLayout srl_printer;
@@ -147,10 +147,10 @@ public class MainActivity extends AppCompatActivity {
 		
 		index_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.index_page, null);
 		index = (LinearLayout) index_base.findViewById(R.id.index_base);
-		index_box = (LinearLayout) index.findViewById(R.id.indexpage_base_box);
-		hitokoto = (TextView) index.findViewById(R.id.indexpage_hitokoto);
-		hitokoto_from = (TextView) index.findViewById(R.id.indexpage_hitokoto_from);
-		index_photo = (Button) index.findViewById(R.id.indexpage_photo);
+		index_box = (LinearLayout) index_base.findViewById(R.id.indexpage_base_box);
+		hitokoto = (TextView) index_base.findViewById(R.id.indexpage_hitokoto);
+		hitokoto_from = (TextView) index_base.findViewById(R.id.indexpage_hitokoto_from);
+		index_photo = (ImageView) index_base.findViewById(R.id.indexpage_photo);
 		
 		MyApplication myapp = (MyApplication) this.getApplication();
 
@@ -172,8 +172,8 @@ public class MainActivity extends AppCompatActivity {
 		index_base.removeView(index);
 		page_array.add(index);
 		
-		LinearLayout counter_bg = (LinearLayout) index.findViewById(R.id.indexpage_counter_bg);
-		final LinearLayout hitokoto_bg = (LinearLayout) index.findViewById(R.id.indexpage_hitokoto_bg);
+		LinearLayout counter_bg = (LinearLayout) index_base.findViewById(R.id.indexpage_counter_bg);
+		final LinearLayout hitokoto_bg = (LinearLayout) index_base.findViewById(R.id.indexpage_hitokoto_bg);
 		//Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
 		Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Color.parseColor("#7e7e7e7e"), }, 
 											 1, 1, Bitmap.Config.ARGB_8888);
