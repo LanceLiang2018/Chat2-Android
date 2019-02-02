@@ -15,12 +15,12 @@ public class MenuData
 	};
 	
 	public static enum LeftMenu {
-		Me(new ItemBeanLeft(R.drawable.icon_people, "我"), ID.LEFT_ME),
-		Printer(new ItemBeanLeft(R.drawable.icon_printer, "打印机"), ID.LEFT_PRINTER),
-		People(new ItemBeanLeft(R.drawable.icon_people, "联系人"), ID.LEFT_PEOPLE),
-		Settings(new ItemBeanLeft(R.drawable.icon_settings, "设置"), ID.LEFT_SETTINGS),
-		More(new ItemBeanLeft(R.drawable.icon_music_downloader, "更多"), ID.LEFT_MORE),
-		About(new ItemBeanLeft(R.drawable.icon_printer, "关于"), ID.LEFT_ABOUT);
+		Me(new ItemBeanLeft(R.drawable.icon_people_smaller, "我"), ID.LEFT_ME),
+		Printer(new ItemBeanLeft(R.drawable.icon_printer_smaller, "打印机"), ID.LEFT_PRINTER),
+		People(new ItemBeanLeft(R.drawable.icon_people_smaller, "联系人"), ID.LEFT_PEOPLE),
+		Settings(new ItemBeanLeft(R.drawable.icon_settings_smaller, "设置"), ID.LEFT_SETTINGS),
+		More(new ItemBeanLeft(R.drawable.icon_music_downloader_smaller, "更多"), ID.LEFT_MORE),
+		About(new ItemBeanLeft(R.drawable.icon_printer_smaller, "关于"), ID.LEFT_ABOUT);
 		public ItemBeanLeft item;
 		public int id;
 		public LeftMenu(ItemBeanLeft item, int id) {

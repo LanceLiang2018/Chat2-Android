@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
 		MyApplication myapp = (MyApplication) this.getApplication();
 
+		/*
 		//Init icon
 		int[] icons = {R.drawable.icon_add_ones, R.drawable.icon_bad_image, R.drawable.icon_chat_room, R.drawable.icon_exit, 
 			R.drawable.icon_loading, R.drawable.icon_loading_2, R.drawable.icon_login, R.drawable.icon_logout, R.drawable.icon_make_friends, 
@@ -171,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
 			//Bitmap res = Utils.replaceBitmapColor(image, convertColor, toColor);
 			Bitmap res = image;
 			myapp.putObject(id, res);
-		}
+		}*/
 		
 		index_base.removeView(index);
 		page_array.add(index);
@@ -479,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
         commonNavigator.setAdjustMode(true);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
 				private List<String> mDataList = Arrays.asList(new String[] {"主页", "打印机", "联系人"});
-				private int[] mImages = {R.drawable.icon_index_2, R.drawable.icon_printer, R.drawable.icon_chat_room};
+				private int[] mImages = {R.drawable.icon_index, R.drawable.icon_printer, R.drawable.icon_chat_room};
 				
 				@Override
 				public int getCount() {
