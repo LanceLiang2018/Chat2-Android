@@ -40,7 +40,7 @@ public class Chat extends AppCompatActivity
 	private ActionBar bar;
 	AlertDialog dialog;
 	Timer timer;
-	private final int code_pick = 0x91, code_file = 0x92;
+	private final int code_pick = 0x91, code_file = 0x92, code_pick_room_head = 0x93;
 	
 	private StringCallback callback_text = new StringCallback() {
 		public void onStart(Response<String> p1)
@@ -335,85 +335,6 @@ public class Chat extends AppCompatActivity
 			case code_file:
 				if (resultCode != RESULT_OK)
 					break;
-				/*
-				//String str = URLDecoder.decode(data.getData().toString());
-				//String path = Uri.parse().
-				Uri uri = data.getData();
-				ContentResolver cr = this.getContentResolver();  
-				//String str = cr.openInputStream().;
-				Toast.makeText(Chat.this, uri.toString(), Toast.LENGTH_LONG).show();
-				//File file = new File(uri);
-				try {
-					//BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-					InputStream is = cr.openInputStream(uri);
-					byte[] buf = new byte[is.available()];
-					is.read(buf);
-					//String md5 = MD5Utils.byteArrayToHexString(buf);
-					String b64 = Base64.encodeToString(buf, Base64.DEFAULT);
-					
-					ContentValues parames = new ContentValues();
-					parames.put("auth", Config.get(Chat.this).data.user.auth);
-					parames.put("data", b64);
-					parames.put("filename", uri.getLastPathSegment());
-					
-					//parames.put("md5", md5);
-					Communication.getComm(Chat.this).post(Communication.UPLOAD, parames, 
-						new StringCallback() {
-							@Override
-							public void onSuccess(Response<String> p1) {
-								if (p1.code() != 200)
-									return;
-								final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
-								if (result.code == 0) {
-									ContentValues parames = new ContentValues();
-									parames.put("auth", Config.get(Chat.this).data.user.auth);
-									parames.put("text", result.data.upload_result.url);
-									parames.put("message_type", "file");
-									parames.put("gid", gid);
-									AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-									builder.setMessage("Sending");
-									builder.setCancelable(false);
-									dialog = builder.create();
-									dialog.show();
-									Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, 
-										new StringCallback() {
-											public void onStart(Response<String> p1)
-											{}
-											@Override
-											public void onError(Response<String> p1)
-											{
-												dialog.hide();
-												AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-												builder.setMessage("Error. (Code: " + p1.code() + ")");
-												builder.show();
-											}
-											@Override
-											public void onSuccess(Response<String> p1)
-											{
-												dialog.hide();
-												ResultData result2 = (new Gson()).fromJson(p1.body(), ResultData.class);
-												if (result2.code == 0)
-												{
-													adp.insert(new ItemBeanChat(0, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
-																				result.data.upload_result.url, Config.get(Chat.this).data.user.head, "file"));
-													adp.notifyDataSetChanged();
-												}
-												else
-												{
-													AlertDialog.Builder builder = new AlertDialog.Builder(Chat.this);
-													builder.setMessage(result2.message + " (Code: " + result2.code + ")");
-													builder.show();
-												}
-											}
-										});
-								}
-							}
-						});
-				}
-				catch (Exception e) {
-					Toast.makeText(Chat.this, e.getMessage(), Toast.LENGTH_LONG).show();
-				}*/
-				
 				Uri uri = data.getData();
 				String path = getRealFilePath(Chat.this, uri);
 				Toast.makeText(Chat.this, path, Toast.LENGTH_LONG).show();
@@ -447,6 +368,47 @@ public class Chat extends AppCompatActivity
 				List<ItemBeanChat> tmp = new ArrayList<>();
 				tmp.add(message);
 				refreshNowBean(tmp);
+				break;
+			case code_pick_room_head:
+				if (resultCode != RESULT_OK)
+					break;
+				String head_path = Matisse.obtainPathResult(data).get(0);
+				Uri uri_head = Uri.parse("file://" +  head_path);
+				ContentResolver crh = this.getContentResolver();  
+				InputStream ish = null;
+				byte[] bufh = null;
+				try {
+					ish = crh.openInputStream(uri_head);
+					bufh = new byte[ish.available()];
+					ish.read(bufh);
+				}
+				catch (Exception e) { break; }
+				String b64_head = Base64.encodeToString(bufh, Base64.DEFAULT);
+
+				ContentValues params2 = new ContentValues();
+				params2.put("auth", Config.get(Chat.this).data.user.auth);
+				params2.put("data", b64_head);
+				params2.put("filename", uri_head.getLastPathSegment());
+				Communication.getComm(Chat.this).post(Communication.UPLOAD, params2, 
+					new StringCallback() {
+						@Override
+						public void onSuccess(Response<String> p1) {
+							if (p1.code() != 200)
+								return;
+							final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+							if (result.code == 0) {
+								Communication.getComm(getApplicationContext()).postWithAuth(Communication.SET_ROOM_INFO, Utils.ContentPut(Utils.ContentPut("gid", gid),
+									"head", result.data.upload_result.url), 
+									new StringCallback() {
+										@Override
+										public void onSuccess(Response<String> p1) {
+											ResultData rd = new Gson().fromJson(p1.body(), ResultData.class);
+											Toast.makeText(getApplicationContext(), rd.message, Toast.LENGTH_SHORT);
+										}
+									});
+							}
+						}
+					});
 				break;
 			case code_pick:
 				if (resultCode == RESULT_OK)
@@ -644,7 +606,7 @@ public class Chat extends AppCompatActivity
 					new StringCallback() {
 						@Override
 						public void onSuccess(Response<String> p1) {
-							ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+							final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
 							if (result.code == 0) {
 								List<String> items = new ArrayList<String>();
 								items.add("GID: " + result.data.info.gid);
@@ -656,9 +618,51 @@ public class Chat extends AppCompatActivity
 								items.add("Room type: " + result.data.info.room_type);
 								
 								new AlertDialog.Builder(Chat.this)
-									.setItems(items.toArray(new String[items.size()]), null)
+									.setItems(items.toArray(new String[items.size()]), new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface p1, int p2) {
+											if (result.data.info.room_type.equals("printer") || result.data.info.room_type.equals("private")) { return; }
+											switch (p2) {
+												case 1:
+													final EditText room_name = new EditText(Chat.this);
+													new AlertDialog.Builder(Chat.this).setTitle("Set the Room name:")
+													.setView(room_name)
+														.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+															@Override
+															public void onClick(DialogInterface p1, int p2) {
+																Communication.getComm(getApplicationContext()).postWithAuth(Communication.SET_ROOM_INFO, 
+																	Utils.ContentPut(Utils.ContentPut("gid", gid), "name", room_name.getText().toString()), 
+																	new StringCallback() {
+																		@Override
+																		public void onSuccess(Response<String> p1) {
+																			ResultData rd = new Gson().fromJson(p1.body(), ResultData.class);
+																			Toast.makeText(Chat.this, rd.message, Toast.LENGTH_SHORT);
+																		}
+																	});
+															}
+														})
+													.setNegativeButton("Cancel", null)
+													.show();
+													break;
+												case 5:
+													Matisse.from(Chat.this)
+														.choose(MimeType.ofImage(), false)
+														.countable(false)
+														.capture(false)
+														.maxSelectable(1)
+														.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+														.thumbnailScale(0.85f)
+														//.originalEnable(true)
+														//.maxOriginalSize(10)
+														.autoHideToolbarOnSingleTap(true)
+														.forResult(code_pick_room_head);
+													break;
+												default:
+													break;
+											}
+										}
+									})
 									.show();
-								
 							}
 						}
 					});

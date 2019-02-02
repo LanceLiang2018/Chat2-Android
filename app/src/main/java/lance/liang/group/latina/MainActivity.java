@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
 	private ListView list_printer;
 	private PeopleAdapter adp_rooms_printer;
 	private SwipeRefreshLayout srl_printer;
+	private TextView count_today;
+	private TextView count_total;
 	
 	
 	private OnItemClickListener left_onClickListener = new OnItemClickListener() {
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 			startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle), code_settings);
 		}
 	};
-
+	
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,13 +147,15 @@ public class MainActivity extends AppCompatActivity {
 		
 		// Index
 		
-		index_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.index_page, null);
+		index_base = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.index_page_a, null);
 		index = (LinearLayout) index_base.findViewById(R.id.index_base);
 		index_box = (LinearLayout) index_base.findViewById(R.id.indexpage_base_box);
 		hitokoto = (TextView) index_base.findViewById(R.id.indexpage_hitokoto);
 		hitokoto_from = (TextView) index_base.findViewById(R.id.indexpage_hitokoto_from);
 		index_photo = (ImageView) index_base.findViewById(R.id.indexpage_photo);
-		
+		final TextView hitokoto_text_span = (TextView) index_base.findViewById(R.id.indexpage_hitokoto_text_span);
+		final TextView hitokoto_from_span = (TextView) index_base.findViewById(R.id.indexpage_hitokoto_from_text_span);
+
 		MyApplication myapp = (MyApplication) this.getApplication();
 
 		//Init icon
@@ -172,8 +176,18 @@ public class MainActivity extends AppCompatActivity {
 		index_base.removeView(index);
 		page_array.add(index);
 		
-		LinearLayout counter_bg = (LinearLayout) index_base.findViewById(R.id.indexpage_counter_bg);
-		final LinearLayout hitokoto_bg = (LinearLayout) index_base.findViewById(R.id.indexpage_hitokoto_bg);
+		LinearLayout counter_bg = (LinearLayout) index.findViewById(R.id.indexpage_counter_bg);
+		final LinearLayout hitokoto_bg = (LinearLayout) index.findViewById(R.id.indexpage_hitokoto_bg);
+		final LinearLayout hitokoto_span = (LinearLayout) index.findViewById(R.id.indexpage_span);
+		hitokoto_span.setAlpha(0);
+		
+		((TextView) index.findViewById(R.id.indexpageaTextView_Today)).setText("今\n日\n打\n印");
+		((TextView) index.findViewById(R.id.indexpageaTextView_total)).setText("总\n共\n打\n印");
+		count_today = (TextView) index.findViewById(R.id.indexpageaTextView_count_today);
+		count_total = (TextView) index.findViewById(R.id.indexpageaTextView_count_total);
+		count_today.setText("" + Config.get(this).data.settings.count_today);
+		count_total.setText("" + Config.get(this).data.settings.count_total);
+		
 		//Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
 		Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Color.parseColor("#7e7e7e7e"), }, 
 											 1, 1, Bitmap.Config.ARGB_8888);
@@ -191,7 +205,9 @@ public class MainActivity extends AppCompatActivity {
 			public void onSuccess(Response<String> p1) {
 				if (p1.code() != 200) {
 					hitokoto.setText("网络错误");
+					hitokoto_text_span.setText("网络错误");
 					hitokoto_from.setText("");
+					hitokoto_from_span.setText("");
 					hitokoto_bg.setAlpha(0);
 					hitokoto_bg.animate().alpha(1);
 					return;
@@ -201,16 +217,20 @@ public class MainActivity extends AppCompatActivity {
 					data = new Gson().fromJson(p1.body().toString(), HitokotoData.class);
 				} catch (JsonSyntaxException e) {
 					hitokoto.setText("API错误");
+					hitokoto_text_span.setText("API错误");
 					hitokoto_from.setText("");
+					hitokoto_from_span.setText("");
 					hitokoto_bg.setAlpha(0);
 					hitokoto_bg.animate().alpha(1);
 					return;
 				}
 				hitokoto.setText(data.hitokoto);
+				hitokoto_text_span.setText(data.hitokoto);
 				hitokoto_from.setText(" —— " + data.from);
+				hitokoto_from_span.setText(" —— " + data.from);
 				hitokoto_bg.setAlpha(0);
 				hitokoto_bg.animate().alpha(1);
-				int hitokoto_count = (int)(MyApplication.getMyApplication().getObject("hitokoto_click"));
+				int hitokoto_count = (MyApplication.getMyApplication().getObject("hitokoto_click"));
 				if (hitokoto_count > 20) {
 					new AlertDialog.Builder(MainActivity.this).setMessage("so kawayi kodo~").show();
 				}
@@ -220,6 +240,8 @@ public class MainActivity extends AppCompatActivity {
 			public void onError(Response<String> p1) {
 				hitokoto.setText("网络错误");
 				hitokoto_from.setText("");
+				hitokoto_text_span.setText("网络错误");
+				hitokoto_from_span.setText("");
 				hitokoto_bg.setAlpha(0);
 				hitokoto_bg.animate().alpha(1);
 			}
@@ -227,6 +249,8 @@ public class MainActivity extends AppCompatActivity {
 		};
 		hitokoto_from.setText("");
 		hitokoto.setText("正在加载...");
+		hitokoto_from_span.setText("");
+		hitokoto_text_span.setText("正在加载...");
 		hitokoto_bg.setAlpha(1);
 		hitokoto_bg.animate().alpha(0);
 		Hitokoto.get(this, hitokoto_callback);
@@ -236,6 +260,8 @@ public class MainActivity extends AppCompatActivity {
 				public void onClick(View p1) {
 					hitokoto_from.setText("");
 					hitokoto.setText("正在加载...");
+					hitokoto_from_span.setText("");
+					hitokoto_text_span.setText("正在加载...");
 					Hitokoto.get(MainActivity.this, hitokoto_callback);
 					hitokoto_bg.setAlpha(1);
 					hitokoto_bg.animate().alpha(0);
@@ -244,16 +270,16 @@ public class MainActivity extends AppCompatActivity {
 		
 		RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(getResources(), bitmap1);
 		roundedBitmapDrawable1.setCornerRadius(15);
-		counter_bg.setBackground(roundedBitmapDrawable1);
+		//counter_bg.setBackground(roundedBitmapDrawable1);
 		RoundedBitmapDrawable roundedBitmapDrawable2 = RoundedBitmapDrawableFactory.create(getResources(), bitmap2);
 		roundedBitmapDrawable2.setCornerRadius(15);
-		hitokoto_bg.setBackground(roundedBitmapDrawable2);
+		//hitokoto_bg.setBackground(roundedBitmapDrawable2);
 		RoundedBitmapDrawable roundedBitmapDrawable3 = RoundedBitmapDrawableFactory.create(getResources(), bitmap3);
 		roundedBitmapDrawable3.setCornerRadius(15);
-		index_box.setBackground(roundedBitmapDrawable3);
+		//index_box.setBackground(roundedBitmapDrawable3);
 		RoundedBitmapDrawable roundedBitmapDrawable4 = RoundedBitmapDrawableFactory.create(getResources(), bitmap4);
 		roundedBitmapDrawable4.setCornerRadius(15);
-		index_photo.setBackground(roundedBitmapDrawable4);
+		//index_photo.setBackground(roundedBitmapDrawable4);
 		
 		// Main Printer Layout
 		
@@ -563,8 +589,9 @@ public class MainActivity extends AppCompatActivity {
 							String[] split = name.split("\\|");
 							String[] heads = room_data.head.split("\\|");
 							String head = room_data.head;
-							String name_me = Config.get(getApplicationContext()).data.user.username, name_friend = "Friend";
-							if (split.length > 0) {
+							String name_me = Config.get(getApplicationContext()).data.user.username, 
+								   name_friend = room_data.name;
+							if (split.length > 1) {
 								if (split[0].equals(name_me)) {
 									name_friend = split[1];
 									head = heads[0];

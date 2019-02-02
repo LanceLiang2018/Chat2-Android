@@ -22,8 +22,8 @@
 	<color name="colorBg06">#FF7E7E7E</color>
 	<color name="colorFt06">#FFaEaEaE</color>
 	
-	<color name="colorBg07">#FF000000</color>
-	<color name="colorFt07">#FFFFFFFF</color>
+	<color name="colorBg07">#FF23B0FF</color>
+	<color name="colorFt07">#FF23B0FF</color>
 	
 	
 </resources>

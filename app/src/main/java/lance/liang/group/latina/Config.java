@@ -26,6 +26,7 @@ class ConfigData
 		public int colorFt = R.color.colorFt01;
 		public int isShowSplash = 1;
 		public int firstStart = 1;
+		public int count_today = 0, count_total = 0;
 		
 		public String defaultPrinter = "Printer";
 		
