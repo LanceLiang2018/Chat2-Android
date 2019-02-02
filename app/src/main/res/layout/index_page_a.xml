@@ -3,7 +3,8 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	android:background="@drawable/background1_small">
 
 	<LinearLayout
 		android:layout_height="match_parent"
@@ -36,7 +37,8 @@
 							android:layout_width="match_parent"
 							android:orientation="vertical"
 							android:gravity="center"
-							android:background="#5023B0FF">
+							android:background="#5023B0FF"
+							android:id="@+id/indexpagea_photo_bg">
 
 							<ImageView
 								android:layout_height="150dp"
@@ -47,9 +49,10 @@
 						</LinearLayout>
 
 						<View
-							android:layout_height="3dp"
+							android:layout_height="7dp"
 							android:layout_width="match_parent"
-							android:background="#15505050"/>
+							android:background="@drawable/image_shadow_3"
+							android:alpha="0.4"/>
 
 						<LinearLayout
 							android:layout_height="wrap_content"
@@ -185,7 +188,6 @@
 									android:layout_width="wrap_content"
 									android:text="Text"
 									android:textColor="#000000"
-									android:layout_marginTop="20dp"
 									android:id="@+id/indexpage_hitokoto_from_text_span"/>
 
 							</LinearLayout>
@@ -231,10 +233,20 @@
 				</LinearLayout>
 
 				<View
-					android:layout_height="3dp"
+					android:layout_height="7dp"
 					android:layout_width="match_parent"
-					android:background="#15505050"
-					android:layout_above="@id/indexpage_hitokoto_bg"/>
+					android:layout_above="@id/indexpage_hitokoto_bg"
+					android:background="@drawable/image_shadow_3"
+					android:alpha="0.4"
+					android:id="@+id/indexpageaView1"/>
+
+				<View
+					android:background="@drawable/image_shadow_3"
+					android:layout_height="7dp"
+					android:layout_width="match_parent"
+					android:layout_above="@id/indexpageaView1"
+					android:alpha="0.4"
+					android:rotation="180"/>
 
 			</RelativeLayout>
 

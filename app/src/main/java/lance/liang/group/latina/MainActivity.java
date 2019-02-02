@@ -44,7 +44,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.View.OnClickListener;
 import io.reactivex.Observer;
-import lance.liang.group.latina.Config;				
+import lance.liang.group.latina.Config;
+import jp.wasabeef.glide.transformations.gpu.*;				
 
 public class MainActivity extends AppCompatActivity {
     private MainPagerAdapter mainPagerAdapter;
@@ -107,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
 					break;
 				case MenuData.ID.LEFT_MORE:
 					MyApplication.getMyApplication().putObject("data", MenuData.listAdds);
+					break;
+				case MenuData.ID.LEFT_ABOUT:
+					MyApplication.getMyApplication().putObject("data", MenuData.listAbout);
 					break;
 				default:
 					return;
@@ -227,6 +231,11 @@ public class MainActivity extends AppCompatActivity {
 		count_today.setText("" + Config.get(this).data.settings.count_today);
 		count_total.setText("" + Config.get(this).data.settings.count_total);
 		
+		LinearLayout photo_bg = (LinearLayout) index.findViewById(R.id.indexpagea_photo_bg);
+		int bgColor = Utils.getPrimaryColor(MainActivity.this);
+		photo_bg.setBackgroundColor(bgColor & 0x00FFFFFF + 0x50000000);
+
+		/*
 		//Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
 		Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Color.parseColor("#7e7e7e7e"), }, 
 											 1, 1, Bitmap.Config.ARGB_8888);
@@ -238,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
 		int accentColor = Utils.getAccentColor(MainActivity.this);
 		Bitmap bitmap4 = Bitmap.createBitmap(new int[] {accentColor }, 
 											 1, 1, Bitmap.Config.ARGB_8888);
+		*/
 		
 		final StringCallback hitokoto_callback = new StringCallback() {
 			@Override
@@ -307,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
 				}
 			});
 		
+			/*
 		RoundedBitmapDrawable roundedBitmapDrawable1 = RoundedBitmapDrawableFactory.create(getResources(), bitmap1);
 		roundedBitmapDrawable1.setCornerRadius(15);
 		//counter_bg.setBackground(roundedBitmapDrawable1);
@@ -319,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
 		RoundedBitmapDrawable roundedBitmapDrawable4 = RoundedBitmapDrawableFactory.create(getResources(), bitmap4);
 		roundedBitmapDrawable4.setCornerRadius(15);
 		//index_photo.setBackground(roundedBitmapDrawable4);
+		*/
 		
 		// Main Printer Layout
 		
@@ -474,8 +486,9 @@ public class MainActivity extends AppCompatActivity {
 		
 		ImageView bgimage = (ImageView) findViewById(R.id.mainviewpagerImageView_bgimage);
 		Glide.with(this).load(getExternalFilesDir("Background").getAbsolutePath() + "/background")
-			.apply(new RequestOptions().transform(new BlurTransformation(20))
+			.apply(new RequestOptions()//.transform(new BlurTransformation(20))
 				.diskCacheStrategy(DiskCacheStrategy.NONE))
+			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(bgimage);
 
         initMagicIndicator1();
@@ -510,12 +523,20 @@ public class MainActivity extends AppCompatActivity {
 					final ImageView titleImg = (ImageView) customLayout.findViewById(R.id.title_img);
 					final TextView titleText = (TextView) customLayout.findViewById(R.id.title_text);
 					//titleImg.setImageResource(mImages[index]);
-					/*
-					Glide.with(context).load(MyApplication.getMyApplication().getObject(mImages[index]))
-						.apply(new RequestOptions().transform(new ColorFilterTransformation(Utils.getAccentColor(context))))
-						.into(titleImg);
-					*/
-					titleImg.setImageResource(mImages[index]);
+					
+					try {
+						Glide.with(context).load(MyApplication.getMyApplication().getObject(mImages[index]))
+							//.apply(new RequestOptions().transform(new ColorFilterTransformation(Utils.getAccentColor(context))))
+							.apply(new RequestOptions().transform(new InvertFilterTransformation()))
+							.into(titleImg);
+					} catch (Exception e) {
+						Glide.with(context).load(MyApplication.getMyApplication().getObject(mImages[index]))
+							//.apply(new RequestOptions().transform(new ColorFilterTransformation(Utils.getAccentColor(context))))
+							.apply(new RequestOptions().transform(new ColorFilterTransformation(Color.argb(255, 255, 255, 255))))
+							.into(titleImg);
+					}
+					
+					//titleImg.setImageResource(mImages[index]);
 					titleText.setText(mDataList.get(index));
 					commonPagerTitleView.setContentView(customLayout);
 
@@ -909,7 +930,7 @@ public class MainActivity extends AppCompatActivity {
 		timer_upload.schedule(new TimerTask() {
 				@Override
 				public void run() {
-					UploadManager();
+					//UploadManager();
 				}
 			}, 0, 250);
 	}

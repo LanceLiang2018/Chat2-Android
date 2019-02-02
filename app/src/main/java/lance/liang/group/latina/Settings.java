@@ -91,6 +91,11 @@ public class Settings extends AppCompatActivity
 					intent_login.setClass(Settings.this, Login.class);
 					startActivity(intent_login);
 					break;
+				case ID.ABOUT_PAGE:
+					Intent intent_about = new Intent();
+					intent_about.setClass(Settings.this, AboutPage.class);
+					startActivity(intent_about);
+					break;
 				case ID.SETTINGS_SERVER:
 					mySetServer();
 					setResult(0, new Intent().putExtra("command", "Recreate"));

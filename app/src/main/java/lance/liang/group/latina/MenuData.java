@@ -11,7 +11,8 @@ public class MenuData
 		ME_MAKE_FRIENDS = 14, ME_NEW_ROOM = 15, ME_NEW_USER = 16,
 		SETTINGS_THEME = 9, SETTINGS_SPLASH = 10, SETTINGS_FONT = 11, SETTINGS_SERVER = 12, SETTINGS_BG = 21, 
 		PRINTER_DEFAULT = 17, PRINTER_ADD = 18,
-		ADDS_MY_FILES = 20;
+		ADDS_MY_FILES = 20, 
+		ABOUT_PAGE = 22;
 	};
 	
 	public static enum LeftMenu {
@@ -47,7 +48,10 @@ public class MenuData
 		SetDefaultPrinter(new ItemBeanSettings("Default Printer"), ID.PRINTER_DEFAULT),
 		AddPrinter(new ItemBeanSettings("Add New Printer"), ID.PRINTER_ADD),
 		
-		MyFiles(new ItemBeanSettings("My Files"), ID.ADDS_MY_FILES);
+		MyFiles(new ItemBeanSettings("My Files"), ID.ADDS_MY_FILES),
+		
+		AboutUs(new ItemBeanSettings("About us"), ID.ABOUT_PAGE);
+		
 		ItemBeanSettings item;
 		int id;
 		public Settings(ItemBeanSettings item, int id) {
@@ -82,5 +86,9 @@ public class MenuData
 	
 	public static Settings[] listAdds = {
 		Settings.MyFiles, 
+	};
+	
+	public static Settings[] listAbout = {
+		Settings.AboutUs, 
 	};
 }

@@ -42,6 +42,8 @@
         </activity>
 		<activity android:name=".MyFiles">
         </activity>
+		<activity android:name=".AboutPage">
+        </activity>
 		
     </application>
 	
