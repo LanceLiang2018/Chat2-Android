@@ -560,14 +560,18 @@ class LeftAdapter extends BaseAdapter
 class LeftAdapter extends BaseAdapter
 {
 	public List<MenuData.LeftMenu> list;
+	public List<ImageView> buf;
 	private LayoutInflater inflater;
 	private Context pcontext;
 
 	LeftAdapter(Context context) {
 		//this.list = ilist;
 		list = new ArrayList<MenuData.LeftMenu>();
-		for (MenuData.LeftMenu menu: MenuData.listLeft)
+		buf = new ArrayList<ImageView>();
+		for (MenuData.LeftMenu menu: MenuData.listLeft) {
 			list.add(menu);
+			buf.add(null);
+		}
 		inflater = LayoutInflater.from(context);
 		pcontext = context;
 	}
@@ -591,8 +595,8 @@ class LeftAdapter extends BaseAdapter
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = inflater.inflate(R.layout.item_left, null);
 		MenuData.LeftMenu bean = list.get(position);
-		ImageView im = (ImageView) view.findViewById(R.id.itemleftImageView);
-		//im.setImageResource(bean.image);
+		//ImageView im = buf.get(position) == null ? ((ImageView) view.findViewById(R.id.itemleftImageView)) : buf.get(position);
+		//buf.add(position, im);
 		((TextView) view.findViewById(R.id.itemleftTextView)).setText(bean.item.title);
 
 
@@ -602,7 +606,12 @@ class LeftAdapter extends BaseAdapter
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(im);
 		*/
-		im.setImageResource(bean.item.image);
+		ImageView im = buf.get(position);
+		if (im == null) {
+			im = (ImageView) view.findViewById(R.id.itemleftImageView);
+			im.setImageResource(bean.item.image);
+			buf.add(position, im);
+		}
 		view.setTag(bean);
 
 		return view;
