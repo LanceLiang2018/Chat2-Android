@@ -45,6 +45,10 @@ class FileData {
 	public String username, url, filename;
 }
 
+class PreUpload {
+	public String url;
+}
+
 public class ResultData
 {
 	public static class Data {
@@ -68,6 +72,7 @@ public class ResultData
 		public List<RoomData> room_data;
 		public UploadResult upload_result;
 		public List<FileData> files;
+		public PreUpload pre_upload;
 	}
 	public int code;
 	public String message;

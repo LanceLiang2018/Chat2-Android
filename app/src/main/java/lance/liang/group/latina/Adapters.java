@@ -309,7 +309,7 @@ class ChatAdapter extends BaseAdapter
 						//	return;
 						DownloadManager downloadManager = (DownloadManager) pcontext.getSystemService(Context.DOWNLOAD_SERVICE);
 						String tag = (String)(p1.getTag());
-						if (tag == null)
+						if (tag == null || tag.charAt(0) == '/')
 							return;
 						Uri url = Uri.parse(tag);
 						DownloadManager.Request request = new DownloadManager.Request(url);
@@ -358,6 +358,7 @@ class ChatAdapter extends BaseAdapter
 		final TextView progress = (TextView) gview.findViewById(R.id.itemloadingTextView_progress);
 		((LinearLayout) view.findViewById(R.id.itemchatframeLinearLayout_content)).addView(gview);
 		
+		/*
 		if (bean.tag != null) {
 			if (bean.status == bean.PRESEND) {
 				OkUpload ok = OkUpload.getInstance();
@@ -407,7 +408,7 @@ class ChatAdapter extends BaseAdapter
 					MyDB.get(pcontext).updateMessage(new MessageData(bean));
 				}
 			}
-		}
+		}*/
 		
 		return view;
 	}

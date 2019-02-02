@@ -4,8 +4,7 @@ import android.content.*;
 import android.util.*;
 import com.google.gson.*;
 import java.io.*;
-import android.widget.*;
-import android.os.*;
+import java.util.*;
 
 class ConfigData
 {
@@ -18,12 +17,12 @@ class ConfigData
 	static class Settings
 	{
 		//public String server = "https://lance-chatroom2.herokuapp.com/";
-		public String server = "http://0.0.0.0:5000/v3/api";
-		public int theme = R.style.AppTheme01;
+		public String server = "https://lance-chatroom2.herokuapp.com/v3/api";
+		public int theme = R.style.AppTheme07;
 		//public int colorBg = 0xFF9BAEC8;
 		//public int colorFt = 0xFF6AAFE6;
-		public int colorBg = R.color.colorBg01;
-		public int colorFt = R.color.colorFt01;
+		public int colorBg = R.color.colorBg07;
+		public int colorFt = R.color.colorFt07;
 		public int isShowSplash = 1;
 		public int firstStart = 1;
 		public int count_today = 0, count_total = 0;
@@ -31,9 +30,13 @@ class ConfigData
 		public String defaultPrinter = "Printer";
 		
 		public String savePath = "Latina/";
+		
+		public int unreadMid = 0;
 	}
 	public Settings settings = new Settings();
 	public PersonData user = new PersonData();
+	//public List<RoomData> rooms = new ArrayList<RoomData>();
+	//public String rooms_str = "[]";
 }
 
 public class Config

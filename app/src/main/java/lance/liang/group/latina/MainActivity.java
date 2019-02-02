@@ -1,9 +1,13 @@
 package lance.liang.group.latina;
 
 import android.*;
+import android.app.*;
 import android.content.*;
+import android.content.pm.*;
 import android.graphics.*;
+import android.net.*;
 import android.os.*;
+import android.support.v4.graphics.drawable.*;
 import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
@@ -11,16 +15,22 @@ import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
+import android.widget.AdapterView.*;
 import com.bumptech.glide.*;
+import com.bumptech.glide.load.engine.*;
 import com.bumptech.glide.load.resource.drawable.*;
 import com.bumptech.glide.request.*;
 import com.google.gson.*;
-import com.lzy.okgo.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import com.lzy.okserver.*;
 import com.lzy.okserver.task.*;
+import com.lzy.okserver.upload.*;
+import com.tbruyelle.rxpermissions2.*;
 import com.zhihu.matisse.*;
+import io.reactivex.*;
+import io.reactivex.disposables.*;
+import java.io.*;
 import java.util.*;
 import jp.wasabeef.glide.transformations.*;
 import lance.liang.group.latina.*;
@@ -29,17 +39,12 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.*;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.*;
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.titles.*;
 
-import lance.liang.group.latina.Config;
-import android.support.v4.graphics.drawable.*;
-import android.graphics.drawable.*;
-import android.widget.AdapterView.*;
-import android.content.pm.*;
-import com.tbruyelle.rxpermissions2.*;
-import com.zhihu.matisse.*;
-import io.reactivex.*;
+import android.app.Notification;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.view.View.OnClickListener;
 import io.reactivex.Observer;
-import io.reactivex.disposables.*;
-import com.bumptech.glide.load.engine.*;				
+import lance.liang.group.latina.Config;				
 
 public class MainActivity extends AppCompatActivity {
     private MainPagerAdapter mainPagerAdapter;
@@ -49,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 	private TextView text_title;
 	public static final int code_login = 0x80, code_signup = 0x81, 
 							code_chat = 0x82, code_pick = 0x83, 
-							code_settings = 0x84;
+							code_settings = 0x84, code_pick_photo = 0x85;
 	private DrawerLayout drawer;
 	private MainAdapter adp_rooms;
 	private SwipeRefreshLayout srl;
@@ -72,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
 	private SwipeRefreshLayout srl_printer;
 	private TextView count_today;
 	private TextView count_total;
+	//private List<MessageData> unreads = new ArrayList<MessageData>();
+	private Timer timer_message;
+	private Timer timer_upload;
 	
 	
 	private OnItemClickListener left_onClickListener = new OnItemClickListener() {
@@ -106,8 +114,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 			startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle), code_settings);
 		}
-	};
-	
+	};	
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +163,38 @@ public class MainActivity extends AppCompatActivity {
 		final TextView hitokoto_text_span = (TextView) index_base.findViewById(R.id.indexpage_hitokoto_text_span);
 		final TextView hitokoto_from_span = (TextView) index_base.findViewById(R.id.indexpage_hitokoto_from_text_span);
 
-		MyApplication myapp = (MyApplication) this.getApplication();
+		index_photo.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					RxPermissions rxPermissions = new RxPermissions(MainActivity.this);
+					rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+						.subscribe(new Observer<Boolean>() {
+							@Override
+							public void onError(Throwable p1)
+							{MainActivity.this.finish();}
+							@Override
+							public void onComplete(){}
+							@Override
+							public void onSubscribe(Disposable d){}
+							@Override
+							public void onNext(Boolean aBoolean) {
+								Matisse.from(MainActivity.this)
+									.choose(MimeType.ofImage(), false)
+									.countable(false)
+									.capture(false)
+									.maxSelectable(1)
+									.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+									.thumbnailScale(0.85f)
+									//.originalEnable(true)
+									//.maxOriginalSize(10)
+									.autoHideToolbarOnSingleTap(true)
+									.forResult(code_pick_photo);
+							}});
+					
+				}
+			});
+		
+		//MyApplication myapp = (MyApplication) this.getApplication();
 
 		/*
 		//Init icon
@@ -427,39 +465,11 @@ public class MainActivity extends AppCompatActivity {
 		list_left.addHeaderView(head_view);
 		list_left.setOnItemClickListener(left_onClickListener);
 		
-		/*
-		ContentValues parames = new ContentValues();
-		parames.put("auth", Config.get(this).data.user.auth);
-		Communication.getComm(this).post(Communication.BEAT, parames, 
-			new StringCallback() {
-				@Override
-				public void onSuccess(Response<String> response) {
-					ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
-					if (result.code != 0)
-					{
-						Toast.makeText(MainActivity.this, "Login Failed.", Toast.LENGTH_SHORT).show();
-						Intent intent_login = new Intent();
-						intent_login.setClass(MainActivity.this, Login.class);
-						startActivityForResult(intent_login, code_login);
-					}
-				}
-			});*/
-
 		refresh();
-		
-		/*
-		for (int i=0; i<3; i++) {
-			inview = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.main, null);
-			mainLayout = (RelativeLayout) inview.findViewById(R.id.mainRelativeLayout_main);
-			inview.removeView(mainLayout);
-			page_array.add(inview);
-		}*/
 		
 		mainPagerAdapter = new MainPagerAdapter(page_array);
 
-		//mainPagerAdapter = new MainPagerAdapter();
-		
-        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+		mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(mainPagerAdapter);
 		
 		ImageView bgimage = (ImageView) findViewById(R.id.mainviewpagerImageView_bgimage);
@@ -469,6 +479,10 @@ public class MainActivity extends AppCompatActivity {
 			.into(bgimage);
 
         initMagicIndicator1();
+		
+		initMessageManager();
+		initUploadManager();
+		
     }
 	
     private void initMagicIndicator1() {
@@ -551,7 +565,6 @@ public class MainActivity extends AppCompatActivity {
 	
 	public void refresh()
 	{
-		// Here errors.
 		RequestOptions options = new RequestOptions()
 			.circleCrop()
 			.placeholder(R.drawable.image_1)
@@ -577,60 +590,29 @@ public class MainActivity extends AppCompatActivity {
 
 		adp_rooms.list.clear();
 		adp_rooms_printer.list.clear();
+		
+		// Load saved rooms...
+		
+		//List<RoomData> rooms = Config.get(this).data.rooms;
+		//List<RoomData> rooms = new Gson().fromJson(Config.get(this).data.rooms_str, new TypeToken<List<RoomData>>() {}.getType());
+		//insertRooms(rooms);
+		
 		ContentValues parames = new ContentValues();
 		parames.put("auth", Config.get(this).data.user.auth);
 		Communication.getComm(this).post(Communication.GET_ROOM_ALL, parames, 
 			new StringCallback() {
+
+				private String room_str;
 				@Override
 				public void onSuccess(Response<String> response) {
 					ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
 					if (result.code == 0) {
-						for (RoomData room_data: result.data.room_data) {
-							String name = room_data.name;
-							String[] split = name.split("\\|");
-							String[] heads = room_data.head.split("\\|");
-							String head = room_data.head;
-							String name_me = Config.get(getApplicationContext()).data.user.username, 
-								   name_friend = room_data.name;
-							if (split.length > 1) {
-								if (split[0].equals(name_me)) {
-									name_friend = split[1];
-									head = heads[0];
-								} else {
-									name_friend = split[0];
-									head = heads[1];
-								}
-							}
-
-							adp_rooms.insert(new ItemBeanMain(room_data.gid, head, name_friend, 
-															  //room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
-															  "Latest message",
-															  //room_data.latest_time == null ? "" : room_data.latest_time, 
-															  new MyGetTime().remote(room_data.last_post_time))
-															  .setRoomType(room_data.room_type)
-															  .setTimeSrc(room_data.last_post_time));
-							adp_rooms.notifyDataSetChanged();
-							adp_rooms_printer.insert(new ItemBeanMain(room_data.gid, head, name_friend, 
-																	 //room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
-																	 "Latest message",
-																	 //room_data.latest_time == null ? "" : room_data.latest_time, 
-																	 new MyGetTime().remote(room_data.last_post_time))
-																	 .setRoomType(room_data.room_type)
-																	 .setTimeSrc(room_data.last_post_time));
-							adp_rooms_printer.notifyDataSetChanged();
-						}
-						Collections.sort(adp_rooms.list, new Comparator<ItemBeanMain>() {
-								@Override
-								public int compare(ItemBeanMain p1, ItemBeanMain p2) {
-									return ("" + p2.timesrc).compareTo("" + p1.timesrc);
-								}
-							});
-						Collections.sort(adp_rooms_printer.list, new Comparator<ItemBeanMain>() {
-								@Override
-								public int compare(ItemBeanMain p1, ItemBeanMain p2) {
-									return ("" + p2.timesrc).compareTo("" + p1.timesrc);
-								}
-							});
+						//Config config = Config.get(MainActivity.this);
+						//config.data.rooms = result.data.room_data;
+						//room_str = new Gson().toJson(result.data.room_data, new TypeToken<List<RoomData>>() {}.getType());
+						//config.data.rooms_str = room_str;
+						//config.save();
+						insertRooms(result.data.room_data);
 					}
 					if (result.code == 2)
 					{
@@ -696,9 +678,159 @@ public class MainActivity extends AppCompatActivity {
 					e.printStackTrace();
 				}
 				break;
+			case code_pick_photo:
+				if (resultCode != RESULT_OK)
+					break;
+				
+				Bundle chat_bundle = new Bundle();
+				chat_bundle.putString("gid", MyApplication.getMyApplication().getDefaultPrinterGid());
+				startActivity(new Intent().setClass(MainActivity.this, Chat.class).putExtras(chat_bundle));
+				
+				final String choose_path = Matisse.obtainPathResult(data).get(0);
+				final Uri choose = Uri.parse("file://" + choose_path);
+				ContentResolver cr2 = this.getContentResolver();  
+				InputStream is = null;
+				byte[] buf2 = null;
+				try
+				{
+					is = cr2.openInputStream(choose);
+					buf2 = new byte[is.available()];
+					is.read(buf2);
+				}
+				catch (Exception e)
+				{
+					break;
+				}
+				//String md5 = MD5Utils.byteArrayToHexString(buf2);
+				String b64_image = Base64.encodeToString(buf2, Base64.DEFAULT);
+
+				ContentValues parames = new ContentValues();
+				parames.put("auth", Config.get(MainActivity.this).data.user.auth);
+				parames.put("data", b64_image);
+				parames.put("filename", choose.getLastPathSegment());
+				//parames.put("md5", md5);
+				Communication.getComm(getApplicationContext()).upload(Communication.UPLOAD, choose_path, parames, "image", 
+					new UploadListener<String>(choose_path) {
+						@Override
+						public void onStart(Progress p1){
+							Toast.makeText(MainActivity.this, choose_path + " Start Uploading", Toast.LENGTH_LONG).show();
+						}
+						@Override
+						public void onProgress(Progress p1){}
+						@Override
+						public void onError(Progress p1){}
+						@Override
+						public void onFinish(String p1, Progress p2){
+							Toast.makeText(MainActivity.this, choose_path + " Finishing", Toast.LENGTH_LONG).show();
+							final ResultData result = new Gson().fromJson(p1, ResultData.class);
+							if (result.code == 0) {
+								ContentValues parames = new ContentValues();
+								parames.put("auth", Config.get(getApplicationContext()).data.user.auth);
+								//parames.put("text", result.data.pre_upload.url + 
+								//			Config.get(getApplicationContext()).data.user.username + "/" + choose.getLastPathSegment());
+								parames.put("text", result.data.upload_result.url);
+								parames.put("message_type", "image");
+								parames.put("gid", MyApplication.getMyApplication().getDefaultPrinterGid());
+								AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+								builder.setMessage("Sending");
+								builder.setCancelable(false);
+								final AlertDialog dialog = builder.create();
+								dialog.show();
+								Communication.getComm(getApplicationContext()).post(Communication.SEND_MESSAGE, parames, 
+									new StringCallback() {
+										public void onStart(Response<String> p1)
+										{}
+										@Override
+										public void onError(Response<String> p1)
+										{
+											dialog.hide();
+											AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+											builder.setMessage("Error. (Code: " + p1.code() + ")");
+											builder.show();
+										}
+										@Override
+										public void onSuccess(Response<String> p1)
+										{
+											dialog.hide();
+											ResultData result2 = (new Gson()).fromJson(p1.body(), ResultData.class);
+											if (result2.code == 0)
+											{
+												//adp.insert(new ItemBeanChat(0, gid_int, Config.get(Chat.this).data.user.username, new MyGetTime().local(), 
+												//							result.data.upload_result.url, Config.get(Chat.this).data.user.head, "image"));
+												//adp.notifyDataSetChanged();
+											}
+											else
+											{
+												AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+												builder.setMessage(result2.message + " (Code: " + result2.code + ")");
+												builder.show();
+											}
+										}
+									});
+							}
+						}
+						@Override
+						public void onRemove(Progress p1) {
+							Toast.makeText(MainActivity.this, choose_path + " Removing", Toast.LENGTH_LONG).show();
+						}
+					}).start();
+				break;
 			default:
 				break;
 		}
+	}
+	
+	void insertRooms(List<RoomData> rooms) {
+		String defaultPrinter = Config.get(this).data.settings.defaultPrinter;
+		for (RoomData room_data: rooms) {
+			String name = room_data.name;
+			String[] split = name.split("\\|");
+			String[] heads = room_data.head.split("\\|");
+			String head = room_data.head;
+			String name_me = Config.get(getApplicationContext()).data.user.username, 
+				name_friend = room_data.name;
+			if (split.length > 1) {
+				if (split[0].equals(name_me)) {
+					name_friend = split[1];
+					head = heads[0];
+				} else {
+					name_friend = split[0];
+					head = heads[1];
+				}
+			}
+			adp_rooms.insert(new ItemBeanMain(room_data.gid, head, name_friend, 
+											  //room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
+											  "Latest message",
+											  //room_data.latest_time == null ? "" : room_data.latest_time, 
+											  new MyGetTime().remote(room_data.last_post_time))
+							 .setRoomType(room_data.room_type)
+							 .setTimeSrc(room_data.last_post_time));
+			adp_rooms.notifyDataSetChanged();
+			adp_rooms_printer.insert(new ItemBeanMain(room_data.gid, head, name_friend, 
+													  //room_data.latest_msg == null ? "Latest Messages" : room_data.latest_msg, 
+													  "Latest message",
+													  //room_data.latest_time == null ? "" : room_data.latest_time, 
+													  new MyGetTime().remote(room_data.last_post_time))
+									 .setRoomType(room_data.room_type)
+									 .setTimeSrc(room_data.last_post_time));
+			adp_rooms_printer.notifyDataSetChanged();
+			
+			if (name_friend.equals(defaultPrinter))
+				MyApplication.getMyApplication().defaultPrinterGid = "" + room_data.gid;
+		}
+		Collections.sort(adp_rooms.list, new Comparator<ItemBeanMain>() {
+				@Override
+				public int compare(ItemBeanMain p1, ItemBeanMain p2) {
+					return ("" + p2.timesrc).compareTo("" + p1.timesrc);
+				}
+			});
+		Collections.sort(adp_rooms_printer.list, new Comparator<ItemBeanMain>() {
+				@Override
+				public int compare(ItemBeanMain p1, ItemBeanMain p2) {
+					return ("" + p2.timesrc).compareTo("" + p1.timesrc);
+				}
+			});
+		
 	}
 
 	@Override
@@ -741,5 +873,124 @@ public class MainActivity extends AppCompatActivity {
 		}
 		super.onResume();
 	}
+	
+	void initMessageManager() {
+		timer_message = new Timer();
+		timer_message.schedule(new TimerTask() {
+				@Override
+				public void run()
+				{
+					MessageManager();
+					//refresh();
+				}
+			}, 0, 3000);
+	}
+
+	void stopMessageManager() {
+		if (timer_message != null) {
+			timer_message.cancel();
+			timer_message = null;
+		}
+	}
+
+	void MessageManager() {
+		StringCallback callback_message = new StringCallback() {
+			@Override
+			public void onSuccess(Response<String> p1) {
+				Config config = Config.get(getApplicationContext());
+
+			}
+		};
+		Communication.getComm(this).postWithAuth(Communication.GET_MESSAGES, new ContentValues(), callback_message);
+	}
+
+	void initUploadManager() {
+		timer_upload = new Timer();
+		timer_upload.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					UploadManager();
+				}
+			}, 0, 250);
+	}
+
+	void stopUploadManager() {
+		if (timer_upload != null) {
+			timer_upload.cancel();
+			timer_upload = null;
+		}
+	}
+
+	void UploadManager() {
+		OkUpload okupload = OkUpload.getInstance();
+		Map<String, UploadTask<?>> tasks = okupload.getTaskMap();
+		final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		for (final String key: tasks.keySet()) {
+			final UploadTask task = tasks.get(key);
+			if (task.listeners == null || task.listeners.isEmpty() || task.listeners.keySet().size() <= 2) {
+				/*
+				if (task.progress.extra1 != null)
+					if (!((String)task.progress.extra1).equals("Image") && 
+						!((String)task.progress.extra1).equals("File"))
+						break;
+				*/
+				task.register(new UploadListener(key) {
+						@Override
+						public void onStart(Progress p1) {
+							Notification.Builder builder = new Notification.Builder(MainActivity.this)
+								.setSmallIcon(R.drawable.image_download)
+								.setContentTitle(key.substring(key.lastIndexOf("/")+1, key.length()))
+								.setContentText(key + " Uploading...");
+							builder.setProgress(100, 0, false);
+							mNotificationManager.notify(key.hashCode(), builder.build());
+						}
+						@Override
+						public void onProgress(Progress p1) {
+							Notification.Builder builder = new Notification.Builder(MainActivity.this)
+								.setSmallIcon(R.drawable.image_download)
+								.setContentTitle(key.substring(key.lastIndexOf("/")+1, key.length()))
+								.setContentText(key + " Uploading...");
+							builder.setProgress(100, (int)(p1.fraction * 100), false);
+							mNotificationManager.notify(key.hashCode(), builder.build());
+						}
+						@Override
+						public void onError(Progress p1) {
+							Notification.Builder builder = new Notification.Builder(MainActivity.this)
+								.setSmallIcon(R.drawable.image_download)
+								.setContentTitle(key.substring(key.lastIndexOf("/")+1, key.length()))
+								.setProgress(0, 0, false)
+								.setContentText(key + " Upload Error");
+							mNotificationManager.notify(key.hashCode(), builder.build());
+						}
+						@Override
+						public void onFinish(Object p1, Progress p2) {
+							Notification.Builder builder = new Notification.Builder(MainActivity.this)
+								.setSmallIcon(R.drawable.image_download)
+								.setContentTitle(key.substring(key.lastIndexOf("/")+1, key.length()))
+								.setProgress(0, 0, false)
+								.setContentText(key + " Upload Finished");
+							mNotificationManager.notify(key.hashCode(), builder.build());
+						}
+						@Override
+						public void onRemove(Progress p1) {
+							//mNotificationManager.cancel(key.hashCode());
+							//task.remove();
+						}
+					});
+				}
+				task.save();
+		}
+	}
+
+	
+	
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		stopMessageManager();
+		stopUploadManager();
+	}
+	
 }
 				

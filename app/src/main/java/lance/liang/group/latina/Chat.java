@@ -129,12 +129,12 @@ public class Chat extends AppCompatActivity
 					params.put("data", b64);
 					params.put("filename", path.substring(path.lastIndexOf("/") + 1, path.length()));
 					UploadTask task = Communication.getComm(Chat.this).uploadNoListener(Communication.UPLOAD, message.tag, params);
-					task.extra1(new SendMessage.MessageToSend().toJson());
-					task.save();
-					task.start();
-					List<ItemBeanChat> tmp = new ArrayList<>();
-					tmp.add(message);
-					refreshNowBean(tmp);
+					task
+						//.extra1(new SendMessage.MessageToSend().toJson())
+						.save().start();
+					//List<ItemBeanChat> tmp = new ArrayList<>();
+					//tmp.add(message);
+					//refreshNowBean(tmp);
 					
 				}
 			})
@@ -416,8 +416,11 @@ public class Chat extends AppCompatActivity
 					//for (String s: Matisse.obtainPathResult(data))
 					//	Toast.makeText(this, s, Toast.LENGTH_LONG).show();
 					//final String choose = Matisse.obtainPathResult(data).get(0);
-					for (final Uri choose: Matisse.obtainResult(data))
+					
+					//for (final Uri choose: Matisse.obtainResult(data))
+					for (final String choose_path: Matisse.obtainPathResult(data))
 					{
+						final Uri choose = Uri.parse("file://" + choose_path);
 						ContentResolver cr2 = this.getContentResolver();  
 						InputStream is = null;
 						byte[] buf2 = null;
@@ -439,16 +442,25 @@ public class Chat extends AppCompatActivity
 						parames.put("data", b64_image);
 						parames.put("filename", choose.getLastPathSegment());
 						//parames.put("md5", md5);
-						Communication.getComm(Chat.this).post(Communication.UPLOAD, parames, 
-							new StringCallback() {
+						Communication.getComm(getApplicationContext()).upload(Communication.UPLOAD, choose_path, parames, "image", 
+							new UploadListener<String>(choose_path) {
 								@Override
-								public void onSuccess(Response<String> p1) {
-									if (p1.code() != 200)
-										return;
-									final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+								public void onStart(Progress p1){
+									Toast.makeText(Chat.this, choose_path + " Start Uploading", Toast.LENGTH_LONG).show();
+								}
+								@Override
+								public void onProgress(Progress p1){}
+								@Override
+								public void onError(Progress p1){}
+								@Override
+								public void onFinish(String p1, Progress p2){
+									Toast.makeText(Chat.this, choose_path + " Finishing", Toast.LENGTH_LONG).show();
+									final ResultData result = new Gson().fromJson(p1, ResultData.class);
 									if (result.code == 0) {
 										ContentValues parames = new ContentValues();
 										parames.put("auth", Config.get(Chat.this).data.user.auth);
+										//parames.put("text", result.data.pre_upload.url + 
+										//			Config.get(getApplicationContext()).data.user.username + "/" + choose.getLastPathSegment());
 										parames.put("text", result.data.upload_result.url);
 										parames.put("message_type", "image");
 										parames.put("gid", gid);
@@ -457,7 +469,7 @@ public class Chat extends AppCompatActivity
 										builder.setCancelable(false);
 										dialog = builder.create();
 										dialog.show();
-										Communication.getComm(Chat.this).post(Communication.SEND_MESSAGE, parames, 
+										Communication.getComm(getApplicationContext()).post(Communication.SEND_MESSAGE, parames, 
 											new StringCallback() {
 												public void onStart(Response<String> p1)
 												{}
@@ -490,7 +502,11 @@ public class Chat extends AppCompatActivity
 											});
 									}
 								}
-							});
+								@Override
+								public void onRemove(Progress p1) {
+									Toast.makeText(Chat.this, choose_path + " Removing", Toast.LENGTH_LONG).show();
+								}
+							}).start();
 						}
 				}
 				break;

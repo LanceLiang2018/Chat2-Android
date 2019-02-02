@@ -212,6 +212,7 @@ public class Communication
 	MAKE_FRIENDS = "make_friends",
 	
 	UPLOAD = "upload",
+	PRE_UPLOAD = "pre_upload", 
 	
 	UID = "uid",
 	MID = "mid",
@@ -285,10 +286,26 @@ public class Communication
 		request.converter(new StringConvert());
 		//request.execute(callback);
 		UploadTask<String> task = OkUpload.request(tag, request)
-			.save()
-			.register(listener);
+			.register(listener).save();
 		return task;
 	}
+	
+	public UploadTask upload(String action, String tag, ContentValues parames, Serializable extra, UploadListener listener)
+	{
+		parames.put("action", action);
+		PostRequest<String> request = OkGo.<String>post(SERVER).tag(this);
+		for (String key: parames.keySet()) {
+			request.params(key, parames.get(key).toString());
+		}
+		request.converter(new StringConvert());
+		//request.execute(callback);
+		UploadTask<String> task = OkUpload.request(tag, request)
+			.extra1(extra)
+			.save()
+			.register(listener).save();
+		return task;
+	}
+	
 	public UploadTask uploadNoListener(String action, String tag, ContentValues parames)
 	{
 		parames.put("action", action);

@@ -8,6 +8,8 @@ public class MyApplication extends Application
 {
 	Map map = new HashMap();
 	private static MyApplication instance;
+	public List<String> uploadTags = new ArrayList<String>();
+	String defaultPrinterGid = "1";
 
 	@Override
 	public void onCreate()
@@ -18,6 +20,11 @@ public class MyApplication extends Application
 		//Toast.makeText(this, "MyApplication Started.", Toast.LENGTH_LONG).show();
 	}
 	
+	public String getDefaultPrinterGid()
+	{
+		return defaultPrinterGid;
+	}
+
 	public Object getObject(Object obj) {
 		return map.get(obj);
 	}
@@ -32,5 +39,9 @@ public class MyApplication extends Application
 	
 	public Context getContext() {
 		return getApplicationContext();
+	}
+	
+	public List<String> getUploadTags() {
+		return uploadTags;
 	}
 }
