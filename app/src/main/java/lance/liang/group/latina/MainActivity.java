@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
 	private Timer timer_message;
 	private Timer timer_upload;
 	private Typeface font_num;
+	private View line;
 	
 	
 	private OnItemClickListener left_onClickListener = new OnItemClickListener() {
@@ -119,7 +120,9 @@ public class MainActivity extends AppCompatActivity {
 			}
 			startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle), code_settings);
 		}
-	};	
+	};
+
+	private LinearLayout counter_bg;	
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 		index_base.removeView(index);
 		page_array.add(index);
 		
-		LinearLayout counter_bg = (LinearLayout) index.findViewById(R.id.indexpage_counter_bg);
+		counter_bg = (LinearLayout) index.findViewById(R.id.indexpage_counter_bg);
 		final LinearLayout hitokoto_bg = (LinearLayout) index.findViewById(R.id.indexpage_hitokoto_bg);
 		final LinearLayout hitokoto_span = (LinearLayout) index.findViewById(R.id.indexpage_span);
 		hitokoto_span.setAlpha(0);
@@ -232,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
 		((TextView) index.findViewById(R.id.indexpageaTextView_total)).setText("总\n共\n打\n印");
 		count_today = (TextView) index.findViewById(R.id.indexpageaTextView_count_today);
 		count_total = (TextView) index.findViewById(R.id.indexpageaTextView_count_total);
+		line = index.findViewById(R.id.indexpage_line);
 		
 		count_today.setTypeface(font_num);
 		count_total.setTypeface(font_num);
@@ -533,10 +537,11 @@ public class MainActivity extends AppCompatActivity {
 					//titleImg.setImageResource(mImages[index]);
 					
 					try {
-						Glide.with(context).load(MyApplication.getMyApplication().getObject(mImages[index]))
+						//Glide.with(context).load(MyApplication.getMyApplication().getObject(mImages[index]))
 							//.apply(new RequestOptions().transform(new ColorFilterTransformation(Utils.getAccentColor(context))))
-							.apply(new RequestOptions().transform(new InvertFilterTransformation()))
-							.into(titleImg);
+							//.apply(new RequestOptions().transform(new InvertFilterTransformation()))
+							//.into(titleImg);
+						titleImg.setImageResource(mImages[index]);
 					} catch (Exception e) {
 						Glide.with(context).load(MyApplication.getMyApplication().getObject(mImages[index]))
 							//.apply(new RequestOptions().transform(new ColorFilterTransformation(Utils.getAccentColor(context))))
@@ -564,12 +569,23 @@ public class MainActivity extends AppCompatActivity {
 							public void onLeave(int index, int totalCount, float leavePercent, boolean leftToRight) {
 								titleImg.setScaleX(1.3f + (0.8f - 1.3f) * leavePercent);
 								titleImg.setScaleY(1.3f + (0.8f - 1.3f) * leavePercent);
+								if (leftToRight) {
+									counter_bg.setAlpha(1.0f - leavePercent);
+									line.setScaleX(1.0f - leavePercent);
+									index_photo.setTranslationY((1.0f - leavePercent) * 150 - 150);
+								}
 							}
 
 							@Override
 							public void onEnter(int index, int totalCount, float enterPercent, boolean leftToRight) {
 								titleImg.setScaleX(0.8f + (1.3f - 0.8f) * enterPercent);
 								titleImg.setScaleY(0.8f + (1.3f - 0.8f) * enterPercent);
+								if (!leftToRight) {
+									counter_bg.setAlpha(enterPercent);
+									line.setScaleX(enterPercent);
+									//line.set
+									index_photo.setTranslationY(enterPercent * 150 - 150);
+								}
 							}
 						});
 

@@ -29,7 +29,8 @@
 					<LinearLayout
 						android:layout_height="match_parent"
 						android:layout_width="match_parent"
-						android:orientation="vertical">
+						android:orientation="vertical"
+						android:id="@+id/indexpage_photo_base">
 
 						<LinearLayout
 							android:layout_height="wrap_content"
@@ -114,7 +115,8 @@
 								<View
 									android:layout_height="1dp"
 									android:layout_width="match_parent"
-									android:background="#000000"/>
+									android:background="#000000"
+									android:id="@+id/indexpage_line"/>
 
 								<LinearLayout
 									android:layout_height="wrap_content"
@@ -239,14 +241,7 @@
 					android:layout_above="@id/indexpage_hitokoto_bg"
 					android:background="@drawable/image_shadow_3"
 					android:alpha="0.4"
-					android:id="@+id/indexpageaView1"/>
-
-				<View
-					android:background="@drawable/image_shadow_3"
-					android:layout_height="7dp"
-					android:layout_width="match_parent"
-					android:layout_above="@id/indexpageaView1"
-					android:alpha="0.4"
+					android:id="@+id/indexpageaView1"
 					android:rotation="180"/>
 
 			</RelativeLayout>
