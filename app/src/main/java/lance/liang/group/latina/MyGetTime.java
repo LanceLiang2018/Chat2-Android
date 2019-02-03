@@ -7,7 +7,8 @@ public class MyGetTime
 {
 	public String format0 = "HH:mm",
 		format1 = "MM-dd HH:mm",
-		format2 = "yyyy-MM-dd HH:mm";
+		format2 = "yyyy-MM-dd HH:mm", 
+		format_date = "dd";
 		
 	private String format(int time) {
 		int now = getInt();
@@ -37,4 +38,16 @@ public class MyGetTime
 		Date date = new Date(stime);
 		return new SimpleDateFormat(format(time_s), Locale.CHINA).format(date);
 	}
+	public String date(int time_s) {
+		Long stime = Long.parseLong("" + time_s) * 1000;
+		Date date = new Date(stime);
+		return new SimpleDateFormat(format_date, Locale.CHINA).format(date);
+	}
+	public String date() {
+		int time_s = getInt();
+		Long stime = Long.parseLong("" + time_s) * 1000;
+		Date date = new Date(stime);
+		return new SimpleDateFormat(format_date, Locale.CHINA).format(date);
+	}
+	
 }

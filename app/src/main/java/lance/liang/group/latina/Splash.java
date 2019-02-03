@@ -12,6 +12,7 @@ import java.io.*;
 public class Splash extends AppCompatActivity
 {
 	@Override protected void onCreate(Bundle savedInstanceState){
+		setTheme(Config.get(this).data.settings.theme);
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//隐藏状态栏 
 		getSupportActionBar().hide();//隐藏标题栏 
@@ -22,6 +23,7 @@ public class Splash extends AppCompatActivity
 		if (Config.get(this).data.settings.firstStart == 1) {
 			Config config = Config.get(this);
 			config.data.settings.firstStart = 0;
+			config.data.settings.lastPrintDate = new MyGetTime().date();
 			config.save();
 		}
 		

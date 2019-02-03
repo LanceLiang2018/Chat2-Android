@@ -532,7 +532,7 @@ public class MainActivity extends AppCompatActivity {
 					} catch (Exception e) {
 						Glide.with(context).load(MyApplication.getMyApplication().getObject(mImages[index]))
 							//.apply(new RequestOptions().transform(new ColorFilterTransformation(Utils.getAccentColor(context))))
-							.apply(new RequestOptions().transform(new ColorFilterTransformation(Color.argb(255, 255, 255, 255))))
+							//.apply(new RequestOptions().transform(new ColorFilterTransformation(Color.argb(255, 255, 255, 255))))
 							.into(titleImg);
 					}
 					

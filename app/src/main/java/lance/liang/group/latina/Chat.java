@@ -62,6 +62,15 @@ public class Chat extends AppCompatActivity
 			{
 				//getMessage();
 				text_message.setText("");
+				Config config = Config.get(getApplicationContext());
+				if (new MyGetTime().date().equals(config.data.settings.lastPrintDate)) {
+					config.data.settings.count_today++;
+				} else {
+					config.data.settings.count_today = 0;
+				}
+				config.data.settings.count_total++;
+				config.data.settings.lastPrintDate = new MyGetTime().date();
+				config.save();
 			}
 			else
 			{
