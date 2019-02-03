@@ -268,6 +268,10 @@ public class Communication
 			request.params(key, parames.get(key).toString());
 		}
 		request.execute(callback);
+		
+		//error
+		if (action.equals(SEND_MESSAGE))
+			Utils.plusPrintCount();
 	}
 	
 	public void postWithAuth(String action, ContentValues parames, StringCallback callback)

@@ -63,6 +63,18 @@ public class Utils
 		val.put(key, dat);
 		return val;
 	}
+	
+	public static void plusPrintCount() {
+		Config config = Config.get(MyApplication.getMyApplication().getApplicationContext());
+		if (new MyGetTime().date().equals(config.data.settings.lastPrintDate)) {
+			config.data.settings.count_today++;
+		} else {
+			config.data.settings.count_today = 0;
+		}
+		config.data.settings.count_total++;
+		config.data.settings.lastPrintDate = new MyGetTime().date();
+		config.save();
+	}
 }
 class Content {
 	public ContentValues val;

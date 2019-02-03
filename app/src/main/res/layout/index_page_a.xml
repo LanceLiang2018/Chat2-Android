@@ -3,8 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent"
-	android:orientation="vertical"
-	android:background="@drawable/background1_small">
+	android:orientation="vertical">
 
 	<LinearLayout
 		android:layout_height="match_parent"
@@ -93,19 +92,20 @@
 									</LinearLayout>
 
 									<LinearLayout
-										android:layout_height="match_parent"
+										android:layout_height="wrap_content"
 										android:layout_width="wrap_content"
 										android:orientation="vertical"
 										android:paddingLeft="25dp"
 										android:paddingRight="35dp">
 
 										<TextView
-											android:layout_height="match_parent"
+											android:layout_height="wrap_content"
 											android:layout_width="wrap_content"
 											android:text="Text"
 											android:textColor="#000000"
 											android:id="@+id/indexpageaTextView_count_today"
-											android:gravity="center"/>
+											android:gravity="center"
+											android:textSize="25sp"/>
 
 									</LinearLayout>
 
@@ -134,7 +134,8 @@
 											android:layout_width="wrap_content"
 											android:text="Text"
 											android:textColor="#000000"
-											android:id="@+id/indexpageaTextView_count_total"/>
+											android:id="@+id/indexpageaTextView_count_total"
+											android:textSize="25sp"/>
 
 									</LinearLayout>
 

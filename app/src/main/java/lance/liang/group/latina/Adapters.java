@@ -232,6 +232,7 @@ class ChatAdapter extends BaseAdapter
 			LinearLayout box = (LinearLayout) frame.findViewById(R.id.itemframetextLinearLayout_box);
 			
 			message.setText(bean.message);
+			message.setTypeface(MyApplication.getMyApplication().font_text);
 			//box.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
 			//message.setTextColor(Config.get(pcontext).data.settings.colorFt);
 

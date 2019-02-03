@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 	//private List<MessageData> unreads = new ArrayList<MessageData>();
 	private Timer timer_message;
 	private Timer timer_upload;
+	private Typeface font_num;
 	
 	
 	private OnItemClickListener left_onClickListener = new OnItemClickListener() {
@@ -153,6 +154,9 @@ public class MainActivity extends AppCompatActivity {
 		
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_viewpager);
+		
+		font_num = Typeface.createFromAsset(getAssets(), "num.ttf");
+		MyApplication.getMyApplication().font_text =  Typeface.createFromAsset(getAssets(), "miao.ttf");
 		
 		//Communication.test(this);
 		
@@ -228,6 +232,10 @@ public class MainActivity extends AppCompatActivity {
 		((TextView) index.findViewById(R.id.indexpageaTextView_total)).setText("总\n共\n打\n印");
 		count_today = (TextView) index.findViewById(R.id.indexpageaTextView_count_today);
 		count_total = (TextView) index.findViewById(R.id.indexpageaTextView_count_total);
+		
+		count_today.setTypeface(font_num);
+		count_total.setTypeface(font_num);
+		
 		count_today.setText("" + Config.get(this).data.settings.count_today);
 		count_total.setText("" + Config.get(this).data.settings.count_total);
 		
@@ -586,6 +594,9 @@ public class MainActivity extends AppCompatActivity {
 	
 	public void refresh()
 	{
+		count_today.setText("" + Config.get(this).data.settings.count_today);
+		count_total.setText("" + Config.get(this).data.settings.count_total);
+		
 		RequestOptions options = new RequestOptions()
 			.circleCrop()
 			.placeholder(R.drawable.image_1)
@@ -899,10 +910,8 @@ public class MainActivity extends AppCompatActivity {
 		timer_message = new Timer();
 		timer_message.schedule(new TimerTask() {
 				@Override
-				public void run()
-				{
-					MessageManager();
-					//refresh();
+				public void run() {
+					//MessageManager();
 				}
 			}, 0, 3000);
 	}

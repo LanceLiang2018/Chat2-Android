@@ -62,15 +62,6 @@ public class Chat extends AppCompatActivity
 			{
 				//getMessage();
 				text_message.setText("");
-				Config config = Config.get(getApplicationContext());
-				if (new MyGetTime().date().equals(config.data.settings.lastPrintDate)) {
-					config.data.settings.count_today++;
-				} else {
-					config.data.settings.count_today = 0;
-				}
-				config.data.settings.count_total++;
-				config.data.settings.lastPrintDate = new MyGetTime().date();
-				config.save();
 			}
 			else
 			{
@@ -551,7 +542,8 @@ public class Chat extends AppCompatActivity
 	}
 	
 	public void initMessages() {
-		List<MessageData> messages = MyDB.get(this).getMessages(gid_int, 30, 0);
+		//TODO: bugs!!
+		List<MessageData> messages = MyDB.get(this).getMessages(gid_int, 65535, 0);
 		adp.list.clear();
 		for (MessageData m: messages) {
 			adp.insert(new ItemBeanChat(m));
