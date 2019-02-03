@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 	};
 
-	private LinearLayout counter_bg;	
+	private RelativeLayout counter_bg;	
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 		index_base.removeView(index);
 		page_array.add(index);
 		
-		counter_bg = (LinearLayout) index.findViewById(R.id.indexpage_counter_bg);
+		counter_bg = (RelativeLayout) index.findViewById(R.id.indexpage_counter_bg);
 		final LinearLayout hitokoto_bg = (LinearLayout) index.findViewById(R.id.indexpage_hitokoto_bg);
 		final LinearLayout hitokoto_span = (LinearLayout) index.findViewById(R.id.indexpage_span);
 		hitokoto_span.setAlpha(0);
@@ -571,8 +571,10 @@ public class MainActivity extends AppCompatActivity {
 								titleImg.setScaleY(1.3f + (0.8f - 1.3f) * leavePercent);
 								if (leftToRight) {
 									counter_bg.setAlpha(1.0f - leavePercent);
-									line.setScaleX(1.0f - leavePercent);
+									line.setScaleX(1.0f * (1.0f - leavePercent));
 									index_photo.setTranslationY((1.0f - leavePercent) * 150 - 150);
+									Utils.setMargins_match(line, 0, (int)(150 * (leavePercent)), 0, (int)(150 * (leavePercent)));
+									//head_head.setRotation((1.0f - leavePercent) * 360);
 								}
 							}
 
@@ -582,9 +584,10 @@ public class MainActivity extends AppCompatActivity {
 								titleImg.setScaleY(0.8f + (1.3f - 0.8f) * enterPercent);
 								if (!leftToRight) {
 									counter_bg.setAlpha(enterPercent);
-									line.setScaleX(enterPercent);
-									//line.set
+									line.setScaleX(1.0f * enterPercent);
+									Utils.setMargins_match(line, 0, (int)(150 * (1.0f - enterPercent)), 0, (int)(150 * (1.0f - enterPercent)));
 									index_photo.setTranslationY(enterPercent * 150 - 150);
+									//head_head.setRotation(enterPercent * 360);
 								}
 							}
 						});

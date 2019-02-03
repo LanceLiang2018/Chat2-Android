@@ -3,6 +3,8 @@ package lance.liang.group.latina;
 import android.content.*;
 import android.graphics.*;
 import android.util.*;
+import android.view.*;
+import android.widget.*;
 
 public class Utils
 {
@@ -75,6 +77,21 @@ public class Utils
 		config.data.settings.lastPrintDate = new MyGetTime().date();
 		config.save();
 	}
+	
+	static public void setMargins_match(View v, int left, int top, int right, int bottom) {
+		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+		if (params == null)
+			params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+												   ViewGroup.LayoutParams.WRAP_CONTENT);
+//		int oldLeft = params.leftMargin;
+//		int oldTop = params.topMargin;
+//		int oldRight = params.rightMargin;
+//		int oldBottom = params.bottomMargin;
+//		params.setMargins(oldLeft + left, oldTop + top, oldRight + right, oldBottom + bottom);
+		params.setMargins(left, top, right, bottom);
+		v.setLayoutParams(params);
+	}
+	
 }
 class Content {
 	public ContentValues val;

@@ -54,116 +54,112 @@
 							android:background="@drawable/image_shadow_3"
 							android:alpha="0.4"/>
 
-						<LinearLayout
-							android:layout_height="wrap_content"
+						<RelativeLayout
+							android:layout_height="300dp"
 							android:layout_width="match_parent"
 							android:orientation="vertical"
 							android:gravity="center"
-							android:padding="20dp"
 							android:id="@+id/indexpage_counter_bg">
+
+							<View
+								android:layout_height="1dp"
+								android:layout_width="300dp"
+								android:background="#000000"
+								android:id="@+id/indexpage_line"
+								android:layout_centerInParent="true"/>
 
 							<LinearLayout
 								android:layout_height="wrap_content"
 								android:layout_width="wrap_content"
-								android:orientation="vertical"
-								android:gravity="center">
+								android:orientation="horizontal"
+								android:id="@+id/indexpage_counter_bg"
+								android:gravity="center"
+								android:layout_above="@id/indexpage_line"
+								android:layout_centerHorizontal="true">
 
 								<LinearLayout
 									android:layout_height="wrap_content"
 									android:layout_width="wrap_content"
-									android:orientation="horizontal"
-									android:id="@+id/indexpage_counter_bg"
-									android:gravity="center">
+									android:orientation="vertical"
+									android:paddingRight="50dp"
+									android:layout_marginLeft="35dp">
 
-									<LinearLayout
+									<TextView
 										android:layout_height="wrap_content"
 										android:layout_width="wrap_content"
-										android:orientation="vertical"
-										android:paddingRight="50dp"
-										android:layout_marginLeft="35dp">
-
-										<TextView
-											android:layout_height="wrap_content"
-											android:layout_width="wrap_content"
-											android:text="Text"
-											android:textColor="#000000"
-											android:id="@+id/indexpageaTextView_Today"
-											android:textSize="18sp"/>
-
-									</LinearLayout>
-
-									<LinearLayout
-										android:layout_height="wrap_content"
-										android:layout_width="wrap_content"
-										android:orientation="vertical"
-										android:paddingLeft="25dp"
-										android:paddingRight="35dp">
-
-										<TextView
-											android:layout_height="wrap_content"
-											android:layout_width="wrap_content"
-											android:text="Text"
-											android:textColor="#000000"
-											android:id="@+id/indexpageaTextView_count_today"
-											android:gravity="center"
-											android:textSize="25sp"/>
-
-									</LinearLayout>
+										android:text="Text"
+										android:textColor="#000000"
+										android:id="@+id/indexpageaTextView_Today"
+										android:textSize="18sp"/>
 
 								</LinearLayout>
 
-								<View
-									android:layout_height="1dp"
-									android:layout_width="match_parent"
-									android:background="#000000"
-									android:id="@+id/indexpage_line"/>
-
 								<LinearLayout
 									android:layout_height="wrap_content"
 									android:layout_width="wrap_content"
-									android:orientation="horizontal"
-									android:gravity="center">
+									android:orientation="vertical"
+									android:paddingLeft="25dp"
+									android:paddingRight="35dp">
 
-									<LinearLayout
+									<TextView
 										android:layout_height="wrap_content"
 										android:layout_width="wrap_content"
-										android:orientation="vertical"
-										android:paddingRight="50dp"
-										android:layout_marginLeft="35dp">
-
-										<TextView
-											android:layout_height="wrap_content"
-											android:layout_width="wrap_content"
-											android:text="Text"
-											android:textColor="#000000"
-											android:id="@+id/indexpageaTextView_count_total"
-											android:textSize="25sp"/>
-
-									</LinearLayout>
-
-									<LinearLayout
-										android:layout_height="wrap_content"
-										android:layout_width="wrap_content"
-										android:orientation="vertical"
-										android:paddingLeft="25dp"
-										android:paddingRight="35dp">
-
-										<TextView
-											android:layout_height="wrap_content"
-											android:layout_width="wrap_content"
-											android:text="Text"
-											android:textColor="#000000"
-											android:id="@+id/indexpageaTextView_total"
-											android:gravity="center"
-											android:textSize="18sp"/>
-
-									</LinearLayout>
+										android:text="Text"
+										android:textColor="#000000"
+										android:id="@+id/indexpageaTextView_count_today"
+										android:gravity="center"
+										android:textSize="25sp"/>
 
 								</LinearLayout>
 
 							</LinearLayout>
 
-						</LinearLayout>
+							<LinearLayout
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:orientation="horizontal"
+								android:gravity="center"
+								android:layout_below="@id/indexpage_line"
+								android:layout_centerHorizontal="true">
+
+								<LinearLayout
+									android:layout_height="wrap_content"
+									android:layout_width="wrap_content"
+									android:orientation="vertical"
+									android:paddingRight="50dp"
+									android:layout_marginLeft="35dp">
+
+									<TextView
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:text="Text"
+										android:textColor="#000000"
+										android:id="@+id/indexpageaTextView_count_total"
+										android:textSize="25sp"/>
+
+								</LinearLayout>
+
+								<LinearLayout
+									android:layout_height="wrap_content"
+									android:layout_width="wrap_content"
+									android:orientation="vertical"
+									android:paddingLeft="25dp"
+									android:paddingRight="35dp">
+
+									<TextView
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:text="Text"
+										android:textColor="#000000"
+										android:id="@+id/indexpageaTextView_total"
+										android:gravity="center"
+										android:textSize="18sp"/>
+
+								</LinearLayout>
+
+							</LinearLayout>
+
+						</RelativeLayout>
 
 						<LinearLayout
 							android:layout_height="wrap_content"
