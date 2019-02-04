@@ -5,9 +5,9 @@ import android.app.*;
 import android.content.*;
 import android.content.pm.*;
 import android.graphics.*;
+import android.graphics.drawable.*;
 import android.net.*;
 import android.os.*;
-import android.support.v4.graphics.drawable.*;
 import android.support.v4.view.*;
 import android.support.v4.widget.*;
 import android.support.v7.app.*;
@@ -44,8 +44,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.View.OnClickListener;
 import io.reactivex.Observer;
-import lance.liang.group.latina.Config;
-import jp.wasabeef.glide.transformations.gpu.*;				
+import lance.liang.group.latina.Config;				
 
 public class MainActivity extends AppCompatActivity {
     private MainPagerAdapter mainPagerAdapter;
@@ -990,20 +989,28 @@ public class MainActivity extends AppCompatActivity {
 					return;
 				
 				String title = "", text = "";
+				Drawable dr = null;
+				
 				if (user_count == 1) {
 					MessageData m = messages.get(messages.size() - 1);
 					title = m.username;
 					text = m.text;
 					if (messages.size() > 1)
 						title = title + " (" + messages.size() + " messages)";
+					if (MyApplication.getMyApplication().imageMap.keySet().contains(m.username))
+						dr = (Drawable) MyApplication.getMyApplication().imageMap.get(m.username);
 				} else {
 					title = "" + user_count + " users sent you " + messages.size() + " messages";
 					text = muser + ": " + messages.get(messages.size() - 1).text;
 				}
 				Notification.Builder builder = new Notification.Builder(MainActivity.this)
-					.setSmallIcon(R.drawable.image_download)
+					//.setSmallIcon(R.drawable.image_download)
 					.setContentTitle(title)
 					.setContentText(text);
+				if (dr != null)
+					builder.setLargeIcon(((BitmapDrawable) dr).getBitmap());
+				else
+					builder.setLargeIcon(Icon.createWithResource(MainActivity.this, R.mipmap.ic_launcher));
 				mNotificationManager.notify(Color.parseColor("#66CCFF"), builder.build());
 				
 				//Config config = Config.get(getApplicationContext());

@@ -1,10 +1,10 @@
 package lance.liang.group.latina;
 import android.app.*;
 import android.content.*;
+import android.graphics.*;
+import android.graphics.drawable.*;
 import com.lzy.okgo.*;
 import java.util.*;
-import android.graphics.*;
-import android.content.res.*;
 
 public class MyApplication extends Application
 {
@@ -12,6 +12,7 @@ public class MyApplication extends Application
 	private static MyApplication instance;
 	public List<String> uploadTags = new ArrayList<String>();
 	String defaultPrinterGid = "1";
+	public Map imageMap = new HashMap<String, Drawable>();
 
 	//@Override
 	Typeface font_text;

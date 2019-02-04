@@ -66,10 +66,10 @@ class MainAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = inflater.inflate(R.layout.item_main, null);
-		ItemBeanMain bean = list.get(position);
+		final ItemBeanMain bean = list.get(position);
 		if (bean.room_type.equals("printer"))
 			return new View(pcontext);
-		ImageView im = (ImageView) view.findViewById(R.id.itemmainImageView);
+		final ImageView im = (ImageView) view.findViewById(R.id.itemmainImageView);
 		//im.setImageResource(bean.image);
 		((TextView) view.findViewById(R.id.itemmainTextView_title)).setText(bean.title);
 		((TextView) view.findViewById(R.id.itemmainTextView_content)).setText(bean.content);
@@ -82,11 +82,19 @@ class MainAdapter extends BaseAdapter
 			text_unread.setText("" + bean.unread);
 		else
 			text_unread.setVisibility(View.GONE);
-
+		
+		SimpleTarget target_main = new SimpleTarget<Drawable>() {
+			@Override
+			public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
+				im.setImageDrawable(p1);
+				MyApplication.getMyApplication().imageMap.put("(GROUP)" + bean.gid, p1);
+			}
+		};
+		
 		Glide.with(pcontext).load(bean.head)
 			.apply(new RequestOptions().circleCrop())
 			.transition(DrawableTransitionOptions.withCrossFade())
-			.into(im);
+			.into(target_main);
 
 		return view;
 	}
@@ -207,7 +215,7 @@ class ChatAdapter extends BaseAdapter
 		
 		((TextView) view.findViewById(R.id.itemchatframeTextView_username)).setText(bean.username);
 		//((TextView) view.findViewById(R.id.itemchatframeTextView_time)).setText(bean.time);
-		ImageView head = (ImageView) view.findViewById(R.id.itemchatframeImageView_head);
+		final ImageView head = (ImageView) view.findViewById(R.id.itemchatframeImageView_head);
 		
 		String str_time = bean.time;
 		TextView text_time = (TextView) view.findViewById(R.id.itemchatframeTextView_time);
@@ -219,12 +227,19 @@ class ChatAdapter extends BaseAdapter
 			}
 		}
 		
+		SimpleTarget target_head = new SimpleTarget<Drawable>() {
+			@Override
+			public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
+				MyApplication.getMyApplication().imageMap.put(bean.username, p1);
+				head.setImageDrawable(p1);
+			}
+		};
 		
 		Glide.with(pcontext)
 			.load(bean.head_url)
 			.apply(new RequestOptions().circleCrop().placeholder(R.drawable.image_blank))
 			.transition(DrawableTransitionOptions.withCrossFade())
-			.into(head);
+			.into(target_head);
 
 		if (bean.type.equals("text")) {
 			frame = inflater.inflate(R.layout.item_frame_text, null);
