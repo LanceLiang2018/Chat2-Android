@@ -944,7 +944,7 @@ public class MainActivity extends AppCompatActivity {
 				public void run() {
 					MessageManager();
 				}
-			}, 0, 10000);
+			}, 0, 3000);
 	}
 
 	void stopMessageManager() {
@@ -983,6 +983,7 @@ public class MainActivity extends AppCompatActivity {
 						m.text = "[Image]";
 					if (m.type.equals("file"))
 						m.text = "[File]";
+					messages.remove(i);
 					messages.add(i, m);
 				}
 				if (user_count == 0)
@@ -1005,12 +1006,15 @@ public class MainActivity extends AppCompatActivity {
 					.setContentText(text);
 				mNotificationManager.notify(Color.parseColor("#66CCFF"), builder.build());
 				
-				Config config = Config.get(getApplicationContext());
-				config.data.settings.unreadMid = unreadMid;
-				config.save();
+				//Config config = Config.get(getApplicationContext());
+				//config.data.settings.unreadMid = unreadMid;
+				//config.save();
 			}
 		};
 		int unreadMid = Config.get(getApplicationContext()).data.settings.unreadMid;
+		if (unreadMid == 0) {
+			return;
+		}
 		Communication.getComm(this).postWithAuth(Communication.GET_MESSAGES, 
 			Utils.ContentPut("since", "" + unreadMid), 
 			callback_message);

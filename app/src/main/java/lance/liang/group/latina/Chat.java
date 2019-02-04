@@ -593,8 +593,11 @@ public class Chat extends AppCompatActivity
 							}
 							MyDB.get(Chat.this).saveMessage(tmp);
 							refreshNow(tmp);
-							Config config = Config.get(getApplicationContext());
-							config.data.settings.unreadMid = max_mid;
+							if (max_mid != 0) {
+								Config config = Config.get(getApplicationContext());
+								config.data.settings.unreadMid = max_mid;
+								config.save();
+							}
 						}
 					}
 				});
