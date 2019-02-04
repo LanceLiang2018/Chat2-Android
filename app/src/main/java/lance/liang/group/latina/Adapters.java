@@ -611,9 +611,9 @@ class LeftAdapter extends BaseAdapter
 		ImageView im = buf.get(position);
 		if (im == null) {
 			im = (ImageView) view.findViewById(R.id.itemleftImageView);
-			im.setImageResource(bean.item.image);
 			buf.add(position, im);
 		}
+		im.setImageResource(bean.item.image);
 		view.setTag(bean);
 
 		return view;

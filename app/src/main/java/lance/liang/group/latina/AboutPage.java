@@ -26,7 +26,7 @@ public class AboutPage extends AppCompatActivity
 		setContentView(R.layout.about_view);
 		
 		ActionBar bar = getSupportActionBar();
-		bar.setTitle("Abour us");
+		bar.setTitle("About us");
 		bar.setDisplayHomeAsUpEnabled(true);
 		bar.setHomeButtonEnabled(true);
 		

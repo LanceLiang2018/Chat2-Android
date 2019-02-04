@@ -574,7 +574,14 @@ public class Chat extends AppCompatActivity
 								//								 message.text, message.head, message.type));
 							//}
 							//adp.notifyDataSetChanged();
+							Collections.sort(result.data.message, new Comparator<MessageData>() {
+									@Override
+									public int compare(MessageData p1, MessageData p2) {
+										return ("" + p1.mid).compareTo("" + p2.mid);
+									}
+								});
 							List<MessageData> tmp = new ArrayList<>();
+							int max_mid = 0;
 							for (MessageData m: result.data.message)
 							{
 								if (m.type.equals("file")) {
@@ -582,13 +589,12 @@ public class Chat extends AppCompatActivity
 									m.text = m.text.substring(m.text.lastIndexOf("/") + 1, m.text.length());
 								}
 								tmp.add(m);
+								max_mid = Utils.max(max_mid, m.mid);
 							}
 							MyDB.get(Chat.this).saveMessage(tmp);
 							refreshNow(tmp);
-						}
-						else
-						{
-
+							Config config = Config.get(getApplicationContext());
+							config.data.settings.unreadMid = max_mid;
 						}
 					}
 				});

@@ -20,13 +20,6 @@ public class Splash extends AppCompatActivity
 		
 		VideoView vv = (VideoView) findViewById(R.id.splashVideoView);
 		
-		if (Config.get(this).data.settings.firstStart == 1) {
-			Config config = Config.get(this);
-			config.data.settings.firstStart = 0;
-			config.data.settings.lastPrintDate = new MyGetTime().date();
-			config.save();
-		}
-		
 		if (Config.get(this).data.settings.isShowSplash == 1)
 		{
 			Thread myThread = new Thread() {//创建子线程 

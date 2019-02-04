@@ -92,6 +92,9 @@ public class Utils
 		v.setLayoutParams(params);
 	}
 	
+	public static int max(int a, int b) {
+		return a > b ? a : b;
+	}
 }
 class Content {
 	public ContentValues val;

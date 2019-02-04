@@ -161,6 +161,18 @@ public class MainActivity extends AppCompatActivity {
 		font_num = Typeface.createFromAsset(getAssets(), "num.ttf");
 		MyApplication.getMyApplication().font_text =  Typeface.createFromAsset(getAssets(), "miao.ttf");
 		
+		if (Config.get(this).data.settings.firstStart == 1) {
+			Config config = Config.get(this);
+			config.data.settings.firstStart = 0;
+			config.data.settings.lastPrintDate = new MyGetTime().date();
+			config.save();
+			
+			Bundle bundle = new Bundle();
+			bundle.putString("title", "Welcome");
+			MyApplication.getMyApplication().putObject("data", MenuData.listAbout);
+			startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle), code_settings);
+		}
+		
 		//Communication.test(this);
 		
 		// Index
@@ -930,9 +942,9 @@ public class MainActivity extends AppCompatActivity {
 		timer_message.schedule(new TimerTask() {
 				@Override
 				public void run() {
-					//MessageManager();
+					MessageManager();
 				}
-			}, 0, 3000);
+			}, 0, 10000);
 	}
 
 	void stopMessageManager() {
@@ -946,11 +958,62 @@ public class MainActivity extends AppCompatActivity {
 		StringCallback callback_message = new StringCallback() {
 			@Override
 			public void onSuccess(Response<String> p1) {
+				ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+				NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+				
+				int unreadMid = Config.get(getApplicationContext()).data.settings.unreadMid;
+				
+				if (result.code != 0)
+					return;
+				
+				List<MessageData> messages = result.data.message;
+				int user_count = 0;
+				String muser = null;
+				for (int i=0; i<messages.size(); i++) {
+					MessageData m = messages.get(i);
+					unreadMid = Utils.max(unreadMid, m.mid);
+					if (muser == null) {
+						muser = m.username;
+						user_count++;
+					}
+					if (!m.username.equals(muser)){
+						user_count++;
+					}
+					if (m.type.equals("image"))
+						m.text = "[Image]";
+					if (m.type.equals("file"))
+						m.text = "[File]";
+					messages.add(i, m);
+				}
+				if (user_count == 0)
+					return;
+				
+				String title = "", text = "";
+				if (user_count == 1) {
+					MessageData m = messages.get(messages.size() - 1);
+					title = m.username;
+					text = m.text;
+					if (messages.size() > 1)
+						title = title + " (" + messages.size() + " messages)";
+				} else {
+					title = "" + user_count + " users sent you " + messages.size() + " messages";
+					text = muser + ": " + messages.get(messages.size() - 1).text;
+				}
+				Notification.Builder builder = new Notification.Builder(MainActivity.this)
+					.setSmallIcon(R.drawable.image_download)
+					.setContentTitle(title)
+					.setContentText(text);
+				mNotificationManager.notify(Color.parseColor("#66CCFF"), builder.build());
+				
 				Config config = Config.get(getApplicationContext());
-
+				config.data.settings.unreadMid = unreadMid;
+				config.save();
 			}
 		};
-		Communication.getComm(this).postWithAuth(Communication.GET_MESSAGES, new ContentValues(), callback_message);
+		int unreadMid = Config.get(getApplicationContext()).data.settings.unreadMid;
+		Communication.getComm(this).postWithAuth(Communication.GET_MESSAGES, 
+			Utils.ContentPut("since", "" + unreadMid), 
+			callback_message);
 	}
 
 	void initUploadManager() {

@@ -183,9 +183,29 @@ public class Settings extends AppCompatActivity
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
-					Config config = Config.get(getApplicationContext());
-					config.data.settings.defaultPrinter = edit.getText().toString();
-					config.save();
+					ContentValues params = new ContentValues();
+					params.put("auth", Config.get(Settings.this).data.user.auth);
+					params.put("friend", String.valueOf(edit.getText()));
+					Communication.getComm(Settings.this).post(Communication.MAKE_FRIENDS, params, 
+						new StringCallback() {
+							@Override
+							public void onSuccess(Response<String> p1) {
+								ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+								if (result.code == 0 || result.code == 8) {
+									Config config = Config.get(getApplicationContext());
+									config.data.settings.defaultPrinter = edit.getText().toString();
+									config.save();
+									new AlertDialog.Builder(Settings.this)
+										.setMessage("Success")
+										.show();
+								}
+								else {
+									new AlertDialog.Builder(Settings.this)
+										.setMessage(result.message + " (Code: " + result.code + ")")
+										.show();									
+								}
+							}
+						});
 				}
 			})
 			.setNegativeButton("Cancel", null)

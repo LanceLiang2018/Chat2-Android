@@ -41,7 +41,7 @@ public class Signup extends AppCompatActivity
 		check_printer = (CheckBox) findViewById(R.id.signupCheckBox_is_printer);
 		
 		check_read.setChecked(true);
-		check_read.setText("I have read License");
+		//check_read.setText("I have read License");
 		
 		ActionBar bar = getSupportActionBar();
 		bar.setTitle("Sign up");
