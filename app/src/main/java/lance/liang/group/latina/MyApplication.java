@@ -10,9 +10,10 @@ public class MyApplication extends Application
 {
 	Map map = new HashMap();
 	private static MyApplication instance;
-	public List<String> uploadTags = new ArrayList<String>();
-	String defaultPrinterGid = "1";
-	public Map imageMap = new HashMap<String, Drawable>();
+	//public List<String> uploadTags = new ArrayList<String>();
+	String defaultPrinterGid = "0";
+	public Map imageMap = new HashMap<String, Bitmap>();
+	public List<RoomData> list_rooms = null;
 
 	//@Override
 	Typeface font_text;
@@ -47,7 +48,7 @@ public class MyApplication extends Application
 		return getApplicationContext();
 	}
 	
-	public List<String> getUploadTags() {
-		return uploadTags;
-	}
+	//public List<String> getUploadTags() {
+	//	return uploadTags;
+	//}
 }

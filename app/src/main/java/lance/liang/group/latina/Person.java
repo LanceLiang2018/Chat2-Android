@@ -26,6 +26,7 @@ import jp.wasabeef.glide.transformations.*;
 
 import io.reactivex.Observer;
 import jp.wasabeef.glide.transformations.gpu.*;
+import com.zhihu.matisse.internal.entity.*;
 
 public class Person extends AppCompatActivity
 {
@@ -125,7 +126,8 @@ public class Person extends AppCompatActivity
 										Matisse.from(Person.this)
 											.choose(MimeType.ofImage(), false)
 											.countable(false)
-											.capture(false)
+											.capture(true)
+											.captureStrategy(new CaptureStrategy(true, "lance.liang.group.latina.provider"))
 											.maxSelectable(1)
 											.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 											.thumbnailScale(0.85f)
@@ -147,9 +149,9 @@ public class Person extends AppCompatActivity
 				@Override
 				public void onClick(View p1) {
 					new AlertDialog.Builder(Person.this)
-						.setMessage("Add him/she into frends?")
-						.setNegativeButton("No", null)
-						.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+						.setMessage("和Ta加为好友？")
+						.setNegativeButton("不要", null)
+						.setPositiveButton("好的", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface p1, int p2) {
 								Communication.getComm(getApplicationContext()).postWithAuth(Communication.MAKE_FRIENDS, 
@@ -160,7 +162,7 @@ public class Person extends AppCompatActivity
 											ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
 											if (result.code == 0)
 												new AlertDialog.Builder(getApplicationContext())
-													.setMessage("OK")
+													.setMessage("好了")
 													.show();
 										}
 									});

@@ -42,9 +42,11 @@
 						android:padding="10dp">
 
 						<ImageView
-							android:layout_height="120dp"
-							android:layout_width="120dp"
-							android:src="@drawable/icon_printer"/>
+							android:layout_height="140dp"
+							android:layout_width="140dp"
+							android:src="@drawable/image_round"
+							android:id="@+id/person_head_round"
+							android:alpha="0.6"/>
 
 						<ImageView
 							android:layout_height="100dp"

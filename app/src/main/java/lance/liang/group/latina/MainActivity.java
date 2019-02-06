@@ -158,7 +158,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_viewpager);
 		
 		font_num = Typeface.createFromAsset(getAssets(), "num.ttf");
-		MyApplication.getMyApplication().font_text =  Typeface.createFromAsset(getAssets(), "miao.ttf");
+		if (!Config.get(this).data.settings.font.equals("default"))
+			MyApplication.getMyApplication().font_text = Typeface.createFromAsset(getAssets(),
+				Config.get(this).data.settings.font);
+		else
+			MyApplication.getMyApplication().font_text = null;
 		
 		if (Config.get(this).data.settings.firstStart == 1) {
 			Config config = Config.get(this);
@@ -181,10 +185,13 @@ public class MainActivity extends AppCompatActivity {
 		index_box = (LinearLayout) index_base.findViewById(R.id.indexpage_base_box);
 		hitokoto = (TextView) index_base.findViewById(R.id.indexpage_hitokoto);
 		hitokoto_from = (TextView) index_base.findViewById(R.id.indexpage_hitokoto_from);
+		hitokoto.setTypeface(font_num);
+		hitokoto_from.setTypeface(font_num);
 		index_photo = (ImageView) index_base.findViewById(R.id.indexpage_photo);
 		final TextView hitokoto_text_span = (TextView) index_base.findViewById(R.id.indexpage_hitokoto_text_span);
 		final TextView hitokoto_from_span = (TextView) index_base.findViewById(R.id.indexpage_hitokoto_from_text_span);
 
+		/*
 		index_photo.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View p1) {
@@ -215,7 +222,34 @@ public class MainActivity extends AppCompatActivity {
 					
 				}
 			});
-		
+		*/
+		index_photo.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					if (MyApplication.getMyApplication().defaultPrinterGid.equals("0")) {
+						new AlertDialog.Builder(MainActivity.this).setTitle("请设置默认打印机")
+							.setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface p1, int p2) {
+									MyApplication.getMyApplication().putObject("data", MenuData.listPrinter);
+									Bundle bundle_ = new Bundle();
+									bundle_.putString("title", "Printer");
+									startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle_), code_settings);
+								}
+							})
+							.setNegativeButton("取消", null)
+							.show();
+							return;
+					}
+					
+					Bundle bundle_chat = new Bundle();
+					bundle_chat.putInt("gid", Integer.parseInt( MyApplication.getMyApplication().defaultPrinterGid));
+					bundle_chat.putInt("print", 1);
+					bundle_chat.putString("name", Config.get(getApplicationContext()).data.settings.defaultPrinter);
+					startActivity(new Intent().putExtras(bundle_chat).setClass(MainActivity.this, Chat.class));
+				}
+				
+		});
 		//MyApplication myapp = (MyApplication) this.getApplication();
 
 		/*
@@ -675,6 +709,7 @@ public class MainActivity extends AppCompatActivity {
 						//config.data.rooms_str = room_str;
 						//config.save();
 						insertRooms(result.data.room_data);
+						MyApplication.getMyApplication().list_rooms = result.data.room_data;
 					}
 					if (result.code == 2)
 					{
@@ -727,6 +762,10 @@ public class MainActivity extends AppCompatActivity {
 				}
 				break;
 			case code_settings:
+				if (resultCode == 1)
+					this.recreate();
+				if (resultCode == 2)
+					this.refresh();
 				try {
 					String str = data.getStringExtra("command");
 					if (str.equals("Recreate")) {
@@ -740,6 +779,7 @@ public class MainActivity extends AppCompatActivity {
 					e.printStackTrace();
 				}
 				break;
+			/*
 			case code_pick_photo:
 				if (resultCode != RESULT_OK)
 					break;
@@ -837,6 +877,7 @@ public class MainActivity extends AppCompatActivity {
 						}
 					}).start();
 				break;
+			*/
 			default:
 				break;
 		}
@@ -966,6 +1007,9 @@ public class MainActivity extends AppCompatActivity {
 					return;
 				
 				List<MessageData> messages = result.data.message;
+				
+				if (messages == null || (messages != null && messages.size() == 0))
+					return;
 				int user_count = 0;
 				String muser = null;
 				for (int i=0; i<messages.size(); i++) {
@@ -989,7 +1033,7 @@ public class MainActivity extends AppCompatActivity {
 					return;
 				
 				String title = "", text = "";
-				Drawable dr = null;
+				Bitmap dr = null;
 				
 				if (user_count == 1) {
 					MessageData m = messages.get(messages.size() - 1);
@@ -998,7 +1042,7 @@ public class MainActivity extends AppCompatActivity {
 					if (messages.size() > 1)
 						title = title + " (" + messages.size() + " messages)";
 					if (MyApplication.getMyApplication().imageMap.keySet().contains(m.username))
-						dr = (Drawable) MyApplication.getMyApplication().imageMap.get(m.username);
+						dr = (Bitmap) MyApplication.getMyApplication().imageMap.get(m.username);
 				} else {
 					title = "" + user_count + " users sent you " + messages.size() + " messages";
 					text = muser + ": " + messages.get(messages.size() - 1).text;
@@ -1008,9 +1052,9 @@ public class MainActivity extends AppCompatActivity {
 					.setContentTitle(title)
 					.setContentText(text);
 				if (dr != null)
-					builder.setLargeIcon(((BitmapDrawable) dr).getBitmap());
+					builder.setSmallIcon(Icon.createWithBitmap(dr));
 				else
-					builder.setLargeIcon(Icon.createWithResource(MainActivity.this, R.mipmap.ic_launcher));
+					builder.setSmallIcon(Icon.createWithResource(MainActivity.this, R.mipmap.ic_launcher));
 				mNotificationManager.notify(Color.parseColor("#66CCFF"), builder.build());
 				
 				//Config config = Config.get(getApplicationContext());

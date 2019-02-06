@@ -33,24 +33,24 @@ public class MenuData
 	public static enum Settings {
 		MyInfo(new ItemBeanSettings("我的信息"), ID.ME_MY_INFO),
 		SetInfo(new ItemBeanSettings("信息设置"), ID.ME_SET_INFO),
-		MakeFriends(new ItemBeanSettings("Make Friends"), ID.ME_MAKE_FRIENDS),
-		NewRoom(new ItemBeanSettings("New Room"), ID.ME_NEW_ROOM),
-		NewUser(new ItemBeanSettings("New User"), ID.ME_NEW_USER),
-		Logout(new ItemBeanSettings("Logout"), ID.ME_LOGOUT),
-		Login(new ItemBeanSettings("Login"), ID.ME_LOGIN),
+		MakeFriends(new ItemBeanSettings("新朋友"), ID.ME_MAKE_FRIENDS),
+		NewRoom(new ItemBeanSettings("创建房间"), ID.ME_NEW_ROOM),
+		NewUser(new ItemBeanSettings("新用户"), ID.ME_NEW_USER),
+		Logout(new ItemBeanSettings("注销"), ID.ME_LOGOUT),
+		Login(new ItemBeanSettings("重新登陆"), ID.ME_LOGIN),
 		
 		SetTheme(new ItemBeanSettings("主题"), ID.SETTINGS_THEME),
 		SetServer(new ItemBeanSettings("服务器"), ID.SETTINGS_SERVER),
 		SetFont(new ItemBeanSettings("字体"), ID.SETTINGS_FONT),
-		SetSplash(new ItemBeanSettings("Spash"), ID.SETTINGS_SPLASH),
-		SetBg(new ItemBeanSettings("Background"), ID.SETTINGS_BG),
+		SetSplash(new ItemBeanSettings("进入动画"), ID.SETTINGS_SPLASH),
+		SetBg(new ItemBeanSettings("主页背景"), ID.SETTINGS_BG),
 		
-		SetDefaultPrinter(new ItemBeanSettings("Default Printer"), ID.PRINTER_DEFAULT),
-		AddPrinter(new ItemBeanSettings("Add New Printer"), ID.PRINTER_ADD),
+		SetDefaultPrinter(new ItemBeanSettings("默认打印机"), ID.PRINTER_DEFAULT),
+		AddPrinter(new ItemBeanSettings("添加打印机"), ID.PRINTER_ADD),
 		
-		MyFiles(new ItemBeanSettings("My Files"), ID.ADDS_MY_FILES),
+		MyFiles(new ItemBeanSettings("我的文件"), ID.ADDS_MY_FILES),
 		
-		AboutUs(new ItemBeanSettings("About us"), ID.ABOUT_PAGE);
+		AboutUs(new ItemBeanSettings("关于我们"), ID.ABOUT_PAGE);
 		
 		ItemBeanSettings item;
 		int id;

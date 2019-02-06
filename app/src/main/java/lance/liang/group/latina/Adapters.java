@@ -87,7 +87,7 @@ class MainAdapter extends BaseAdapter
 			@Override
 			public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
 				im.setImageDrawable(p1);
-				MyApplication.getMyApplication().imageMap.put("(GROUP)" + bean.gid, p1);
+				MyApplication.getMyApplication().imageMap.put("(GROUP)" + bean.gid, ((BitmapDrawable)p1).getBitmap());
 			}
 		};
 		
@@ -230,7 +230,7 @@ class ChatAdapter extends BaseAdapter
 		SimpleTarget target_head = new SimpleTarget<Drawable>() {
 			@Override
 			public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
-				MyApplication.getMyApplication().imageMap.put(bean.username, p1);
+				MyApplication.getMyApplication().imageMap.put(bean.username, ((BitmapDrawable)p1).getBitmap());
 				head.setImageDrawable(p1);
 			}
 		};
@@ -247,7 +247,10 @@ class ChatAdapter extends BaseAdapter
 			LinearLayout box = (LinearLayout) frame.findViewById(R.id.itemframetextLinearLayout_box);
 			
 			message.setText(bean.message);
-			message.setTypeface(MyApplication.getMyApplication().font_text);
+			if (MyApplication.getMyApplication().font_text != null)
+				message.setTypeface(MyApplication.getMyApplication().font_text);
+			else
+				message.setTypeface(Typeface.DEFAULT);
 			//box.setBackgroundResource(Config.get(pcontext).data.settings.colorBg);
 			//message.setTextColor(Config.get(pcontext).data.settings.colorFt);
 

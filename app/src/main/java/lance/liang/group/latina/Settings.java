@@ -16,13 +16,17 @@ import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import com.tbruyelle.rxpermissions2.*;
 import com.zhihu.matisse.*;
+import com.zhihu.matisse.internal.entity.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import java.io.*;
 import lance.liang.group.latina.MenuData.*;
 
 import android.app.AlertDialog;
 import android.support.v7.app.ActionBar;
-import java.io.*;
+import android.database.*;
+import java.util.List;
+import java.util.Arrays;
 
 public class Settings extends AppCompatActivity
 {
@@ -98,32 +102,32 @@ public class Settings extends AppCompatActivity
 					break;
 				case ID.SETTINGS_SERVER:
 					mySetServer();
-					setResult(0, new Intent().putExtra("command", "Recreate"));
+					setResult(1, new Intent().putExtra("command", "Recreate"));
 					//Settings.this.finish();
 					break;
 				case ID.SETTINGS_FONT:
-					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
-					setResult(0, new Intent().putExtra("command", "Refresh"));
+					myFont();
+					setResult(1, new Intent().putExtra("command", "Refresh"));
 					//Settings.this.finish();
 					break;
 				case ID.SETTINGS_SPLASH:
 					mySetSplash();
-					setResult(0, new Intent().putExtra("command", "Refresh"));
+					setResult(2, new Intent().putExtra("command", "Refresh"));
 					//Settings.this.finish();
 					break;
 				case ID.SETTINGS_THEME:
 					mySetTheme();
-					setResult(0, new Intent().putExtra("command", "Recreate"));
+					setResult(1, new Intent().putExtra("command", "Recreate"));
 					//Settings.this.finish();
 					break;
 				case ID.PRINTER_ADD:
 					myAddPrinter();
-					setResult(0, new Intent().putExtra("command", "Refresh"));
+					setResult(2, new Intent().putExtra("command", "Refresh"));
 					//Settings.this.finish();
 					break;
 				case ID.PRINTER_DEFAULT:
 					mySetDefaultPrinter();
-					setResult(0, new Intent().putExtra("command", "Refresh"));
+					setResult(2, new Intent().putExtra("command", "Refresh"));
 					//Settings.this.finish();
 					break;
 				case ID.ADDS_MY_FILES:
@@ -148,7 +152,8 @@ public class Settings extends AppCompatActivity
 								Matisse.from(Settings.this)
 									.choose(MimeType.ofImage(), false)
 									.countable(false)
-									.capture(false)
+									.capture(true)
+									.captureStrategy(new CaptureStrategy(true, "lance.liang.group.latina.provider"))
 									.maxSelectable(1)
 									.restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 									.thumbnailScale(0.85f)
@@ -171,6 +176,103 @@ public class Settings extends AppCompatActivity
 		super.onDestroy();
 	}
 	
+	
+	public void myFont() {
+		String[] select_disp = {"Local", "Remote"};
+		new AlertDialog.Builder(Settings.this)
+			.setItems(select_disp, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					if (p2 == 0)
+						myFontLocal();
+					if (p2 == 1)
+						myFontRemote();
+				}
+			})
+			.show();
+	}
+	
+	public void myFontRemote() {
+		View sview = LayoutInflater.from(Settings.this).inflate(R.layout.settings_font_remote, null);
+		Spinner spinner = (Spinner) sview.findViewById(R.id.settingsfontremoteSpinner);
+		final EditText edit = (EditText) sview.findViewById(R.id.settingsfontremoteEditText);
+		final SpinnerAdapter sadp = new SpinnerAdapter() {
+			List<String> data = Arrays.asList(new String[] {"微软雅黑", "宋体", "仿宋", "黑体",
+												  "Microsoft YaHei Mono", "幼圆", "楷体", "隶书"});
+			@Override
+			public void registerDataSetObserver(DataSetObserver p1) {}
+			@Override
+			public void unregisterDataSetObserver(DataSetObserver p1) {}
+			@Override
+			public int getCount() { return data.size(); }
+			@Override
+			public Object getItem(int p1) { return data.get(p1); }
+			@Override
+			public long getItemId(int p1) { return p1; }
+			@Override
+			public boolean hasStableIds() { return true; }
+			@Override
+			public View getView(int p1, View p2, ViewGroup p3) {
+				TextView text = new TextView(p3.getContext());
+				text.setText(data.get(p1));
+				return text;
+			}
+			@Override
+			public int getItemViewType(int p1) { return 1; }
+			@Override
+			public int getViewTypeCount() { return 1; }
+			@Override
+			public boolean isEmpty() { return false; }
+			@Override
+			public View getDropDownView(int p1, View p2, ViewGroup p3) { return null; }
+		};
+		spinner.setAdapter(sadp);
+		new AlertDialog.Builder(Settings.this)
+			.setTitle("Set remote font")
+			.setView(sview)
+			.setNegativeButton("Cancle", null)
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					List<RoomData> list_rooms = MyApplication.getMyApplication().list_rooms;
+					for (RoomData r: list_rooms)
+						if (!r.room_type.equals("printer"))
+							list_rooms.remove(r);
+					String family = (String) sadp.getItem(p2);
+					int size = Integer.parseInt(edit.getText().toString());
+					FontSetting option = new FontSetting();
+					option.font_size = size;
+					option.font_family = family;
+					String text = new Gson().toJson(option, FontSetting.class);
+					for (RoomData r: list_rooms) {
+						Communication.getComm(getApplicationContext()).postWithAuth(Communication.SEND_MESSAGE, 
+							Utils.ContentPut(Utils.ContentPut("gid", "" + r.gid), "text", text), 
+							new StringCallback() {
+								@Override
+								public void onSuccess(Response<String> p1){}
+							});
+					}
+				}
+			})
+			.show();
+	}
+	
+	public void myFontLocal() {	
+		String[] disp = {"Default", "miao", "hand-writting"};
+		final String[] fonts = {"default", "miao.ttf", "num.ttf"};
+		new AlertDialog.Builder(Settings.this)
+			.setTitle("Set Font")
+			.setItems(disp, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					Config config = Config.get(Settings.this);
+					config.data.settings.font = fonts[p2];
+					config.save();
+				}
+			})
+			.show();
+	}
+	
 	public void myFiles() {
 		startActivity(new Intent().setClass(Settings.this, MyFiles.class));
 	}
@@ -178,9 +280,9 @@ public class Settings extends AppCompatActivity
 	public void mySetDefaultPrinter() {
 		final EditText edit = new EditText(this);
 		edit.setText(Config.get(this).data.settings.defaultPrinter);
-		new AlertDialog.Builder(this).setTitle("Enter Defalut Printer Name:")
+		new AlertDialog.Builder(this).setTitle("设置默认打印机").setMessage("输入打印机用户名：")
 			.setView(edit)
-			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
 					ContentValues params = new ContentValues();
@@ -196,19 +298,19 @@ public class Settings extends AppCompatActivity
 									config.data.settings.defaultPrinter = edit.getText().toString();
 									config.save();
 									new AlertDialog.Builder(Settings.this)
-										.setMessage("Success")
+										.setMessage("设置成功")
 										.show();
 								}
 								else {
 									new AlertDialog.Builder(Settings.this)
-										.setMessage(result.message + " (Code: " + result.code + ")")
+										.setMessage(result.message + " (错误码: " + result.code + ")")
 										.show();									
 								}
 							}
 						});
 				}
 			})
-			.setNegativeButton("Cancel", null)
+			.setNegativeButton("取消", null)
 			.show();
 	}
 	
@@ -219,16 +321,17 @@ public class Settings extends AppCompatActivity
 	public static void myNewRoom(final Context context) {
 		final EditText edit = new EditText(context);
 		final CheckBox check = new CheckBox(context);
-		check.setText("Establish a public room for all users");
+		check.setText("建立一个公共房间");
 		check.setSelected(false);
 		LinearLayout view = new LinearLayout(context);
 		AlertDialog.Builder build = new AlertDialog.Builder(context);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.addView(edit);
 		view.addView(check);
-		build.setTitle("Input the name of Room:");
+		build.setTitle("创建房间");
+		build.setMessage("设置房间名字：");
 		build.setView(view);
-		build.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+		build.setPositiveButton("确定", new AlertDialog.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
 					ContentValues parames = new ContentValues();
@@ -258,9 +361,10 @@ public class Settings extends AppCompatActivity
 	public static void myJoinIn(final Context context) {
 		final EditText edit = new EditText(context);
 		new AlertDialog.Builder(context)
-			.setMessage("Input gid:")
+			.setTitle("加入房间")
+			.setMessage("输入房间号码(gid):")
 			.setView(edit)
-			.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+			.setPositiveButton("确定", new AlertDialog.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
 					ContentValues parames = new ContentValues();
@@ -282,7 +386,7 @@ public class Settings extends AppCompatActivity
 						});
 				}
 			})
-			.setNegativeButton("Cancel", null)
+			.setNegativeButton("取消", null)
 			.show();
 	}
 	
@@ -290,7 +394,8 @@ public class Settings extends AppCompatActivity
 		final EditText edit = new EditText(this);
 		final Context context = getApplicationContext();
 		new AlertDialog.Builder(this)
-			.setMessage("Input gid:")
+			.setTitle("加入房间")
+			.setMessage("输入房间号码(gid):")
 			.setView(edit)
 			.setPositiveButton("OK", new AlertDialog.OnClickListener() {
 				@Override
@@ -304,33 +409,37 @@ public class Settings extends AppCompatActivity
 							public void onSuccess(Response<String> response) {
 								ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
 								if (result.code == 0) {
-									Settings.this.recreate();
+									//Settings.this.recreate();
+									new AlertDialog.Builder(Settings.this)
+										.setMessage("加入成功")
+										.show();
 								}
 								else {
 									new AlertDialog.Builder(context)
-										.setMessage(result.message + " (Code: " + result.code + ")");
+										.setMessage(result.message + " (错误码: " + result.code + ")");
 								}
 							}
 						});
 				}
 			})
-			.setNegativeButton("Cancel", null)
+			.setNegativeButton("取消", null)
 			.show();
 	}
 	
 	private void myNewRoom() {
 		final EditText edit = new EditText(Settings.this);
 		final CheckBox check = new CheckBox(this);
-		check.setText("Establish a public room for all users");
+		check.setText("建立一个公共房间");
 		check.setSelected(false);
 		LinearLayout view = new LinearLayout(this);
 		AlertDialog.Builder build = new AlertDialog.Builder(Settings.this);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.addView(edit);
 		view.addView(check);
-		build.setTitle("Input the name of Room:");
+		build.setTitle("创建房间");
+		build.setMessage("设置房间名字：");
 		build.setView(view);
-		build.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+		build.setPositiveButton("确定", new AlertDialog.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
 					ContentValues parames = new ContentValues();
@@ -344,16 +453,20 @@ public class Settings extends AppCompatActivity
 								ResultData result = (new Gson()).fromJson(response.body().toString(), ResultData.class);
 								if (result.code == 0) {
 									Log.d("Chat 2", "Create Room: name:" + result.data.info.name + " gid: " + result.data.info.gid);
-									Settings.this.recreate();
+									//Settings.this.recreate();
+									new AlertDialog.Builder(Settings.this)
+										.setMessage("创建房间成功，名字："+result.data.info.name+"，gid号："+result.data.info.gid).show();
 								}
 								else {
 									Log.e("Chat 2", result.message + "(Code: " + result.code + ")");
+									new AlertDialog.Builder(Settings.this)
+										.setMessage(result.message + " (错误码: " + result.code + ")");
 								}
 							}
 						});
 				}
 			});
-		build.setNegativeButton("Cancel", null);
+		build.setNegativeButton("取消", null);
 		build.show();
 	}
 	
@@ -382,22 +495,22 @@ public class Settings extends AppCompatActivity
 			}
 		};
 		new AlertDialog.Builder(Settings.this)
-			.setTitle("Enter username:")
+			.setTitle("新朋友").setMessage("输入用户名：")
 			.setView(edit)
-			.setPositiveButton("Yes", listener)
-			.setNegativeButton("No", null)
+			.setPositiveButton("确定", listener)
+			.setNegativeButton("取消", null)
 			.show();
 		
 	}
 	
 	private void mySetTheme() {
-		final String[] disp = {"默认", "荷月", "惊蛰", "霜序", "岁馀", "纯净", "Pure Blue"};
+		final String[] disp = {"立春", "荷月", "惊蛰", "霜序", "岁馀", "小寒", "寒露"};
 		final int[] vals = {R.style.AppTheme01, R.style.AppTheme02, R.style.AppTheme03, R.style.AppTheme04, R.style.AppTheme05, R.style.AppTheme06, R.style.AppTheme07};
 		final int[] valsBg = {R.color.colorBg01, R.color.colorBg02, R.color.colorBg03, R.color.colorBg04, R.color.colorBg05, R.color.colorBg06, R.color.colorBg07};
 		final int[] valsFt = {R.color.colorFt01, R.color.colorFt02, R.color.colorFt03, R.color.colorFt04, R.color.colorFt05, R.color.colorFt06, R.color.colorFt07};
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);
-		builder.setTitle("Set Theme")
+		builder.setTitle("设置主题")
 			.setItems(disp, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
@@ -413,30 +526,23 @@ public class Settings extends AppCompatActivity
 		builder.show();
 	}
 	private void mySetServer() {
-		String[] disp = {"Remote", "Debug", "Local", "Lance's Server"};
+		String[] disp = {"远程(Release)", "调试", "本地(调试)", "Lance的远程服务器"};
 		final String[] vals = {
 			"https://lance-chatroom2.herokuapp.com/v3/api", 
 			"https://lance-latina-debug.herokuapp.com/v3/api", 
 			"http://0.0.0.0:5000/v3/api",
 			"http://lanceliang2018.xyz:5000/v3/api"};
 		AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);
-		builder.setTitle("Set Host")
+		builder.setTitle("设置服务器")
 			.setItems(disp, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
 					Config config = Config.get(Settings.this);
 					config.data.settings.server = vals[p2];
 					config.save();
-					Toast.makeText(Settings.this, "Change into host: " + config.data.settings.server, Toast.LENGTH_LONG).show();
+					Toast.makeText(Settings.this, "服务器设置为 " + config.data.settings.server, Toast.LENGTH_LONG).show();
 				}
 			});
-		builder.show();
-	}
-	
-	private void myAbout() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-		builder.setTitle("About");
-		builder.setMessage("https://github.com/LanceLiang2018/Chat2-Android/");
 		builder.show();
 	}
 	
@@ -452,8 +558,8 @@ public class Settings extends AppCompatActivity
 	
 	private void mySetSplash() {
 		new AlertDialog.Builder(Settings.this)
-			.setTitle("Set Splash")
-			.setPositiveButton("Show", new DialogInterface.OnClickListener() {
+			.setTitle("设置开始动画")
+			.setPositiveButton("显示", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
 					Config config = Config.get(getApplicationContext());
@@ -461,7 +567,7 @@ public class Settings extends AppCompatActivity
 					config.save();
 				}
 			})
-			.setNegativeButton("Hide", new DialogInterface.OnClickListener() {
+			.setNegativeButton("隐藏", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
 					Config config = Config.get(getApplicationContext());
@@ -504,7 +610,7 @@ public class Settings extends AppCompatActivity
 				BufferedOutputStream bis = new BufferedOutputStream(new FileOutputStream(bg));
 				bis.write(buf2);
 				bis.close();
-				Toast.makeText(this, "Restart the app please...", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "请(完全)重启应用...", Toast.LENGTH_LONG).show();
 			}
 			catch (Exception e) { return; }
 		}

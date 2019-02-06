@@ -44,7 +44,7 @@ public class Signup extends AppCompatActivity
 		//check_read.setText("I have read License");
 		
 		ActionBar bar = getSupportActionBar();
-		bar.setTitle("Sign up");
+		bar.setTitle("用户注册");
 		bar.setDisplayHomeAsUpEnabled(true);
 		bar.setHomeButtonEnabled(true);
 		
@@ -60,20 +60,20 @@ public class Signup extends AppCompatActivity
 				@Override
 				public void onClick(View p1) {
 					if (!check_read.isChecked()) {
-						new AlertDialog.Builder(Signup.this).setMessage("Check the \"Read it\" box please").show();
+						new AlertDialog.Builder(Signup.this).setMessage("请先阅读用户协议").show();
 						return;
 					}
 					String s1 = text_password.getText().toString();
 					String s2 = text_conform.getText().toString();
 					if (!s1.equals(s2)) {
 						AlertDialog.Builder builder = new AlertDialog.Builder(Signup.this);
-						builder.setMessage("Password do not ... Please Check.");
+						builder.setMessage("两次密码不一致");
 						builder.show();
 						return;
 					}
 					
 					AlertDialog.Builder builder = new AlertDialog.Builder(Signup.this);
-					builder.setMessage("Please wait...");
+					builder.setMessage("正在加载");
 					builder.setCancelable(false);
 					dialog = builder.create();
 					dialog.show();
@@ -93,8 +93,8 @@ public class Signup extends AppCompatActivity
 								if (result.code == 0)
 								{
 									AlertDialog.Builder build = new AlertDialog.Builder(Signup.this);
-									build.setMessage("Sign up successfully.");
-									build.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+									build.setMessage("注册成功");
+									build.setPositiveButton("确认", new AlertDialog.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface p1, int p2) {
 												Signup.this.finish();
@@ -105,8 +105,8 @@ public class Signup extends AppCompatActivity
 								else
 								{
 									AlertDialog.Builder build = new AlertDialog.Builder(Signup.this);
-									build.setMessage(result.message + " (Code: " + result.code + ")");
-									build.setPositiveButton("OK", null);
+									build.setMessage(result.message + " (错误码: " + result.code + ")");
+									build.setPositiveButton("了解", null);
 									build.show();
 								}
 							}
@@ -114,8 +114,8 @@ public class Signup extends AppCompatActivity
 							public void onError(Response<String> response) {
 								dialog.hide();
 								AlertDialog.Builder build = new AlertDialog.Builder(Signup.this);
-								build.setMessage("Connection Errors.");
-								build.setPositiveButton("OK", null);
+								build.setMessage("网络连接错误。检查网络。");
+								build.setPositiveButton("了解", null);
 								build.show();
 							}
 						});

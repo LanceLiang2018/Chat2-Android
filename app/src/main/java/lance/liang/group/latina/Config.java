@@ -27,17 +27,20 @@ class ConfigData
 		public int firstStart = 1;
 		public int count_today = 0, count_total = 0;
 		public String lastPrintDate = "00";
-		
 		public String defaultPrinter = "Printer";
-		
 		public String savePath = "Latina/";
-		
 		public int unreadMid = 0;
+		public String font = "miao.ttf";
+		
+		public String remoteFontFamily = "微软雅黑";
+		public int remoteFontSize = 10;
 	}
 	public Settings settings = new Settings();
 	public PersonData user = new PersonData();
 	//public List<RoomData> rooms = new ArrayList<RoomData>();
 	//public String rooms_str = "[]";
+	//['微软雅黑', '宋体', '仿宋', '黑体',
+	// 'Microsoft YaHei Mono', '幼圆', '楷体', '隶书']
 }
 
 public class Config

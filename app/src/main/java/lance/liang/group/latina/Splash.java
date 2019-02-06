@@ -70,7 +70,7 @@ public class Splash extends AppCompatActivity
 		File bg = new File(getExternalFilesDir("Background").getAbsolutePath() + "/background");
 		if (!bg.exists()) {
 			try {
-				InputStream is = getResources().getAssets().open("tengyuan.gif");
+				InputStream is = getResources().getAssets().open("background");
 				byte[] buf = new byte[is.available()];
 				is.read(buf);
 				is.close();

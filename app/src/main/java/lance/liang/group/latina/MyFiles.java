@@ -27,6 +27,11 @@ public class MyFiles extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.myfiles);
 		
+		ActionBar bar = getSupportActionBar();
+		bar.setDisplayHomeAsUpEnabled(true);
+		bar.setHomeButtonEnabled(true);
+		bar.setTitle("我的文件");
+		
 		RxPermissions rxPermissions = new RxPermissions(MyFiles.this);
 		rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 			.subscribe(new Observer<Boolean>() {
