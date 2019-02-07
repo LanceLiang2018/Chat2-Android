@@ -28,6 +28,7 @@ import io.reactivex.Observer;
 import android.widget.AdapterView.*;
 import com.zhihu.matisse.internal.entity.*;
 import kotlin.math.*;
+import java.nio.*;
 
 public class Chat extends AppCompatActivity
 {
@@ -114,7 +115,8 @@ public class Chat extends AppCompatActivity
 						.setTag(path);
 					new MyDB(Chat.this).saveMessage(message);
 					ContentResolver cr = Chat.this.getContentResolver();
-					String b64 = null;
+					String b64 = "";
+					/*
 					try {
 						InputStream is = cr.openInputStream(uri);
 						byte[] buf = new byte[is.available()];
@@ -124,16 +126,83 @@ public class Chat extends AppCompatActivity
 						Log.e("Chat 2", e.getMessage());
 						Toast.makeText(Chat.this, e.getMessage(), Toast.LENGTH_LONG).show();
 						return;
-					}
+					}*/
+					String newPath = getExternalFilesDir("Base64").getAbsolutePath() + "/" + uri.getLastPathSegment() + new MyGetTime().getInt() + ".b64";
+					final File out = new File(newPath);
+					InputStream is = null;
+					OutputStream os = null;
+					try { out.createNewFile(); is = cr.openInputStream(uri); os = new FileOutputStream(out); }
+					catch (Exception e) { return; }
+					BufferedInputStream bis = new BufferedInputStream(is);
+					BufferedOutputStream bos = new BufferedOutputStream(os);
+					//ByteBuffer bif = ByteBuffer.allocateDirect(bis.available());
+					byte[] buf = new byte[3 * 1000];
+					int len = 0;
+					try {
+						while ((len = bis.read(buf)) != -1) {
+							//b64 = b64 + Base64.encodeToString(
+							byte[] tmp = Base64.encode(buf, Base64.DEFAULT);
+							bos.write(tmp);
+						}
+						bis.close();
+						bos.close();
+					} catch (IOException e) { return; }
+					
 
 					ContentValues params = new ContentValues();
 					params.put("auth", Config.get(Chat.this).data.user.auth);
-					params.put("data", b64);
+//					params.put("data", b64);
 					params.put("filename", path.substring(path.lastIndexOf("/") + 1, path.length()));
-					UploadTask task = Communication.getComm(Chat.this).uploadNoListener(Communication.UPLOAD, message.tag, params);
-					task
-						//.extra1(new SendMessage.MessageToSend().toJson())
-						.save().start();
+//					UploadTask task = Communication.getComm(Chat.this).uploadNoListener(Communication.UPLOAD, message.tag, params);
+//					task
+//						//.extra1(new SendMessage.MessageToSend().toJson())
+//						.save().start();
+					/*
+					UploadTask task = Communication.getComm(getApplicationContext()).uploadFile(path, params, 
+						"data", out, new UploadListener<String>(path) {
+							@Override
+							public void onStart(Progress p1){}
+							@Override
+							public void onProgress(Progress p1){}
+							@Override
+							public void onError(Progress p1){}
+							@Override
+							public void onFinish(String p1, Progress p2) {
+								boolean res = out.delete();
+								final ResultData result = new Gson().fromJson(p1, ResultData.class);
+								if (result.code != 0) {
+									Toast.makeText(Chat.this, result.message, Toast.LENGTH_LONG).show();
+									return;
+								}
+								Communication.getComm(getApplicationContext()).postWithAuth(Communication.SEND_MESSAGE, 
+									Utils.ContentPut(Utils.ContentPut("gid", gid), "text", result.data.upload_result.url), new StringCallback() {
+										@Override
+										public void onSuccess(Response<String> p1) {
+											Toast.makeText(Chat.this, result.message, Toast.LENGTH_LONG).show();
+										}
+									});
+							}
+							@Override
+							public void onRemove(Progress p1){}
+						}).start();
+					*/
+					Communication.getComm(getApplicationContext()).postFile(params, "data", out, new StringCallback() {
+							@Override
+							public void onSuccess(Response<String> p1) {
+								final ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+								if (result.code != 0) {
+									Toast.makeText(Chat.this, result.message, Toast.LENGTH_LONG).show();
+									return;
+								}
+								Communication.getComm(getApplicationContext()).postWithAuth(Communication.SEND_MESSAGE, 
+									Utils.ContentPut(Utils.ContentPut(Utils.ContentPut("gid", gid), "text", result.data.upload_result.url), "message_type", "file"), new StringCallback() {
+										@Override
+										public void onSuccess(Response<String> p1) {
+											Toast.makeText(Chat.this, result.message, Toast.LENGTH_LONG).show();
+										}
+									});
+							}
+						});
 					//List<ItemBeanChat> tmp = new ArrayList<>();
 					//tmp.add(message);
 					//refreshNowBean(tmp);

@@ -274,8 +274,8 @@ public class Settings extends AppCompatActivity
 					String family = MyApplication.getMyApplication().tmp_select_font;
 					if (family == null)
 						family = data.get(0);
-					option.font_size = size;
-					option.font_family = family;
+					option.option.font_size = size;
+					option.option.font_family = family;
 					String text = new Gson().toJson(option, FontSetting.class);
 					for (RoomData r: list_rooms) {
 						Communication.getComm(getApplicationContext()).postWithAuth(Communication.SEND_MESSAGE, 

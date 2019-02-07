@@ -15,6 +15,7 @@ import com.lzy.okserver.upload.*;
 import com.lzy.okserver.*;
 import android.util.*;
 import com.lzy.okgo.convert.*;
+import okhttp3.MediaType;
 
 /*
 public class Communication
@@ -225,6 +226,7 @@ public class Communication
 	EMAIL = "email",
 	NAME = "name";
 	private Context pcontext = null;
+	String tmp = "";
 
 	Communication(Context context)
 	{
@@ -268,7 +270,7 @@ public class Communication
 			request.params(key, parames.get(key).toString());
 		}
 		request.execute(callback);
-		
+
 		if (action.equals(SEND_MESSAGE) && parames.containsKey("gid")) {
 			String target = (String) parames.get("gid");
 			for (int i=0; i<MyApplication.getMyApplication().list_printer.size(); i++) {
@@ -282,6 +284,16 @@ public class Communication
 	
 	public void postWithAuth(String action, ContentValues parames, StringCallback callback)
 	{
+		parames.put("auth", Config.get(pcontext).data.user.auth);
+		post(action, parames, callback);
+	}
+	
+	public void postWithAuth(String action, ContentValues parames)
+	{
+		StringCallback callback = new StringCallback() {
+			@Override
+			public void onSuccess(Response<String> p1) {}
+		};
 		parames.put("auth", Config.get(pcontext).data.user.auth);
 		post(action, parames, callback);
 	}
@@ -328,6 +340,58 @@ public class Communication
 		UploadTask<String> task = OkUpload.request(tag, request)
 			.save();
 		return task;
+	}
+
+	public UploadTask uploadFile(String tag, ContentValues parames, String filekey, File file)
+	{
+		parames.put("action", UPLOAD);
+		PostRequest<String> request = OkGo.<String>post(SERVER).tag(this);
+		for (String key: parames.keySet()) {
+			request.params(key, parames.get(key).toString());
+		}
+		request.params(filekey, file);
+		request.converter(new StringConvert());
+		UploadTask<String> task = OkUpload.request(tag, request)
+			.save();
+		return task;
+	}
+
+	public UploadTask uploadFile(String tag, ContentValues parames, String filekey, File file, UploadListener listener)
+	{
+		parames.put("action", UPLOAD);
+		PostRequest<String> request = OkGo.<String>post(SERVER).tag(this);
+		for (String key: parames.keySet()) {
+			request.params(key, parames.get(key).toString());
+		}
+		HttpParams p2 = new HttpParams();
+		//p2.put(filekey, file);
+		//p2.put(filekey, Base64.encodeToString(file.getPath().getBytes(), Base64.DEFAULT));
+		p2.put(filekey, new HttpParams.FileWrapper(file, file.getName(), MediaType.parse("application/octet-stream")));
+		request.params(p2);
+		request.converter(new StringConvert());
+		request.isMultipart(true);
+		UploadTask<String> task = OkUpload.request(tag, request)
+			.register(listener)
+			.save();
+		return task;
+	}
+	
+	public void postFile(ContentValues parames, String filekey, File file, StringCallback callback)
+	{
+		parames.put("action", UPLOAD);
+		PostRequest<String> request = OkGo.<String>post(SERVER).tag(this);
+		for (String key: parames.keySet()) {
+			request.params(key, parames.get(key).toString());
+		}
+		HttpParams p2 = new HttpParams();
+		InputStream is = new InputStream(file);
+		//p2.put(filekey, file);
+		//p2.put(filekey, Base64.encodeToString(file.getPath().getBytes(), Base64.DEFAULT));
+		//p2.put(filekey, new HttpParams.FileWrapper(file, file.getName(), MediaType.parse("application/octet-stream")));
+		request.params(p2);
+		request.converter(new StringConvert());
+		request.isMultipart(true);
+		request.execute(callback);
 	}
 	
 	static public void test(final Context context) {

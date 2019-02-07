@@ -49,10 +49,15 @@ class PreUpload {
 	public String url;
 }
 
+class FontOption {
+	public String font_family = "微软雅黑";	
+	public int font_size = 10;
+}
+	
+
 class FontSetting {
-	public String font_family = "微软雅黑";
-	public int font_size = 0;
 	public String message = "[--font-option--]";
+	public FontOption option = new FontOption();
 }
 
 public class ResultData

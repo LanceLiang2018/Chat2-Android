@@ -154,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
 				}
 			});
 		
+		File dir_base64 = getExternalFilesDir("Base64").getAbsoluteFile();
+		for (File f: dir_base64.listFiles())
+			f.delete();
+		
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_viewpager);
 		
