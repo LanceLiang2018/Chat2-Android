@@ -27,6 +27,7 @@ import android.support.v7.app.ActionBar;
 import android.database.*;
 import java.util.List;
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Settings extends AppCompatActivity
 {
@@ -193,12 +194,14 @@ public class Settings extends AppCompatActivity
 	}
 	
 	public void myFontRemote() {
+		final List<String> data = Arrays.asList(new String[] {"微软雅黑", "宋体", "仿宋", "黑体",
+											  "Microsoft YaHei Mono", "幼圆", "楷体", "隶书"});
 		View sview = LayoutInflater.from(Settings.this).inflate(R.layout.settings_font_remote, null);
 		Spinner spinner = (Spinner) sview.findViewById(R.id.settingsfontremoteSpinner);
 		final EditText edit = (EditText) sview.findViewById(R.id.settingsfontremoteEditText);
+		edit.setText("" + Config.get(getApplicationContext()).data.settings.remoteFontSize);
+		
 		final SpinnerAdapter sadp = new SpinnerAdapter() {
-			List<String> data = Arrays.asList(new String[] {"微软雅黑", "宋体", "仿宋", "黑体",
-												  "Microsoft YaHei Mono", "幼圆", "楷体", "隶书"});
 			@Override
 			public void registerDataSetObserver(DataSetObserver p1) {}
 			@Override
@@ -213,9 +216,12 @@ public class Settings extends AppCompatActivity
 			public boolean hasStableIds() { return true; }
 			@Override
 			public View getView(int p1, View p2, ViewGroup p3) {
+				LinearLayout ll = new LinearLayout(p3.getContext());
 				TextView text = new TextView(p3.getContext());
+				ll.addView(text);
 				text.setText(data.get(p1));
-				return text;
+				ll.setPadding(0, 10, 0, 10);
+				return ll;
 			}
 			@Override
 			public int getItemViewType(int p1) { return 1; }
@@ -224,9 +230,26 @@ public class Settings extends AppCompatActivity
 			@Override
 			public boolean isEmpty() { return false; }
 			@Override
-			public View getDropDownView(int p1, View p2, ViewGroup p3) { return null; }
+			public View getDropDownView(int p1, View p2, ViewGroup p3) {
+				LinearLayout ll = new LinearLayout(p3.getContext());
+				TextView text = new TextView(p3.getContext());
+				ll.addView(text);
+				text.setText(data.get(p1));
+				ll.setPadding(0, 10, 0, 10);
+				return ll;
+			}
 		};
 		spinner.setAdapter(sadp);
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> p1, View p2, int p3, long p4) {
+					Config config = Config.get(getApplicationContext());
+					config.data.settings.remoteFontFamily = data.get(p3);
+					config.save();
+				}
+				@Override
+				public void onNothingSelected(AdapterView<?> p1) {}
+			});
 		new AlertDialog.Builder(Settings.this)
 			.setTitle("Set remote font")
 			.setView(sview)
@@ -234,13 +257,19 @@ public class Settings extends AppCompatActivity
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
-					List<RoomData> list_rooms = MyApplication.getMyApplication().list_rooms;
-					for (RoomData r: list_rooms)
-						if (!r.room_type.equals("printer"))
-							list_rooms.remove(r);
-					String family = (String) sadp.getItem(p2);
+					List<RoomData> list_rooms = new ArrayList<RoomData>();
+					//for (RoomData r: MyApplication.getMyApplication().list_rooms)
+					for (int i=0; i<MyApplication.getMyApplication().list_rooms.size(); i++)
+						if (MyApplication.getMyApplication().list_rooms.get(i).room_type.equals("printer"))
+							list_rooms.add(MyApplication.getMyApplication().list_rooms.get(i));
+					//String family = (String) sadp.getItem(p2);
 					int size = Integer.parseInt(edit.getText().toString());
+					if (size == 0) {
+						Toast.makeText(Settings.this, "SIZE == 0", Toast.LENGTH_LONG).show();
+						return;
+					}
 					FontSetting option = new FontSetting();
+					String family = Config.get(getApplicationContext()).data.settings.remoteFontFamily;
 					option.font_size = size;
 					option.font_family = family;
 					String text = new Gson().toJson(option, FontSetting.class);
@@ -257,7 +286,7 @@ public class Settings extends AppCompatActivity
 			.show();
 	}
 	
-	public void myFontLocal() {	
+	public void myFontLocal() {
 		String[] disp = {"Default", "miao", "hand-writting"};
 		final String[] fonts = {"default", "miao.ttf", "num.ttf"};
 		new AlertDialog.Builder(Settings.this)

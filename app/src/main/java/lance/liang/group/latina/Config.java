@@ -32,7 +32,7 @@ class ConfigData
 		public int unreadMid = 0;
 		public String font = "miao.ttf";
 		
-		public String remoteFontFamily = "微软雅黑";
+		public String remoteFontFamily = "Microsoft YaHei Mono";
 		public int remoteFontSize = 10;
 	}
 	public Settings settings = new Settings();

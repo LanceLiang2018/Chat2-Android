@@ -626,9 +626,10 @@ class LeftAdapter extends BaseAdapter
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(im);
 		*/
-		ImageView im = buf.get(position);
+		ImageView im = null;//buf.get(position);
 		if (im == null) {
 			im = (ImageView) view.findViewById(R.id.itemleftImageView);
+			buf.remove(position);
 			buf.add(position, im);
 		}
 		im.setImageResource(bean.item.image);
