@@ -303,7 +303,7 @@ class ChatAdapter extends BaseAdapter
 				//.asBitmap()
 				.load(bean.message)
 				.apply(new RequestOptions()
-					   .placeholder(R.drawable.image_box_bg)
+					   .placeholder(R.drawable.image_blank)
 					   .override(300)
 					   .diskCacheStrategy(DiskCacheStrategy.ALL))
 				.transition(DrawableTransitionOptions.withCrossFade())

@@ -10,10 +10,6 @@
 		android:title="加入房间" 
 		app:showAsAction="ifRoom"/> 
 	
-	<item android:id="@+id/option_clear_all" 
-		android:title="Debug: Clear All" 
-		app:showAsAction="ifRoom"/> 
-
 	<item android:id="@+id/option_exit" 
 		android:title="退出" 
 		app:showAsAction="ifRoom"/> 

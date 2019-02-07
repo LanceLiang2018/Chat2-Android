@@ -87,12 +87,12 @@ public class Person extends AppCompatActivity
 					}
 					head_url = result.data.user_info.head;
 					Glide.with(Person.this).load(head_url)
-						.apply(new RequestOptions().placeholder(R.drawable.image_head)
+						.apply(new RequestOptions().placeholder(R.drawable.image_blank)
 							   .circleCrop())
 						.transition(DrawableTransitionOptions.withCrossFade())
 						.into(image_head);
 					Glide.with(Person.this).load(head_url)
-						.apply(new RequestOptions().placeholder(R.drawable.image_head)
+						.apply(new RequestOptions().placeholder(R.drawable.image_blank)
 							   .centerCrop().fitCenter().transform(new BlurTransformation(20)))
 						.transition(DrawableTransitionOptions.withCrossFade())
 						.into(bg);

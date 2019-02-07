@@ -243,9 +243,10 @@ public class Settings extends AppCompatActivity
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> p1, View p2, int p3, long p4) {
-					Config config = Config.get(getApplicationContext());
-					config.data.settings.remoteFontFamily = data.get(p3);
-					config.save();
+					//Config config = Config.get(getApplicationContext());
+					//config.data.settings.remoteFontFamily = data.get(p3);
+					//config.save();
+					MyApplication.getMyApplication().tmp_select_font = data.get(p3);
 				}
 				@Override
 				public void onNothingSelected(AdapterView<?> p1) {}
@@ -269,7 +270,10 @@ public class Settings extends AppCompatActivity
 						return;
 					}
 					FontSetting option = new FontSetting();
-					String family = Config.get(getApplicationContext()).data.settings.remoteFontFamily;
+					//String family = Config.get(getApplicationContext()).data.settings.remoteFontFamily;
+					String family = MyApplication.getMyApplication().tmp_select_font;
+					if (family == null)
+						family = data.get(0);
 					option.font_size = size;
 					option.font_family = family;
 					String text = new Gson().toJson(option, FontSetting.class);

@@ -34,7 +34,7 @@ public class ImagePreView extends Activity
 		//final ImageView imview = (ImageView) findViewById(R.id.photo_view);
 
 		Glide.with(this).load(url)
-			.apply(new RequestOptions().placeholder(R.drawable.image_1))
+			.apply(new RequestOptions().placeholder(R.drawable.image_blank))
 			.into(imview);
 		//imview.setOnClickListener(new OnClickListener() {
 		//		@Override

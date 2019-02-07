@@ -52,7 +52,7 @@ class PreUpload {
 class FontSetting {
 	public String font_family = "微软雅黑";
 	public int font_size = 0;
-	public String message = "[==font-option==]";
+	public String message = "[--font-option--]";
 }
 
 public class ResultData

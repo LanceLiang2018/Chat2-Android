@@ -663,7 +663,7 @@ public class MainActivity extends AppCompatActivity {
 		
 		RequestOptions options = new RequestOptions()
 			.circleCrop()
-			.placeholder(R.drawable.image_1)
+			.placeholder(R.drawable.image_blank)
 			.dontAnimate();
 
 		Glide.with(this).load(Config.get(this).data.user.head)
@@ -920,6 +920,8 @@ public class MainActivity extends AppCompatActivity {
 			
 			if (name_friend.equals(defaultPrinter))
 				MyApplication.getMyApplication().defaultPrinterGid = "" + room_data.gid;
+			if (room_data.room_type.equals("printer"))
+				MyApplication.getMyApplication().list_printer.add(room_data);
 		}
 		Collections.sort(adp_rooms.list, new Comparator<ItemBeanMain>() {
 				@Override
@@ -958,10 +960,10 @@ public class MainActivity extends AppCompatActivity {
 			case R.id.option_join_in:
 				Settings.myJoinIn(this);
 				break;
-			case R.id.option_clear_all:
+			//case R.id.option_clear_all:
 				//Communication.test(this);
-				Communication.getComm(this).get(Communication.SERVER + "/clear_all", null);
-				break;
+				//Communication.getComm(this).get(Communication.SERVER + "/clear_all", null);
+			//	break;
 			default:
 				break;
 		}
@@ -982,7 +984,7 @@ public class MainActivity extends AppCompatActivity {
 		timer_message.schedule(new TimerTask() {
 				@Override
 				public void run() {
-					MessageManager();
+					//MessageManager();
 				}
 			}, 0, 3000);
 	}

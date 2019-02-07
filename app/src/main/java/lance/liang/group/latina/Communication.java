@@ -269,9 +269,15 @@ public class Communication
 		}
 		request.execute(callback);
 		
-		//error
-		if (action.equals(SEND_MESSAGE))
-			Utils.plusPrintCount();
+		if (action.equals(SEND_MESSAGE) && parames.containsKey("gid")) {
+			String target = (String) parames.get("gid");
+			for (int i=0; i<MyApplication.getMyApplication().list_printer.size(); i++) {
+				if (MyApplication.getMyApplication().list_printer.get(i).gid == Integer.parseInt(target)) {
+					Utils.plusPrintCount();
+					break;
+				}
+			}
+		}
 	}
 	
 	public void postWithAuth(String action, ContentValues parames, StringCallback callback)

@@ -14,6 +14,8 @@ public class MyApplication extends Application
 	String defaultPrinterGid = "0";
 	public Map imageMap = new HashMap<String, Bitmap>();
 	public List<RoomData> list_rooms = null;
+	public String tmp_select_font = null;
+	public List<RoomData> list_printer = new ArrayList<RoomData>();
 
 	//@Override
 	Typeface font_text;
