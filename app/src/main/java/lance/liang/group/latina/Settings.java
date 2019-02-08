@@ -72,7 +72,8 @@ public class Settings extends AppCompatActivity
 					Settings.this.finish();
 					break;
 				case ID.ME_SET_INFO:
-					Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
+					//Toast.makeText(Settings.this, bean.item.title, Toast.LENGTH_LONG).show();
+					mySetInfo();
 					setResult(0, new Intent().putExtra("command", "Refresh"));
 					//Settings.this.finish();
 					break;
@@ -177,6 +178,41 @@ public class Settings extends AppCompatActivity
 		super.onDestroy();
 	}
 	
+	public void mySetInfo() {
+		Communication.getComm(this).postWithAuth(Communication.GET_USER, new Content().put("username", Config.get(this).data.user.username).val, 
+			new StringCallback() {
+				@Override
+				public void onSuccess(Response<String> p1) {
+					ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+					if (result.code != 0) { Toast.makeText(Settings.this, result.message, Toast.LENGTH_LONG).show(); return; }
+					PersonData user_info = result.data.user_info;
+					View dialogView = LayoutInflater.from(Settings.this).inflate(R.layout.dialog_set_info, null);
+					final EditText email = (EditText) dialogView.findViewById(R.id.dialogsetinfoEditText_email), 
+						motto = (EditText) dialogView.findViewById(R.id.dialogsetinfoEditText_motto);
+					email.setText(user_info.email);
+					motto.setText(user_info.motto);
+					new AlertDialog.Builder(Settings.this)
+						.setTitle("Set my person info")
+						.setView(dialogView)
+						.setNegativeButton("Cancle", null)
+						.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface p1, int p2) {
+								Communication.getComm(getApplicationContext()).postWithAuth(Communication.SET_USER, 
+									new Content().put("email", email.getText().toString()).put("motto", motto.getText().toString()).val, 
+									new StringCallback() {
+										@Override
+										public void onSuccess(Response<String> p1) {
+											ResultData result2 = new Gson().fromJson(p1.body(), ResultData.class);
+											Toast.makeText(Settings.this, result2.message, Toast.LENGTH_LONG);
+										}
+									});
+							}
+						})
+						.show();
+				}
+			});
+	}
 	
 	public void myFont() {
 		String[] select_disp = {"Local", "Remote"};
@@ -199,7 +235,8 @@ public class Settings extends AppCompatActivity
 		View sview = LayoutInflater.from(Settings.this).inflate(R.layout.settings_font_remote, null);
 		Spinner spinner = (Spinner) sview.findViewById(R.id.settingsfontremoteSpinner);
 		final EditText edit = (EditText) sview.findViewById(R.id.settingsfontremoteEditText);
-		edit.setText("" + Config.get(getApplicationContext()).data.settings.remoteFontSize);
+		//edit.setText("" + Config.get(getApplicationContext()).data.settings.remoteFontSize);
+		edit.setText("" + 10);
 		
 		final SpinnerAdapter sadp = new SpinnerAdapter() {
 			@Override
@@ -586,6 +623,7 @@ public class Settings extends AppCompatActivity
 		bundle.putString("head_url", Config.get(getApplicationContext()).data.user.head);
 		intent.putExtras(bundle);
 		intent.setClass(getApplicationContext(), Person.class);
+		MyApplication.getMyApplication().putObject("username", Config.get(getApplicationContext()).data.user.username);
 		this.startActivity(intent);
 	}
 	

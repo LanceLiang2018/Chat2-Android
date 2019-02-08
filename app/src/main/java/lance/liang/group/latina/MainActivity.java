@@ -176,10 +176,16 @@ public class MainActivity extends AppCompatActivity {
 			config.data.settings.lastPrintDate = new MyGetTime().date();
 			config.save();
 			
-			Bundle bundle = new Bundle();
-			bundle.putString("title", "Welcome");
-			MyApplication.getMyApplication().putObject("data", MenuData.listAbout);
-			startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle), code_settings);
+			new AlertDialog.Builder(this)
+				.setTitle("Welcome to 方寸之间 ver." + Utils.getVerName(this))
+				.setMessage(getResources().getString(R.string.update_log))
+				.setPositiveButton("Open About Page", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface p1, int p2) {
+						startActivity(new Intent().setClass(MainActivity.this, About.class));
+					}
+				})
+				.show();
 		}
 		
 		//Communication.test(this);
@@ -736,7 +742,12 @@ public class MainActivity extends AppCompatActivity {
 					if (result.code == 0) {
 						Config config = Config.get(getApplicationContext());
 						config.data.user.username = result.data.user_info.username;
-						
+						config.data.user.head = result.data.user_info.head;
+						config.data.user.email = result.data.user_info.email;
+						config.data.user.motto = result.data.user_info.motto;
+						config.save();
+						head_username.setText("");
+						head_motto.setText(result.data.user_info.motto);
 					}
 				}
 			});

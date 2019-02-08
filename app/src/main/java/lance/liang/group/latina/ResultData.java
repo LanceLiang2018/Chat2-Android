@@ -29,6 +29,12 @@ class RoomData {
 	public String name, head, room_type;
 }
 
+/*
+ {
+ 'uid': info[0], 'username': info[1], 'email': info[2],
+ 'head': info[3], 'motto': info[4], 'rooms': rooms, "user_type": info[6]
+ }*/
+
 class PersonData {
 	public String username = "", head = "", user_type = "", motto = "", email = "", 
 				auth = "";	// use when you login

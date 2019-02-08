@@ -66,6 +66,7 @@ public class Splash extends AppCompatActivity
 			}
 		}
 		vv.setVideoPath(video.getAbsolutePath());
+		vv.requestFocus();
 		vv.start();
 		File bg = new File(getExternalFilesDir("Background").getAbsolutePath() + "/background");
 		if (!bg.exists()) {

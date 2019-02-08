@@ -27,13 +27,13 @@ class ConfigData
 		public int firstStart = 1;
 		public int count_today = 0, count_total = 0;
 		public String lastPrintDate = "00";
-		public String defaultPrinter = "Printer";
+		public String defaultPrinter = "Default";
 		public String savePath = "Latina/";
 		public int unreadMid = 0;
-		public String font = "miao.ttf";
+		public String font = "default";
 		
 		//public String remoteFontFamily = "Microsoft YaHei Mono";
-		public int remoteFontSize = 10;
+		//public int remoteFontSize = 10;
 	}
 	public Settings settings = new Settings();
 	public PersonData user = new PersonData();

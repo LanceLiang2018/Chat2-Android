@@ -17,6 +17,8 @@ import android.webkit.*;
 public class AboutPage extends AppCompatActivity
 {
 	private WebView web;
+	ActionBar bar;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -25,7 +27,7 @@ public class AboutPage extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about_view);
 		
-		ActionBar bar = getSupportActionBar();
+		bar = getSupportActionBar();
 		bar.setTitle("About us");
 		bar.setDisplayHomeAsUpEnabled(true);
 		bar.setHomeButtonEnabled(true);
@@ -42,7 +44,7 @@ public class AboutPage extends AppCompatActivity
 		// 设置可以支持缩放
 		web.getSettings().setSupportZoom(true);
 		// 设置出现缩放工具
-		web.getSettings().setBuiltInZoomControls(true);
+		web.getSettings().setBuiltInZoomControls(false);
 		//扩大比例的缩放
 		web.getSettings().setUseWideViewPort(true);
 		//自适应屏幕
@@ -50,10 +52,23 @@ public class AboutPage extends AppCompatActivity
 		web.getSettings().setLoadWithOverviewMode(true);
 		web.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
 		
+		web.setWebViewClient(webviewclient);
+		web.setWebChromeClient(webchromeclient);
+		
 		//web.loadUrl(Config.get(this).data.settings.server);
 		web.loadUrl(url);
 	}
-
+	
+	WebViewClient webviewclient = new WebViewClient() {};
+	WebChromeClient webchromeclient = new WebChromeClient() {
+		@Override
+		public void onReceivedTitle(WebView view, String title) {
+			super.onReceivedTitle(view, title);
+			bar.setTitle(title);
+		}
+		
+	};
+	
 	@Override
 	protected void onDestroy()
 	{

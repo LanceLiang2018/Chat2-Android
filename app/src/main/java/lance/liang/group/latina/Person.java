@@ -34,7 +34,7 @@ public class Person extends AppCompatActivity
 		motto = "", email = "", last_time = "", uid = "";
 	
 	ImageView image_head;
-	TextView text_motto, text_email, text_username, text_last_time, text_uid;
+	TextView text_motto, text_email, text_username, text_last_time, text_uid, text_motto_frame;
 	ImageView bg;
 	Button make_friends;
 	
@@ -58,13 +58,13 @@ public class Person extends AppCompatActivity
 
 		image_head = (ImageView) frame.findViewById(R.id.personImageView_head);
 		text_username = (TextView) frame.findViewById(R.id.personTextView_username);
-		text_motto = (TextView) frame.findViewById(R.id.personTextView_motto);
+		text_motto_frame = (TextView) frame.findViewById(R.id.personTextView_motto);
 		
 		
 		LinearLayout head_view = (LinearLayout) findViewById(R.id.personLinearLayout_headview);
 		head_view.addView(frame);
 
-		//text_motto = (TextView) findViewById(R.id.personTextView_motto);
+		text_motto = (TextView) findViewById(R.id.personTextView_sign);
 		text_email = (TextView) findViewById(R.id.personTextView_email);
 		text_last_time = (TextView) findViewById(R.id.personTextView_last_login);
 		text_uid = (TextView) findViewById(R.id.personTextView_uid);
@@ -97,6 +97,7 @@ public class Person extends AppCompatActivity
 						.transition(DrawableTransitionOptions.withCrossFade())
 						.into(bg);
 					text_motto.setText(result.data.user_info.motto);
+					text_motto_frame.setText("");
 					text_email.setText(result.data.user_info.email);
 					text_last_time.setText(new MyGetTime().remote(result.data.user_info.last_active_time));
 					text_uid.setText("" + result.data.user_info.uid);

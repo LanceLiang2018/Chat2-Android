@@ -80,6 +80,14 @@ public class Login extends AppCompatActivity
 									intent.putExtra("command", "Refresh");
 									setResult(0, intent);
 									Toast.makeText(Login.this, "Login successfully. Got auth: " + config.data.user.auth, Toast.LENGTH_SHORT).show();
+									
+									config = Config.get(Login.this);
+									config.data.settings.defaultPrinter = "Default";
+									config.data.settings.savePath = "Latina/";
+									config.data.settings.count_today = 0;
+									config.data.settings.count_total = 0;
+									config.save();
+									
 									Login.this.finish();
 								}
 								else
