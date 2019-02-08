@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<LinearLayout
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:orientation="vertical">
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:orientation="vertical"
+			android:gravity="center"
+			android:padding="40dp">
+
+			<ImageView
+				android:layout_height="80dp"
+				android:layout_width="80dp"
+				android:src="@drawable/image_ic_main"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:text="方寸之间"
+				android:textColor="#000000"/>
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="v1.7"
+				android:id="@+id/aboutTextView_version"/>
+
+		</LinearLayout>
+
+		<View
+			android:background="?android:attr/dividerVertical"
+			android:layout_height="1dp"
+			android:layout_width="match_parent"/>
+
+		<RelativeLayout
+			android:layout_height="match_parent"
+			android:layout_width="match_parent">
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:orientation="vertical"
+				android:layout_alignParentBottom="true"
+				android:gravity="center"
+				android:id="@+id/aboutLinearLayout1">
+
+				<TextView
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="服务条款"
+					android:id="@+id/aboutTextView_license"/>
+
+				<TextView
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Copyright © 2019 鸽研部. All Rights Reserverd"
+					android:textSize="10sp"/>
+
+			</LinearLayout>
+
+			<ListView
+				android:layout_height="match_parent"
+				android:layout_width="match_parent"
+				android:layout_above="@id/aboutLinearLayout1"
+				android:id="@+id/aboutListView"/>
+
+		</RelativeLayout>
+
+	</LinearLayout>
+
+</LinearLayout>
+

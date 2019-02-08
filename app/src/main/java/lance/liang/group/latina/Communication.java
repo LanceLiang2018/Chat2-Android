@@ -384,10 +384,19 @@ public class Communication
 			request.params(key, parames.get(key).toString());
 		}
 		HttpParams p2 = new HttpParams();
-		InputStream is = new InputStream(file);
+		tmp = "";
+		byte[] buf = new byte[4096];
+		try {
+			InputStream is = new FileInputStream(file);
+			while (is.read(buf) != -1) {
+				tmp = tmp + new String(buf);
+			}
+		} catch (Exception e) { return; }
 		//p2.put(filekey, file);
 		//p2.put(filekey, Base64.encodeToString(file.getPath().getBytes(), Base64.DEFAULT));
 		//p2.put(filekey, new HttpParams.FileWrapper(file, file.getName(), MediaType.parse("application/octet-stream")));
+		p2.put(filekey, tmp);
+		tmp = "";
 		request.params(p2);
 		request.converter(new StringConvert());
 		request.isMultipart(true);

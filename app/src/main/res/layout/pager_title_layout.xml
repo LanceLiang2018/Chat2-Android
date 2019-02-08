@@ -12,7 +12,7 @@
 		android:id="@+id/title_img"
 		android:layout_width="30dp"
 		android:layout_height="30dp"
-		android:src="@drawable/sqrt_icon"/>
+		android:src="@drawable/image_blank"/>
 
 	<TextView
 		android:id="@+id/title_text"

@@ -30,7 +30,7 @@ public class ImagePreView extends Activity
 
 		final PhotoView imview = (PhotoView) findViewById(R.id.photo_view);
 		imview.enable();
-		imview.setImageResource(R.drawable.image_person_bg);
+		//imview.setImageResource(R.drawable.image_person_bg);
 		//final ImageView imview = (ImageView) findViewById(R.id.photo_view);
 
 		Glide.with(this).load(url)

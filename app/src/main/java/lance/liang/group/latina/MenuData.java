@@ -12,7 +12,7 @@ public class MenuData
 		SETTINGS_THEME = 9, SETTINGS_SPLASH = 10, SETTINGS_FONT = 11, SETTINGS_SERVER = 12, SETTINGS_BG = 21, 
 		PRINTER_DEFAULT = 17, PRINTER_ADD = 18,
 		ADDS_MY_FILES = 20, 
-		ABOUT_PAGE = 22;
+		ABOUT_PAGE = 22, ABOUT_UPDATE = 23, ABOUT_LEARN = 24, ABOUT_FEEDBACK = 25, ABOUT_SOURCE = 26;
 	};
 	
 	public static enum LeftMenu {
@@ -50,7 +50,11 @@ public class MenuData
 		
 		MyFiles(new ItemBeanSettings("我的文件"), ID.ADDS_MY_FILES),
 		
-		AboutUs(new ItemBeanSettings("关于我们"), ID.ABOUT_PAGE);
+		AboutUs(new ItemBeanSettings("关于我们"), ID.ABOUT_PAGE),
+		AboutLearn(new ItemBeanSettings("快速上手"), ID.ABOUT_LEARN),
+		Update(new ItemBeanSettings("检查更新"), ID.ABOUT_UPDATE),
+		FeedBack(new ItemBeanSettings("使用反馈"), ID.ABOUT_FEEDBACK),
+		Source(new ItemBeanSettings("Open source license"), ID.ABOUT_FEEDBACK);
 		
 		ItemBeanSettings item;
 		int id;
@@ -89,6 +93,6 @@ public class MenuData
 	};
 	
 	public static Settings[] listAbout = {
-		Settings.AboutUs, 
+		Settings.Update, Settings.AboutUs, Settings.AboutLearn, Settings.FeedBack, Settings.Source, 
 	};
 }

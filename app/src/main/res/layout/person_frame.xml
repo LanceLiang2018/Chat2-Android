@@ -17,7 +17,7 @@
 			<ImageView
 				android:layout_height="150dp"
 				android:layout_width="match_parent"
-				android:src="@drawable/image_person_bg"
+				android:src="@drawable/image_blank"
 				android:layout_centerInParent="true"
 				android:id="@+id/personImageView_bg"
 				android:adjustViewBounds="false"
@@ -51,7 +51,7 @@
 						<ImageView
 							android:layout_height="100dp"
 							android:layout_width="100dp"
-							android:src="@drawable/image_2"
+							android:src="@drawable/image_blank"
 							android:adjustViewBounds="true"
 							android:scaleType="fitXY"
 							android:id="@+id/personImageView_head"

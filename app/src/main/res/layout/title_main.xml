@@ -9,7 +9,7 @@
 	<ImageView
 		android:layout_height="45dp"
 		android:layout_width="45dp"
-		android:src="@drawable/image_2"
+		android:src="@drawable/image_blank"
 		android:id="@+id/titlemainImageButton_head"/>
 
 	<LinearLayout

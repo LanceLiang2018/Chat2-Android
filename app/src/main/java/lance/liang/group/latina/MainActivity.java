@@ -111,8 +111,10 @@ public class MainActivity extends AppCompatActivity {
 					MyApplication.getMyApplication().putObject("data", MenuData.listAdds);
 					break;
 				case MenuData.ID.LEFT_ABOUT:
-					MyApplication.getMyApplication().putObject("data", MenuData.listAbout);
-					break;
+					//MyApplication.getMyApplication().putObject("data", MenuData.listAbout);
+					//break;
+					startActivity(new Intent().setClass(MainActivity.this, About.class));
+					return;
 				default:
 					return;
 					//break;
@@ -687,9 +689,6 @@ public class MainActivity extends AppCompatActivity {
 				   .transform(new BlurTransformation()))
 			.transition(DrawableTransitionOptions.withCrossFade())
 			.into(head_bg);
-
-		adp_rooms.list.clear();
-		adp_rooms_printer.list.clear();
 		
 		// Load saved rooms...
 		
@@ -712,6 +711,9 @@ public class MainActivity extends AppCompatActivity {
 						//room_str = new Gson().toJson(result.data.room_data, new TypeToken<List<RoomData>>() {}.getType());
 						//config.data.rooms_str = room_str;
 						//config.save();
+						adp_rooms.list.clear();
+						adp_rooms_printer.list.clear();
+						
 						insertRooms(result.data.room_data);
 						MyApplication.getMyApplication().list_rooms = result.data.room_data;
 					}

@@ -3,7 +3,7 @@ import android.support.v7.widget.*;
 
 class ItemBeanMain {
 	public String title, content, time = "", head, room_type = "public";
-	public int image = R.drawable.image_1;
+	public int image = R.drawable.image_blank;
 	public int gid, unread = 0, timesrc = 0;
 
 	ItemBeanMain(int gid, int image, String title, String content) {

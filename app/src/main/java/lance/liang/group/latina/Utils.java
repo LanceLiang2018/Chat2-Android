@@ -5,6 +5,7 @@ import android.graphics.*;
 import android.util.*;
 import android.view.*;
 import android.widget.*;
+import android.content.pm.*;
 
 public class Utils
 {
@@ -94,6 +95,14 @@ public class Utils
 	
 	public static int max(int a, int b) {
 		return a > b ? a : b;
+	}
+	
+	public static String getVerName(Context context) {
+		String name = "";
+		try {
+			name = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+		} catch (PackageManager.NameNotFoundException e) {}
+		return name;
 	}
 }
 class Content {
