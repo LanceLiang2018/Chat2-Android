@@ -54,7 +54,7 @@ public class MenuData
 		AboutLearn(new ItemBeanSettings("快速上手"), ID.ABOUT_LEARN),
 		Update(new ItemBeanSettings("检查更新"), ID.ABOUT_UPDATE),
 		FeedBack(new ItemBeanSettings("使用反馈"), ID.ABOUT_FEEDBACK),
-		Source(new ItemBeanSettings("Open source license"), ID.ABOUT_FEEDBACK);
+		Source(new ItemBeanSettings("Open source license"), ID.ABOUT_SOURCE);
 		
 		ItemBeanSettings item;
 		int id;

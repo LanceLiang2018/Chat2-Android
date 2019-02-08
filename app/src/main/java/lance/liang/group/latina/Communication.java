@@ -213,6 +213,8 @@ public class Communication
 	MAKE_FRIENDS = "make_friends",
 	
 	UPLOAD = "upload",
+	//UPDATE = "update",
+	GET_VERSION= "get_version",
 	PRE_UPLOAD = "pre_upload", 
 	
 	UID = "uid",

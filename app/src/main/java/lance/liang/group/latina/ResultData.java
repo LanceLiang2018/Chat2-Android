@@ -84,6 +84,7 @@ public class ResultData
 		public UploadResult upload_result;
 		public List<FileData> files;
 		public PreUpload pre_upload;
+		public String version;
 	}
 	public int code;
 	public String message;

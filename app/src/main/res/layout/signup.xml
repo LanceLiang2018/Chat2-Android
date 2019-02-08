@@ -111,12 +111,12 @@
 					android:layout_height="wrap_content"
 					android:layout_width="wrap_content"
 					android:id="@+id/signupCheckBox_read_it"
-					android:text="I have read the License"/>
+					android:text="I have read the"/>
 
 				<TextView
 					android:layout_height="wrap_content"
 					android:layout_width="wrap_content"
-					android:text="License"
+					android:text="用户协议"
 					android:layout_margin="5dp"
 					android:textColor="#00FFFF"
 					android:textStyle="bold"

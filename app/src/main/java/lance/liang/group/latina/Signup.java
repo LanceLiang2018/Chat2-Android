@@ -12,6 +12,7 @@ import com.google.gson.*;
 import com.lzy.okgo.callback.*;
 import com.lzy.okgo.model.*;
 import jp.wasabeef.glide.transformations.*;
+import android.view.View.*;
 
 public class Signup extends AppCompatActivity
 {
@@ -21,6 +22,7 @@ public class Signup extends AppCompatActivity
 	private EditText text_email;
 	private AlertDialog dialog;
 	private EditText text_conform;
+	private TextView text_license;
 	private CheckBox check_read;
 	private CheckBox check_printer;
 	
@@ -36,12 +38,29 @@ public class Signup extends AppCompatActivity
 		text_password = (EditText)findViewById(R.id.signupEditText_password);
 		text_email = (EditText)findViewById(R.id.signupEditText_email);
 		text_conform = (EditText)findViewById(R.id.signupEditText_conform);
+		text_license = (TextView) findViewById(R.id.signupTextView_license);
 		
 		check_read = (CheckBox) findViewById(R.id.signupCheckBox_read_it);
 		check_printer = (CheckBox) findViewById(R.id.signupCheckBox_is_printer);
 		
 		check_read.setChecked(true);
 		//check_read.setText("I have read License");
+		text_license.setTextColor(Utils.getAccentColor(Signup.this));
+		text_license.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					String server = Config.get(getApplicationContext()).data.settings.server;
+					// https://lance-chatroom2.herokuapp.com/v3/api
+					String url = server.substring(0, server.lastIndexOf("/"));
+					// https://lance-chatroom2.herokuapp.com/v3
+					url = url.substring(0, url.lastIndexOf("/"));
+					// https://lance-chatroom2.herokuapp.com
+					url = url + "/license";
+					Bundle bundle = new Bundle();
+					bundle.putString("url", url);
+					startActivity(new Intent().setClass(Signup.this, AboutPage.class).putExtras(bundle));
+				}
+			});
 		
 		ActionBar bar = getSupportActionBar();
 		bar.setTitle("用户注册");

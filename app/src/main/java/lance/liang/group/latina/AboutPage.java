@@ -30,6 +30,11 @@ public class AboutPage extends AppCompatActivity
 		bar.setDisplayHomeAsUpEnabled(true);
 		bar.setHomeButtonEnabled(true);
 		
+		String url = "http://lance-chatroom2.herokuapp.com/";
+		try {
+			url = getIntent().getExtras().getString("url");
+		} catch (Exception e) { return; }
+		
 		web = (WebView) findViewById(R.id.aboutviewWebView);
 		
 		//支持javascript
@@ -41,12 +46,12 @@ public class AboutPage extends AppCompatActivity
 		//扩大比例的缩放
 		web.getSettings().setUseWideViewPort(true);
 		//自适应屏幕
-		//web.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
-		//web.getSettings().setLoadWithOverviewMode(true);
+		web.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+		web.getSettings().setLoadWithOverviewMode(true);
 		web.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
 		
 		//web.loadUrl(Config.get(this).data.settings.server);
-		web.loadUrl("http://lance-chatroom2.herokuapp.com/");
+		web.loadUrl(url);
 	}
 
 	@Override
