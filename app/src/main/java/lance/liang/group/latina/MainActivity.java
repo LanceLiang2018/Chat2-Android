@@ -733,7 +733,8 @@ public class MainActivity extends AppCompatActivity {
 				}
 			});
 		
-		Communication.getComm(getApplicationContext()).postWithAuth(Communication.GET_USER, new ContentValues(), 
+		Communication.getComm(getApplicationContext()).postWithAuth(Communication.GET_USER, 
+			new Content().put("username", Config.get(getApplicationContext()).data.user.username).val, 
 			new StringCallback() {
 				@Override
 				public void onSuccess(Response<String> p1) {

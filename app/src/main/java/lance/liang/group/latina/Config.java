@@ -78,6 +78,8 @@ public class Config
 			//String str = "{}";
 			//Log.v("Chat 2", "Load(): " + str);
 			//Toast.makeText(context, str, Toast.LENGTH_LONG).show();
+			
+			str = new String(Base64.decode(str, Base64.DEFAULT));
 			data = (new Gson()).fromJson(str, ConfigData.class);
 			
 			if (data.settings.savePath.equals("Latina/"))
@@ -102,6 +104,7 @@ public class Config
 				file.createNewFile();
 			Writer writer = new FileWriter(file);
 			String str = (new Gson()).toJson(new ConfigData(), ConfigData.class);
+			str = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
 			writer.write(str);
 			writer.close();
 			
@@ -118,6 +121,8 @@ public class Config
 			File file = new File(FILENAME);
 			Writer writer = new FileWriter(file);
 			String str = (new Gson()).toJson(data, ConfigData.class);
+			str = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
+			
 			writer.write(str);
 			writer.close();
 			//Log.v("Chat 2", "Save(): " + str);
