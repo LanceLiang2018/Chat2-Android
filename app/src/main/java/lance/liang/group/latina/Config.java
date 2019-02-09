@@ -17,7 +17,8 @@ class ConfigData
 	static class Settings
 	{
 		//public String server = "https://lance-chatroom2.herokuapp.com/";
-		public String server = "https://lance-chatroom2.herokuapp.com/v3/api";
+		public String server = "https://lance-latina-debug.herokuapp.com/v3/api";
+			//"https://lance-chatroom2.herokuapp.com/v3/api";
 		public int theme = R.style.AppTheme07;
 		//public int colorBg = 0xFF9BAEC8;
 		//public int colorFt = 0xFF6AAFE6;

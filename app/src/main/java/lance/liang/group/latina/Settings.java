@@ -598,8 +598,8 @@ public class Settings extends AppCompatActivity
 	private void mySetServer() {
 		String[] disp = {"远程(Release)", "调试", "本地(调试)", "Lance的远程服务器"};
 		final String[] vals = {
-			"https://lance-chatroom2.herokuapp.com/v3/api", 
 			"https://lance-latina-debug.herokuapp.com/v3/api", 
+			"https://lance-chatroom2.herokuapp.com/v3/api", 
 			"http://0.0.0.0:5000/v3/api",
 			"http://lanceliang2018.xyz:5000/v3/api"};
 		AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);

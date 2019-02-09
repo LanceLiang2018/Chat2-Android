@@ -565,6 +565,57 @@ public class MainActivity extends AppCompatActivity {
 		initMessageManager();
 		initUploadManager();
 		
+		Communication.getComm(getApplicationContext()).postWithAuth(Communication.GET_VERSION, 
+			new Content().val, new StringCallback() {
+				@Override
+				public void onSuccess(Response<String> p1) {
+					ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
+					if (result.code != 0) { Toast.makeText(MainActivity.this, result.message, Toast.LENGTH_LONG).show(); return; }
+					float ver_new = Float.parseFloat(result.data.version);
+					float ver_me = Float.parseFloat(Utils.getVerName(getApplicationContext()));
+					if (ver_new < ver_me) { return; }
+					Toast.makeText(MainActivity.this, "There is neeeew version: " + result.data.version, Toast.LENGTH_LONG).show();
+
+					new AlertDialog.Builder(MainActivity.this)
+						.setTitle("Update")
+						.setMessage("Download new apk?")
+						.setNegativeButton("Cancel", null)
+						.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface p1, int p2) {
+								RxPermissions rxPermissions = new RxPermissions(MainActivity.this);
+								rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+									.subscribe(new Observer<Boolean>() {
+										@Override
+										public void onError(Throwable p1) {}
+										@Override
+										public void onComplete() {}
+										@Override
+										public void onSubscribe(Disposable d) {}
+										@Override
+										public void onNext(Boolean aBoolean) {
+											DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+											String server = Config.get(getApplicationContext()).data.settings.server;
+											// https://lance-chatroom2.herokuapp.com/v3/api
+											String url = server.substring(0, server.lastIndexOf("/"));
+											// https://lance-chatroom2.herokuapp.com/v3
+											url = url.substring(0, url.lastIndexOf("/"));
+											// https://lance-chatroom2.herokuapp.com
+											url = url + "/update";
+											Uri uri = Uri.parse(url);
+											DownloadManager.Request request = new DownloadManager.Request(uri);
+											request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
+											request.setDestinationInExternalPublicDir(Config.get(getApplicationContext()).data.settings.savePath, "release.apk");
+											request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+											downloadManager.enqueue(request);
+											
+										}});
+							}
+						})
+						.show();
+				}
+			});
+		
     }
 	
     private void initMagicIndicator1() {
@@ -752,45 +803,6 @@ public class MainActivity extends AppCompatActivity {
 					}
 				}
 			});
-		
-		Communication.getComm(getApplicationContext()).postWithAuth(Communication.GET_VERSION, 
-			new Content().val, new StringCallback() {
-				@Override
-				public void onSuccess(Response<String> p1) {
-					ResultData result = new Gson().fromJson(p1.body(), ResultData.class);
-					if (result.code != 0) { Toast.makeText(MainActivity.this, result.message, Toast.LENGTH_LONG).show(); return; }
-					float ver_new = Float.parseFloat(result.data.version);
-					float ver_me = Float.parseFloat(Utils.getVerName(getApplicationContext()));
-					if (ver_new <= ver_me) { return; }
-					Toast.makeText(MainActivity.this, "There is neeeew version: " + result.data.version, Toast.LENGTH_LONG).show();
-
-					new AlertDialog.Builder(MainActivity.this)
-						.setTitle("Update")
-						.setMessage("Download new apk?")
-						.setNegativeButton("Cancel", null)
-						.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface p1, int p2) {
-								DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-								String server = Config.get(getApplicationContext()).data.settings.server;
-								// https://lance-chatroom2.herokuapp.com/v3/api
-								String url = server.substring(0, server.lastIndexOf("/"));
-								// https://lance-chatroom2.herokuapp.com/v3
-								url = url.substring(0, url.lastIndexOf("/"));
-								// https://lance-chatroom2.herokuapp.com
-								url = url + "/update";
-								Uri uri = Uri.parse(url);
-								DownloadManager.Request request = new DownloadManager.Request(uri);
-								request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
-								request.setDestinationInExternalPublicDir(Config.get(getApplicationContext()).data.settings.savePath, "release.apk");
-								request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-								downloadManager.enqueue(request);
-							}
-						})
-						.show();
-				}
-			});
-		
 	}
 
 	@Override
