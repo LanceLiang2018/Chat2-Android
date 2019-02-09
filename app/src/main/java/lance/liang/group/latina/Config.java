@@ -28,7 +28,7 @@ class ConfigData
 		public int firstStart = 1;
 		public int count_today = 0, count_total = 0;
 		public String lastPrintDate = "00";
-		public String defaultPrinter = "Default";
+		public String defaultPrinter = "Printer";
 		public String savePath = "Latina/";
 		public int unreadMid = 0;
 		public String font = "default";

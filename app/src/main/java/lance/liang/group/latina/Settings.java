@@ -199,7 +199,7 @@ public class Settings extends AppCompatActivity
 							@Override
 							public void onClick(DialogInterface p1, int p2) {
 								Communication.getComm(getApplicationContext()).postWithAuth(Communication.SET_USER, 
-									new Content().put("电子邮箱", email.getText().toString()).put("签名", motto.getText().toString()).val, 
+									new Content().put("email", email.getText().toString()).put("motto", motto.getText().toString()).val, 
 									new StringCallback() {
 										@Override
 										public void onSuccess(Response<String> p1) {

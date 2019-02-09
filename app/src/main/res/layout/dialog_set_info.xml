@@ -15,7 +15,7 @@
 		android:inputType="textEmailAddress"
 		android:layout_width="match_parent"
 		android:ems="10"
-		android:hint="Email"
+		android:hint="电子邮箱"
 		android:id="@+id/dialogsetinfoEditText_email"/>
 
 	<View
@@ -28,7 +28,7 @@
 		android:inputType="textMultiLine"
 		android:layout_width="match_parent"
 		android:ems="10"
-		android:hint="Motto"
+		android:hint="签名"
 		android:id="@+id/dialogsetinfoEditText_motto"/>
 
 	<View

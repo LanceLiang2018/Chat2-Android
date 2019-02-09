@@ -7,8 +7,8 @@ android {
         applicationId "lance.liang.group.latina"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 3
-        versionName "2.15"
+        versionCode 4
+        versionName "2.16"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

@@ -64,7 +64,7 @@ public class Person extends AppCompatActivity
 		LinearLayout head_view = (LinearLayout) findViewById(R.id.personLinearLayout_headview);
 		head_view.addView(frame);
 
-		text_motto = (TextView) findViewById(R.id.personTextView_sign);
+		//text_motto = (TextView) findViewById(R.id.personTextView_sign);
 		text_email = (TextView) findViewById(R.id.personTextView_email);
 		text_last_time = (TextView) findViewById(R.id.personTextView_last_login);
 		text_uid = (TextView) findViewById(R.id.personTextView_uid);
@@ -96,8 +96,8 @@ public class Person extends AppCompatActivity
 							   .centerCrop().fitCenter().transform(new BlurTransformation(20)))
 						.transition(DrawableTransitionOptions.withCrossFade())
 						.into(bg);
-					text_motto.setText(result.data.user_info.motto);
-					text_motto_frame.setText("");
+					//text_motto.setText(result.data.user_info.motto);
+					text_motto_frame.setText(result.data.user_info.motto);
 					text_email.setText(result.data.user_info.email);
 					text_last_time.setText(new MyGetTime().remote(result.data.user_info.last_active_time));
 					text_uid.setText("" + result.data.user_info.uid);

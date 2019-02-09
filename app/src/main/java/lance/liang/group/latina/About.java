@@ -81,7 +81,16 @@ public class About extends AppCompatActivity
 				return;
 			switch (bean.id) {
 				case ID.ABOUT_PAGE:
-					startActivity(new Intent().setClass(About.this, AboutPage.class));
+					String server3 = Config.get(getApplicationContext()).data.settings.server;
+					// https://lance-chatroom2.herokuapp.com/v3/api
+					String url3 = server3.substring(0, server3.lastIndexOf("/"));
+					// https://lance-chatroom2.herokuapp.com/v3
+					url3 = url3.substring(0, url3.lastIndexOf("/"));
+					// https://lance-chatroom2.herokuapp.com
+					url3 = url3 + "/about";
+					Bundle bundle3 = new Bundle();
+					bundle3.putString("url", url3);
+					startActivity(new Intent().setClass(About.this, AboutPage.class).putExtras(bundle3));
 					break;
 				case ID.ABOUT_UPDATE:
 					Communication.getComm(getApplicationContext()).postWithAuth(Communication.GET_VERSION, 
@@ -141,7 +150,7 @@ public class About extends AppCompatActivity
 					// https://lance-chatroom2.herokuapp.com/v3
 					url2 = url2.substring(0, url2.lastIndexOf("/"));
 					// https://lance-chatroom2.herokuapp.com
-					url2 = url2 + "/learn";
+					url2 = url2 + "/source";
 					Bundle bundle2 = new Bundle();
 					bundle2.putString("url", url2);
 					startActivity(new Intent().setClass(About.this, AboutPage.class).putExtras(bundle2));
@@ -169,7 +178,7 @@ public class About extends AppCompatActivity
 												if (gid == 0) { Toast.makeText(About.this, "Error...", Toast.LENGTH_LONG).show(); return; }
 												
 												Bundle bundle = new Bundle();
-												bundle.putString("gid", "" + gid);
+												bundle.putInt("gid", gid);
 												bundle.putString("name", "Feedback");
 												startActivity(new Intent().setClass(About.this, Chat.class).putExtras(bundle));
 											}

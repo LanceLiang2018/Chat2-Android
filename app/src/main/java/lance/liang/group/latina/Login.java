@@ -88,6 +88,8 @@ public class Login extends AppCompatActivity
 									config.data.settings.count_total = 0;
 									config.save();
 									
+									MyDB.get(Login.this).init();
+									
 									Login.this.finish();
 								}
 								else
