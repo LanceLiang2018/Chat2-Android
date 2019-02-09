@@ -49,7 +49,7 @@ public class Config
 	public static ConfigData data;
 
 	public static String FILENAME = "";
-	public final static String NAME = "settings.json";
+	public final static String NAME = "settings.json.b64";
 	
 	private Context pcontext;
 	

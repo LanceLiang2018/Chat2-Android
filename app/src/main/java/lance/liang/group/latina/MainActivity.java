@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
 			new AlertDialog.Builder(this)
 				.setTitle("Welcome to 方寸之间 ver." + Utils.getVerName(this))
 				.setMessage(getResources().getString(R.string.update_log))
-				.setPositiveButton("Open About Page", new DialogInterface.OnClickListener() {
+				.setPositiveButton("关于&帮助页面", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface p1, int p2) {
 						startActivity(new Intent().setClass(MainActivity.this, About.class));
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
 								public void onClick(DialogInterface p1, int p2) {
 									MyApplication.getMyApplication().putObject("data", MenuData.listPrinter);
 									Bundle bundle_ = new Bundle();
-									bundle_.putString("title", "Printer");
+									bundle_.putString("title", "打印机");
 									startActivityForResult(new Intent().setClass(MainActivity.this, Settings.class).putExtras(bundle_), code_settings);
 								}
 							})
@@ -573,14 +573,14 @@ public class MainActivity extends AppCompatActivity {
 					if (result.code != 0) { Toast.makeText(MainActivity.this, result.message, Toast.LENGTH_LONG).show(); return; }
 					float ver_new = Float.parseFloat(result.data.version);
 					float ver_me = Float.parseFloat(Utils.getVerName(getApplicationContext()));
-					if (ver_new < ver_me) { return; }
-					Toast.makeText(MainActivity.this, "There is neeeew version: " + result.data.version, Toast.LENGTH_LONG).show();
+					if (ver_new <= ver_me) { return; }
+					Toast.makeText(MainActivity.this, "应用有更新: " + result.data.version, Toast.LENGTH_LONG).show();
 
 					new AlertDialog.Builder(MainActivity.this)
-						.setTitle("Update")
-						.setMessage("Download new apk?")
-						.setNegativeButton("Cancel", null)
-						.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+						.setTitle("应用更新")
+						.setMessage("是否下载应用？")
+						.setNegativeButton("不要", null)
+						.setPositiveButton("好的", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface p1, int p2) {
 								RxPermissions rxPermissions = new RxPermissions(MainActivity.this);
@@ -776,7 +776,7 @@ public class MainActivity extends AppCompatActivity {
 					}
 					if (result.code == 2)
 					{
-						Toast.makeText(MainActivity.this, "Login Failed.", Toast.LENGTH_SHORT).show();
+						Toast.makeText(MainActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
 						Intent intent_login = new Intent();
 						intent_login.setClass(MainActivity.this, Login.class);
 						startActivityForResult(intent_login, code_login);
@@ -798,7 +798,7 @@ public class MainActivity extends AppCompatActivity {
 						config.data.user.email = result.data.user_info.email;
 						config.data.user.motto = result.data.user_info.motto;
 						config.save();
-						head_username.setText("");
+						head_username.setText(result.data.user_info.username);
 						head_motto.setText(result.data.user_info.motto);
 					}
 				}

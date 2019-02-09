@@ -37,7 +37,7 @@ public class MenuData
 		NewRoom(new ItemBeanSettings("创建房间"), ID.ME_NEW_ROOM),
 		NewUser(new ItemBeanSettings("新用户"), ID.ME_NEW_USER),
 		Logout(new ItemBeanSettings("注销"), ID.ME_LOGOUT),
-		Login(new ItemBeanSettings("重新登陆"), ID.ME_LOGIN),
+		Login(new ItemBeanSettings("重新登录"), ID.ME_LOGIN),
 		
 		SetTheme(new ItemBeanSettings("主题"), ID.SETTINGS_THEME),
 		SetServer(new ItemBeanSettings("服务器"), ID.SETTINGS_SERVER),
@@ -54,7 +54,7 @@ public class MenuData
 		AboutLearn(new ItemBeanSettings("快速上手"), ID.ABOUT_LEARN),
 		Update(new ItemBeanSettings("检查更新"), ID.ABOUT_UPDATE),
 		FeedBack(new ItemBeanSettings("使用反馈"), ID.ABOUT_FEEDBACK),
-		Source(new ItemBeanSettings("Open source license"), ID.ABOUT_SOURCE);
+		Source(new ItemBeanSettings("开源许可"), ID.ABOUT_SOURCE);
 		
 		ItemBeanSettings item;
 		int id;

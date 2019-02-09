@@ -92,14 +92,14 @@ public class About extends AppCompatActivity
 								if (result.code != 0) { Toast.makeText(About.this, result.message, Toast.LENGTH_LONG).show(); return; }
 								float ver_new = Float.parseFloat(result.data.version);
 								float ver_me = Float.parseFloat(Utils.getVerName(getApplicationContext()));
-								if (ver_new <= ver_me) { Toast.makeText(About.this, "newest", Toast.LENGTH_LONG).show(); return; }
-								Toast.makeText(About.this, "There is neeeew version: " + result.data.version, Toast.LENGTH_LONG).show();
+								if (ver_new <= ver_me) { Toast.makeText(About.this, "应用已是最新版本", Toast.LENGTH_LONG).show(); return; }
+								Toast.makeText(About.this, "应用有更新: " + result.data.version, Toast.LENGTH_LONG).show();
 								
 								new AlertDialog.Builder(About.this)
-									.setTitle("Update")
-									.setMessage("Download new apk?")
-									.setNegativeButton("Cancel", null)
-									.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+									.setTitle("应用更新")
+									.setMessage("是否下载应用?")
+									.setNegativeButton("不要", null)
+									.setPositiveButton("好的", new DialogInterface.OnClickListener() {
 										@Override
 										public void onClick(DialogInterface p1, int p2) {
 											DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);

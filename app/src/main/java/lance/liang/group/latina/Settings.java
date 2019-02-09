@@ -192,14 +192,14 @@ public class Settings extends AppCompatActivity
 					email.setText(user_info.email);
 					motto.setText(user_info.motto);
 					new AlertDialog.Builder(Settings.this)
-						.setTitle("Set my person info")
+						.setTitle("设置我的个人信息")
 						.setView(dialogView)
-						.setNegativeButton("Cancle", null)
-						.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						.setNegativeButton("取消", null)
+						.setPositiveButton("确认", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface p1, int p2) {
 								Communication.getComm(getApplicationContext()).postWithAuth(Communication.SET_USER, 
-									new Content().put("email", email.getText().toString()).put("motto", motto.getText().toString()).val, 
+									new Content().put("电子邮箱", email.getText().toString()).put("签名", motto.getText().toString()).val, 
 									new StringCallback() {
 										@Override
 										public void onSuccess(Response<String> p1) {
@@ -215,7 +215,7 @@ public class Settings extends AppCompatActivity
 	}
 	
 	public void myFont() {
-		String[] select_disp = {"Local", "Remote"};
+		String[] select_disp = {"本地显示字体", "远程打印字体"};
 		new AlertDialog.Builder(Settings.this)
 			.setItems(select_disp, new DialogInterface.OnClickListener() {
 				@Override
@@ -289,10 +289,10 @@ public class Settings extends AppCompatActivity
 				public void onNothingSelected(AdapterView<?> p1) {}
 			});
 		new AlertDialog.Builder(Settings.this)
-			.setTitle("Set remote font")
+			.setTitle("远程打印字体")
 			.setView(sview)
-			.setNegativeButton("Cancle", null)
-			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			.setNegativeButton("取消", null)
+			.setPositiveButton("确认", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
 					List<RoomData> list_rooms = new ArrayList<RoomData>();
@@ -303,7 +303,7 @@ public class Settings extends AppCompatActivity
 					//String family = (String) sadp.getItem(p2);
 					int size = Integer.parseInt(edit.getText().toString());
 					if (size == 0) {
-						Toast.makeText(Settings.this, "SIZE == 0", Toast.LENGTH_LONG).show();
+						Toast.makeText(Settings.this, "文字大小不能为零", Toast.LENGTH_LONG).show();
 						return;
 					}
 					FontSetting option = new FontSetting();
@@ -328,10 +328,10 @@ public class Settings extends AppCompatActivity
 	}
 	
 	public void myFontLocal() {
-		String[] disp = {"Default", "miao", "hand-writting"};
+		String[] disp = {"系统默认", "我也不知道什么体", "手写文字体"};
 		final String[] fonts = {"default", "miao.ttf", "num.ttf"};
 		new AlertDialog.Builder(Settings.this)
-			.setTitle("Set Font")
+			.setTitle("设置本地显示文字")
 			.setItems(disp, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
@@ -596,7 +596,7 @@ public class Settings extends AppCompatActivity
 		builder.show();
 	}
 	private void mySetServer() {
-		String[] disp = {"远程(Release)", "调试", "本地(调试)", "Lance的远程服务器"};
+		String[] disp = {"远程(Release)", "调试(旧)", "本地(调试)", "Lance的远程服务器"};
 		final String[] vals = {
 			"https://lance-latina-debug.herokuapp.com/v3/api", 
 			"https://lance-chatroom2.herokuapp.com/v3/api", 
