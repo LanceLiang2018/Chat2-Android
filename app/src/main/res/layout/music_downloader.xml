@@ -19,15 +19,20 @@
 			<Button
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:text="Search"
-				android:id="@+id/musicdownloaderButton_search"/>
+				android:text="Search Songs"
+				android:id="@+id/musicdownloaderButton_search_songs"/>
+
+			<Button
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="Search playlists"
+				android:id="@+id/musicdownloaderButton_search_playlists"/>
 
 			<EditText
 				android:layout_height="wrap_content"
 				android:layout_width="match_parent"
 				android:ems="10"
-				android:id="@+id/musicdownloaderEditText_text"
-				android:hint="Input name of songs..."/>
+				android:id="@+id/musicdownloaderEditText_text"/>
 
 		</LinearLayout>
 

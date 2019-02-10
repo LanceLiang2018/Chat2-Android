@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 	private ActionBar bar;
 	private ImageView im_head;
-	private TextView text_title;
+	private TextView text_title, text_shici;
 	public static final int code_login = 0x80, code_signup = 0x81, 
 							code_chat = 0x82, code_pick = 0x83, 
 							code_settings = 0x84, code_pick_photo = 0x85;
@@ -421,6 +421,7 @@ public class MainActivity extends AppCompatActivity {
 		View title_view = LayoutInflater.from(this).inflate(R.layout.title_main, null);
 		im_head = (ImageView)title_view.findViewById(R.id.titlemainImageButton_head);
 		text_title = (TextView)title_view.findViewById(R.id.titlemainTextView_title);
+		text_shici = (TextView) title_view.findViewById(R.id.titlemainTextView_shici);
 		
 		View.OnClickListener title_onclick = new OnClickListener() {
 			@Override
@@ -723,6 +724,48 @@ public class MainActivity extends AppCompatActivity {
 	{
 		count_today.setText("" + Config.get(this).data.settings.count_today);
 		count_total.setText("" + Config.get(this).data.settings.count_total);
+		
+		ShiCi.One(this, new StringCallback() {
+				@Override
+				public void onSuccess(Response<String> p1) {
+					final ShiCiData sdata = new Gson().fromJson(p1.body(), ShiCiData.class);
+					if ("error".equals(sdata.status)) {
+						text_shici.setText("" + sdata.errCode + ": " + sdata.errMessage);
+						return;
+					}
+					text_shici.setText(sdata.data.content);
+					text_shici.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View p1) {
+								View inview = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_shici, null);
+								TextView shici_title = (TextView) inview.findViewById(R.id.dialogshiciTextView_title), 
+									shici_content = (TextView) inview.findViewById(R.id.dialogshiciTextView_content), 
+									shici_translate = (TextView) inview.findViewById(R.id.dialogshiciTextView_translate), 
+									shici_author = (TextView) inview.findViewById(R.id.dialogshiciTextView_author), 
+									shici_dynasty = (TextView) inview.findViewById(R.id.dialogshiciTextView_dynasty);
+								shici_title.setText(sdata.data.origin.title);
+								shici_author.setText(sdata.data.origin.author);
+								shici_dynasty.setText(sdata.data.origin.dynasty);
+								
+								String content = "";
+								for (String c: sdata.data.origin.content)
+									content = content + c + "\n";
+								content = content.substring(0, content.length() - 1);
+								String translate = "";
+								if (sdata.data.origin.translate != null) {
+									for (String t: sdata.data.origin.translate)
+										translate = translate + t + "\n";
+									translate = translate.substring(0, translate.length() - 1);
+								}
+								shici_content.setText(content);
+								shici_translate.setText(translate);
+								new AlertDialog.Builder(MainActivity.this)
+									.setView(inview)
+									.show();
+							}
+						});
+				}
+			});
 		
 		RequestOptions options = new RequestOptions()
 			.circleCrop()

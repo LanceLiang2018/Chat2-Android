@@ -32,6 +32,7 @@ class ConfigData
 		public String savePath = "Latina/";
 		public int unreadMid = 0;
 		public String font = "default";
+		public String cToken = "";
 		
 		//public String remoteFontFamily = "Microsoft YaHei Mono";
 		//public int remoteFontSize = 10;

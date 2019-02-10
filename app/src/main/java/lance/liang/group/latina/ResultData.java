@@ -66,6 +66,25 @@ class FontSetting {
 	public FontOption option = new FontOption();
 }
 
+class ShiCiToken {
+	public String data, status;
+}
+
+class ShiCiData {
+	public static class Data {
+		public static class Origin {
+			public String title, dynasty, author;
+			public List<String> content, translate, matchTags;
+		}
+		public String id, content;
+		public int popularity;
+		public Origin origin;
+	}
+	public String status, token, ipAddress, errMessage;
+	public int errCode;
+	public Data data;
+}
+
 public class ResultData
 {
 	public static class Data {
