@@ -49,7 +49,7 @@ public class MenuData
 		AddPrinter(new ItemBeanSettings("添加打印机"), ID.PRINTER_ADD),
 		
 		MyFiles(new ItemBeanSettings("我的文件"), ID.ADDS_MY_FILES),
-		Music(new ItemBeanSettings("Music Downloader"), ID.ADDS_MUSIC_DOWNLOADER),
+		Music(new ItemBeanSettings("网易云音乐下载器"), ID.ADDS_MUSIC_DOWNLOADER),
 		
 		AboutUs(new ItemBeanSettings("关于我们"), ID.ABOUT_PAGE),
 		AboutLearn(new ItemBeanSettings("快速上手"), ID.ABOUT_LEARN),

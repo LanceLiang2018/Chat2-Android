@@ -53,7 +53,7 @@ public class MusicDownloader extends AppCompatActivity
 		} catch (Exception e) {}
 		
 		ActionBar bar = getSupportActionBar();
-		bar.setTitle("Music Downloader");
+		bar.setTitle("网易云音乐下载器");
 		bar.setDisplayHomeAsUpEnabled(true);
 		bar.setHomeButtonEnabled(true);
 		

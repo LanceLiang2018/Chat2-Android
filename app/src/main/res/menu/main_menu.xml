@@ -4,13 +4,13 @@
 
 	<item android:id="@+id/option_new_room" 
 		android:title="新 Room" 
-		app:showAsAction="ifRoom"/> 
+		app:showAsAction="never"/> 
 	
 	<item android:id="@+id/option_join_in" 
 		android:title="加入房间" 
-		app:showAsAction="ifRoom"/> 
+		app:showAsAction="never"/> 
 	
 	<item android:id="@+id/option_exit" 
 		android:title="退出" 
-		app:showAsAction="ifRoom"/> 
+		app:showAsAction="never"/> 
 </menu>

@@ -6,19 +6,19 @@
 	<item
         android:id="@+id/select_download"
         android:orderInCategory="50"
-        android:title="Download"
+        android:title="下载"
         android:showAsAction="always"/>
 	
 	<item
         android:id="@+id/select_all"
         android:orderInCategory="100"
         android:title="全选"
-        android:showAsAction="ifRoom"/>
+        android:showAsAction="never"/>
 	
     <item
         android:id="@+id/unselect_all"
         android:orderInCategory="200"
         android:title="取消全选"
-        android:showAsAction="ifRoom"/>
+        android:showAsAction="never"/>
 
 </menu>

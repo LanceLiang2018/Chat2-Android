@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">方寸之间</string>
-	<string name="update_log">Small fixs</string>
+	<string name="update_log">
+		2/11 更新日志：
+		修复了一些bug。
+		新功能：
+		  首页诗词
+		  音乐下载（单曲）插件
+		感谢您的下载和使用。
+		</string>
 	
 </resources>
