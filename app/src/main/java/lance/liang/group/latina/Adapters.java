@@ -305,7 +305,7 @@ class ChatAdapter extends BaseAdapter
 				.apply(new RequestOptions()
 					   .placeholder(R.drawable.image_blank)
 					   .override(300)
-					   .diskCacheStrategy(DiskCacheStrategy.ALL))
+					   .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
 				.transition(DrawableTransitionOptions.withCrossFade())
 				.into(target);
 		}

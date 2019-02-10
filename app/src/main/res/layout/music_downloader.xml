@@ -16,23 +16,31 @@
 			android:layout_alignParentBottom="true"
 			android:id="@+id/musicdownloaderLinearLayout1">
 
-			<Button
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:text="Search Songs"
-				android:id="@+id/musicdownloaderButton_search_songs"/>
-
-			<Button
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:text="Search playlists"
-				android:id="@+id/musicdownloaderButton_search_playlists"/>
-
 			<EditText
 				android:layout_height="wrap_content"
 				android:layout_width="match_parent"
 				android:ems="10"
-				android:id="@+id/musicdownloaderEditText_text"/>
+				android:id="@+id/musicdownloaderEditText_text"
+				android:layout_weight="3.0"
+				android:imeOptions="actionSearch"
+				android:inputType="text"
+				android:lines="1"/>
+
+			<Button
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="单曲"
+				android:id="@+id/musicdownloaderButton_search_songs"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:layout_weight="1.0"/>
+
+			<Button
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="歌单"
+				android:id="@+id/musicdownloaderButton_search_playlists"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:layout_weight="1.0"/>
 
 		</LinearLayout>
 

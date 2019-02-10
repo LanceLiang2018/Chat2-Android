@@ -36,12 +36,12 @@ public class ImagePreView extends Activity
 		Glide.with(this).load(url)
 			.apply(new RequestOptions().placeholder(R.drawable.image_blank))
 			.into(imview);
-		//imview.setOnClickListener(new OnClickListener() {
-		//		@Override
-		//		public void onClick(View p1) {
-		//			ImagePreView.this.finish();
-		//		}
-		//	});
+		imview.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					ImagePreView.this.finish();
+				}
+			});
 		
 		//imview.setOnTouchListener(new ImageZoomListenter());
 		/*
