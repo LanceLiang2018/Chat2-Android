@@ -11,7 +11,7 @@ public class MenuData
 		ME_MAKE_FRIENDS = 14, ME_NEW_ROOM = 15, ME_NEW_USER = 16,
 		SETTINGS_THEME = 9, SETTINGS_SPLASH = 10, SETTINGS_FONT = 11, SETTINGS_SERVER = 12, SETTINGS_BG = 21, 
 		PRINTER_DEFAULT = 17, PRINTER_ADD = 18,
-		ADDS_MY_FILES = 20, 
+		ADDS_MY_FILES = 20, ADDS_MUSIC_DOWNLOADER = 27,
 		ABOUT_PAGE = 22, ABOUT_UPDATE = 23, ABOUT_LEARN = 24, ABOUT_FEEDBACK = 25, ABOUT_SOURCE = 26;
 	};
 	
@@ -49,6 +49,7 @@ public class MenuData
 		AddPrinter(new ItemBeanSettings("添加打印机"), ID.PRINTER_ADD),
 		
 		MyFiles(new ItemBeanSettings("我的文件"), ID.ADDS_MY_FILES),
+		Music(new ItemBeanSettings("Music Downloader"), ID.ADDS_MUSIC_DOWNLOADER),
 		
 		AboutUs(new ItemBeanSettings("关于我们"), ID.ABOUT_PAGE),
 		AboutLearn(new ItemBeanSettings("快速上手"), ID.ABOUT_LEARN),
@@ -89,7 +90,7 @@ public class MenuData
 	};
 	
 	public static Settings[] listAdds = {
-		Settings.MyFiles, 
+		Settings.MyFiles, Settings.Music,
 	};
 	
 	public static Settings[] listAbout = {

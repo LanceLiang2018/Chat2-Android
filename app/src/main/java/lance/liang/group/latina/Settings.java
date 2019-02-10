@@ -102,6 +102,11 @@ public class Settings extends AppCompatActivity
 					intent_about.setClass(Settings.this, AboutPage.class);
 					startActivity(intent_about);
 					break;
+				case ID.ADDS_MUSIC_DOWNLOADER:
+					Intent intent_music = new Intent();
+					intent_music.setClass(Settings.this, MusicDownloader.class);
+					startActivity(intent_music);
+					break;
 				case ID.SETTINGS_SERVER:
 					mySetServer();
 					setResult(1, new Intent().putExtra("command", "Recreate"));
