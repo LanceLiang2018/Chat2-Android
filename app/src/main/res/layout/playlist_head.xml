@@ -6,87 +6,100 @@
 	android:orientation="vertical">
 
 	<RelativeLayout
-		android:layout_height="match_parent"
-		android:layout_width="match_parent"
-		android:padding="30dp"
-		android:id="@+id/playlistheadRelativeLayout_bg">
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent">
 
 		<ImageView
-			android:layout_height="70dp"
-			android:layout_width="70dp"
-			android:id="@+id/playlistheadImageView_image"/>
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:src="@drawable/image_background_1"
+			android:scaleType="centerCrop"
+			android:id="@+id/playlistheadImageView_bg"/>
 
-		<LinearLayout
+		<RelativeLayout
 			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
-			android:orientation="vertical"
-			android:layout_toRightOf="@id/playlistheadImageView_image"
-			android:layout_marginLeft="20dp"
-			android:id="@+id/playlistheadLinearLayout1">
+			android:padding="30dp"
+			android:background="#60FFFFFF">
+
+			<ImageView
+				android:layout_height="70dp"
+				android:layout_width="70dp"
+				android:id="@+id/playlistheadImageView_image"/>
 
 			<LinearLayout
 				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:orientation="horizontal"
-				android:layout_margin="5dp">
+				android:layout_width="match_parent"
+				android:orientation="vertical"
+				android:layout_toRightOf="@id/playlistheadImageView_image"
+				android:layout_marginLeft="20dp"
+				android:id="@+id/playlistheadLinearLayout1">
 
-				<TextView
+				<LinearLayout
 					android:layout_height="wrap_content"
 					android:layout_width="wrap_content"
-					android:text="Name"
-					android:id="@+id/playlistheadTextView_name"/>
+					android:orientation="horizontal"
+					android:layout_margin="5dp">
+
+					<TextView
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="Name"
+						android:id="@+id/playlistheadTextView_name"/>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:orientation="horizontal"
+					android:layout_margin="5dp">
+
+					<TextView
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="Creator"
+						android:id="@+id/playlistheadTextView_creator"/>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:orientation="horizontal"
+					android:layout_margin="5dp">
+
+					<TextView
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="ID"
+						android:layout_marginRight="10dp"/>
+
+					<TextView
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="Text"
+						android:id="@+id/playlistheadTextView_id"/>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:orientation="horizontal"
+					android:layout_margin="5dp">
+
+					<TextView
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="Text"
+						android:id="@+id/playlistheadTextView_desc"/>
+
+				</LinearLayout>
 
 			</LinearLayout>
 
-			<LinearLayout
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:orientation="horizontal"
-				android:layout_margin="5dp">
-
-				<TextView
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
-					android:text="Creator"
-					android:id="@+id/playlistheadTextView_creator"/>
-
-			</LinearLayout>
-
-			<LinearLayout
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:orientation="horizontal"
-				android:layout_margin="5dp">
-
-				<TextView
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
-					android:text="ID"
-					android:layout_marginRight="10dp"/>
-
-				<TextView
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
-					android:text="Text"
-					android:id="@+id/playlistheadTextView_id"/>
-
-			</LinearLayout>
-
-			<LinearLayout
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:orientation="horizontal"
-				android:layout_margin="5dp">
-
-				<TextView
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
-					android:text="Text"
-					android:id="@+id/playlistheadTextView_desc"/>
-
-			</LinearLayout>
-
-		</LinearLayout>
+		</RelativeLayout>
 
 	</RelativeLayout>
 

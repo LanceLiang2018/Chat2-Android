@@ -31,6 +31,8 @@ import jp.wasabeef.glide.transformations.*;
 import android.support.v7.app.ActionBar;
 import android.view.View.OnClickListener;
 import io.reactivex.Observer;
+import android.support.v4.media.session.*;
+import android.text.style.*;
 
 public class MusicDownloader extends AppCompatActivity
 {
@@ -38,7 +40,13 @@ public class MusicDownloader extends AppCompatActivity
 	private EditText text_search_key;
 	private ListView list;
 	private MusicAdapter madp;
+	private PlaylistContent padp;
+	LinearLayout bg;
 	ModeCallback mcallback;
+	ModeCallbackPlaylist pcallback;
+	int offset = 0;
+	private LinearLayout footer;
+	int search_res = 0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -47,9 +55,9 @@ public class MusicDownloader extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.music_downloader);
 
-		int int_playlist_id = 0;
+		String int_playlist_id = "0";
 		try {
-			int_playlist_id = getIntent().getExtras().getInt("playlist_id");
+			int_playlist_id = getIntent().getExtras().getString("playlist_id");
 		} catch (Exception e) {}
 		
 		ActionBar bar = getSupportActionBar();
@@ -58,11 +66,14 @@ public class MusicDownloader extends AppCompatActivity
 		bar.setHomeButtonEnabled(true);
 		
 		madp = new MusicAdapter(this);
+		padp = new PlaylistContent(this);
 		mcallback = new ModeCallback();
+		pcallback = new ModeCallbackPlaylist();
 
 		btn_search_songs = (Button) findViewById(R.id.musicdownloaderButton_search_songs);
 		btn_search_playlists = (Button) findViewById(R.id.musicdownloaderButton_search_playlists);
 		text_search_key = (EditText) findViewById(R.id.musicdownloaderEditText_text);
+		bg = (LinearLayout) findViewById(R.id.musicdownloaderLinearLayout1);
 		list = (ListView) findViewById(R.id.musicdownloaderListView);
 		list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		list.setMultiChoiceModeListener(mcallback);
@@ -82,13 +93,40 @@ public class MusicDownloader extends AppCompatActivity
 					return false;
 				}
 			});
+		btn_search_playlists.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					Bundle bundle = new Bundle();
+					bundle.putString("key", text_search_key.getText().toString());
+					startActivity(new Intent().setClass(MusicDownloader.this, MusicDownloaderList.class).putExtras(bundle));
+				}
+			});
 		list.setAdapter(madp);
 		
-		if (int_playlist_id != 0)
+		footer = new LinearLayout(this);
+		TextView header_text = new TextView(this);
+		header_text.setText("\n加载更多\n");
+		footer.addView(header_text);
+		footer.setGravity(Gravity.CENTER);
+		footer.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View p1) {
+					offset = offset + 30;
+					refreshSongs();
+				}
+			});
+		list.addFooterView(footer);
+		footer.setVisibility(View.GONE);
+		
+		list.setDividerHeight(0);
+		
+		if (!"0".equals(int_playlist_id)) {
+			bg.setVisibility(View.GONE);
 			getPlaylistSongs(int_playlist_id);
+		}
 	}
 	
-	void getPlaylistSongs(int id)
+	void getPlaylistSongs(String id)
 	{
 		NetEaseAPI.getPlaylist(this, id, new StringCallback() {
 				@Override
@@ -101,32 +139,42 @@ public class MusicDownloader extends AppCompatActivity
 						text_desc = (TextView) inview.findViewById(R.id.playlistheadTextView_desc), 
 						text_creator = (TextView) inview.findViewById(R.id.playlistheadTextView_creator);
 					ImageView image = (ImageView) inview.findViewById(R.id.playlistheadImageView_image);
-					final RelativeLayout bg = (RelativeLayout) inview.findViewById(R.id.playlistheadRelativeLayout_bg);
+					//final ImageView bg = (ImageView) inview.findViewById(R.id.playlistheadImageView_bg);
 					
 					text_name.setText(data.playlist.name);
 					text_id.setText("" + data.playlist.id);
 					text_creator.setText(data.playlist.creator.nickname);
 					text_desc.setText(data.playlist.description);
 					
+					/*
 					Glide.with(MusicDownloader.this).load(data.playlist.coverImgUrl)
 						.apply(new RequestOptions().centerCrop()
 							.diskCacheStrategy(DiskCacheStrategy.DATA)
 							.transform(new BlurTransformation(25)))
 						.transition(DrawableTransitionOptions.withCrossFade())
-						.into(new SimpleTarget<Drawable>() {
-							@Override
-							public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
-								bg.setBackgroundDrawable(p1);
-							}
-						});
+						//.into(new SimpleTarget<Drawable>() {
+						//	@Override
+						//	public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
+						//		bg.setBackgroundDrawable(p1);
+						//	}
+						//})
+							.into(bg);*/
 					
 					Glide.with(MusicDownloader.this).load(data.playlist.coverImgUrl)
 						.apply(new RequestOptions().centerCrop()
-							   .diskCacheStrategy(DiskCacheStrategy.DATA))
+							   .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
 						.transition(DrawableTransitionOptions.withCrossFade())
 						.into(image);
-					list = (ListView) findViewById(R.id.musicdownloaderListView);
+					
 					list.addHeaderView(inview);
+					list.setMultiChoiceModeListener(pcallback);
+					
+					list.setAdapter(padp);
+					padp.list_data.clear();
+					for (Track s: data.playlist.tracks)
+						padp.list_data.add(s);
+					padp.notifyDataSetChanged();
+					list.setOnItemClickListener(playlist_click);
 				}
 			});
 	}
@@ -136,7 +184,25 @@ public class MusicDownloader extends AppCompatActivity
 		public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
 			if (p3 < 0) return;
 			Song bean = madp.list_data.get(p3);
-//			NetEaseAPI.download(MusicDownloader.this, bean.id, bean.name);
+			NetEaseAPI.lisentOnline(MusicDownloader.this, bean.id, new StringCallback() {
+					@Override
+					public void onSuccess(Response<String> p1) {
+						NetEaseMusicDownloadData data = new Gson().fromJson(p1.body(), NetEaseMusicDownloadData.class);
+						if (data.code != 200) return;
+						Intent mIntent = new Intent();
+						mIntent.setAction(android.content.Intent.ACTION_VIEW);
+						Uri uri = Uri.parse(data.data.get(0).url);
+						mIntent.setDataAndType(uri , "audio/mp3");
+						startActivity(mIntent);
+					}
+				});
+		}
+	};
+	AdapterView.OnItemClickListener playlist_click = new AdapterView.OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4) {
+			if (p3 < 1) return;
+			Track bean = padp.list_data.get(p3 - 1);
 			NetEaseAPI.lisentOnline(MusicDownloader.this, bean.id, new StringCallback() {
 					@Override
 					public void onSuccess(Response<String> p1) {
@@ -153,22 +219,52 @@ public class MusicDownloader extends AppCompatActivity
 	};
 	
 	void getSongs() {
-		NetEaseAPI.getSongs(this, text_search_key.getText().toString(), 0, new StringCallback() {
+		offset = 0;
+		footer.setVisibility(View.VISIBLE);
+		NetEaseAPI.getSongs(this, text_search_key.getText().toString(), offset, new StringCallback() {
 				@Override
 				public void onSuccess(Response<String> p1) {
 					NetEaseMusicData data = new Gson().fromJson(p1.body(), NetEaseMusicData.class);
 					if (data.code != 200) return;
-					list.setAdapter(madp);
+					search_res = data.result.songCount;
+					if (search_res == 0) return;
+					//list.setAdapter(madp);
 					madp.list_data.clear();
 					for (Song s: data.result.songs) {
 						madp.list_data.add(s);
 					}
+					if (offset + 30 < search_res)
+						footer.setVisibility(View.VISIBLE);
+					else
+						footer.setVisibility(View.GONE);
 					madp.notifyDataSetChanged();
 					list.setOnItemClickListener(music_click);
 				}
 			});
 	}
-
+	
+	void refreshSongs() {
+		NetEaseAPI.getSongs(this, text_search_key.getText().toString(), offset, new StringCallback() {
+				@Override
+				public void onSuccess(Response<String> p1) {
+					NetEaseMusicData data = new Gson().fromJson(p1.body(), NetEaseMusicData.class);
+					if (data.code != 200) return;
+					search_res = data.result.songCount;
+					if (search_res == 0) return;
+					//list.setAdapter(madp);
+					for (Song s: data.result.songs) {
+						madp.list_data.add(s);
+					}
+					if (offset + 30 < search_res)
+						footer.setVisibility(View.VISIBLE);
+					else
+						footer.setVisibility(View.GONE);
+					madp.notifyDataSetChanged();
+					list.setOnItemClickListener(music_click);
+				}
+			});
+	}
+	
 	@Override
 	protected void onDestroy()
 	{
@@ -194,7 +290,10 @@ public class MusicDownloader extends AppCompatActivity
 			case R.id.enter_mode:
 				list.setItemChecked(0, true);
 				list.clearChoices();
-				mcallback.updateSelectedCount();
+				if (bg.getVisibility() != View.GONE)
+					mcallback.updateSelectedCount();
+				else
+					pcallback.updateSelectedCount();
 				break;
 			default:
 			break;
@@ -274,6 +373,79 @@ public class MusicDownloader extends AppCompatActivity
             selectedNum.setText(selectedCount + "");
         }
     }
+
+	class ModeCallbackPlaylist implements MultiChoiceModeListener {
+
+        View actionBarView;
+        TextView selectedNum;
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+        }
+
+        //退出多选模式时调用
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            list.clearChoices();
+        }
+
+        //进入多选模式调用，初始化ActionBar的菜单和布局
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            getMenuInflater().inflate(R.menu.multiple_mode_menu, menu);
+            if(actionBarView == null) {
+                actionBarView = LayoutInflater.from(MusicDownloader.this).inflate(R.layout.actionbar_view, null);
+                selectedNum = (TextView) actionBarView.findViewById(R.id.selected_num);
+            }
+            mode.setCustomView(actionBarView);
+            return true;
+        }
+
+        //ActionBar上的菜单项被点击时调用
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch(item.getItemId()) {
+                case R.id.select_all:
+                    for(int i = 0; i < padp.getCount(); i++) {
+                        list.setItemChecked(i, true);
+                    }
+                    updateSelectedCount();
+                    padp.notifyDataSetChanged();
+                    break;
+                case R.id.unselect_all:
+                    list.clearChoices();
+                    updateSelectedCount();
+                    padp.notifyDataSetChanged();
+                    break;
+				case R.id.select_download:
+					for (int i=0; i<padp.list_data.size(); i++) {
+						if (!list.isItemChecked(i + 1)) continue;
+						final Track bean = padp.list_data.get(i + 1);
+						NetEaseAPI.download(MusicDownloader.this, bean.id, Track.getFilename(bean));
+					}
+					list.setItemChecked(0, false);
+					list.clearChoices();
+					pcallback.updateSelectedCount();
+					break;
+            }
+            return true;
+        }
+
+        //列表项的选中状态被改变时调用
+        @Override
+        public void onItemCheckedStateChanged(ActionMode mode, int position,
+											  long id, boolean checked) {
+            updateSelectedCount();
+            mode.invalidate();
+            padp.notifyDataSetChanged();
+        }
+
+        public void updateSelectedCount() {
+            int selectedCount = list.getCheckedItemCount();
+            selectedNum.setText(selectedCount + "");
+        }
+    }
 	
 	class MusicAdapter extends BaseAdapter
 	{
@@ -315,46 +487,58 @@ public class MusicDownloader extends AppCompatActivity
 //			.transition(DrawableTransitionOptions.withCrossFade())
 //			.into(image);
 			if (list.isItemChecked(p1))
-				view.setBackgroundColor(Color.parseColor("#C0C030"));
+				view.setBackgroundColor(Utils.getAccentColor(MusicDownloader.this));
 			else
 				view.setBackgroundColor(Color.TRANSPARENT);
 			return view;
 		}
 	}
-}
-
-class MusicDownloaderList extends AppCompatActivity
-{
-	@Override
-	public void onCreate(Bundle savedInstanceState)
+	
+	class PlaylistContent extends BaseAdapter
 	{
-		setTheme(Config.get(this).data.settings.theme);
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.music_downloader);
-
-		ActionBar bar = getSupportActionBar();
-		bar.setTitle("Playlist Downloader");
-		bar.setDisplayHomeAsUpEnabled(true);
-		bar.setHomeButtonEnabled(true);
-
-	}
-
-	@Override
-	protected void onDestroy()
-	{
-		super.onDestroy();
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId())
-		{
-			case android.R.id.home:
-				this.finish();
-				break;
+		public List<Track> list_data = new ArrayList<Track>();
+		Context context;
+		PlaylistContent(Context context) {
+			this.context = context;
 		}
-		return super.onOptionsItemSelected(item);
+		@Override
+		public int getCount() {
+			return list_data.size();
+		}
+		@Override
+		public Object getItem(int p1) {
+			return list_data.get(p1);
+		}
+		@Override
+		public long getItemId(int p1) {
+			return p1;
+		}
+		@Override
+		public View getView(int p1, View p2, ViewGroup p3) {
+			//if (p1 < 0) return new View(context);
+			Track bean = list_data.get(p1);
+			LinearLayout view = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.item_music, null);
+			TextView text_name = (TextView) view.findViewById(R.id.itemmusicTextView_name),
+				text_id = (TextView) view.findViewById(R.id.itemmusicTextView_id),
+				text_artists = (TextView) view.findViewById(R.id.itemmusicTextView_artist);
+//		ImageView image = (ImageView) view.findViewById(R.id.itemmusicImageView_image);
+			text_name.setText(bean.name);
+			text_id.setText("" + bean.id);
+			String artists = "";
+			for (Track.Ar a: bean.ar)
+				artists = artists + a.name + "/";
+			artists = artists.substring(0, artists.length() - 1);
+			text_artists.setText(artists);
+//		Glide.with(context).load(bean.album.artist.img1v1Url)
+//			.apply(new RequestOptions().centerCrop())
+//			.transition(DrawableTransitionOptions.withCrossFade())
+//			.into(image);
+			if (list.isItemChecked(p1 + 1))
+				view.setBackgroundColor(Utils.getAccentColor(MusicDownloader.this));
+			else
+				view.setBackgroundColor(Color.TRANSPARENT);
+			return view;
+		}
 	}
 }
 
@@ -393,12 +577,12 @@ class NetEaseMusicData {
 	}
 }
 
-class PlayList {
+class Playlist {
 	public static class Creator {
 		public String nickname;
 	}
 	public String name, coverImgUrl, description;
-	public int id;
+	public String id;
 	public Creator creator;
 }
 	
@@ -408,27 +592,36 @@ class NetEasePlaylistData {
 	public Result result;
 	public static class Result {
 		public int playlistCount;
-		public List<PlayList> playlists;
+		public List<Playlist> playlists;
 	}
 }
 
+class Track {
+	static public class Ar {
+		public int id;
+		public String name;
+	}
+	static public class Al {
+		public String name, picUrl;
+		public int id;
+	}
+	public String name;
+	public int id;
+	public List<Ar> ar;
+	public Al al;
+	static public String getFilename(Track s) {
+		String filename = "";
+		for (Track.Ar a: s.ar)
+			filename = filename + a.name + "、";
+		filename = filename.substring(0, filename.length() - 1);
+		filename = filename + " - " + s.name + ".mp3";
+		return filename;
+	}
+}
+	
 class NetEasePlaylistContentData {
 	public int code;
 	static public class Playlist {
-		static public class Track {
-			static public class Ar {
-				public int id;
-				public String name;
-			}
-			static public class Al {
-				public String name, picUrl;
-				public int id;
-			}
-			public String name;
-			public int id;
-			public List<Ar> ar;
-			public Al al;
-		}
 		static public class Creator {
 			public String nickname;
 		}
@@ -470,7 +663,7 @@ class NetEaseAPI {
 			.execute(callback);
 	}
 	
-	static public void getPlaylist(Context context, int id, StringCallback callback) {
+	static public void getPlaylist(Context context, String id, StringCallback callback) {
 		OkGo.<String>get(url_playlist + id)
 			.execute(callback);
 	}

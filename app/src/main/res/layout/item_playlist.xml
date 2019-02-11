@@ -17,7 +17,7 @@
 			android:id="@+id/itemplaylistImageView_image"/>
 
 		<LinearLayout
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
 			android:layout_marginLeft="10dp"
 			android:orientation="vertical">
@@ -27,7 +27,8 @@
 				android:textAppearance="?android:attr/textAppearanceMedium"
 				android:layout_width="wrap_content"
 				android:text="Name"
-				android:id="@+id/itemplaylistTextView_name"/>
+				android:id="@+id/itemplaylistTextView_name"
+				android:maxLines="2"/>
 
 			<LinearLayout
 				android:layout_height="wrap_content"
@@ -44,18 +45,23 @@
 				<TextView
 					android:layout_height="wrap_content"
 					android:layout_width="wrap_content"
-					android:text="ID:***"
-					android:layout_marginRight="10dp"
-					android:id="@+id/itemplaylistTextView_id"/>
+					android:text="ID:"/>
 
 				<TextView
 					android:layout_height="wrap_content"
 					android:layout_width="wrap_content"
-					android:text="description"
-					android:lines="1"
-					android:id="@+id/itemplaylistTextView_desc"/>
+					android:text="****"
+					android:layout_marginRight="10dp"
+					android:id="@+id/itemplaylistTextView_id"/>
 
 			</LinearLayout>
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="description"
+				android:id="@+id/itemplaylistTextView_desc"
+				android:maxLines="3"/>
 
 		</LinearLayout>
 

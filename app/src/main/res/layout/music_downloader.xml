@@ -48,7 +48,8 @@
 			android:layout_height="match_parent"
 			android:layout_width="match_parent"
 			android:layout_above="@id/musicdownloaderLinearLayout1"
-			android:id="@+id/musicdownloaderListView"/>
+			android:id="@+id/musicdownloaderListView"
+			android:dividerHeight="0dp"/>
 
 	</RelativeLayout>
 
