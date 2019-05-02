@@ -230,7 +230,10 @@ class ChatAdapter extends BaseAdapter
 		SimpleTarget target_head = new SimpleTarget<Drawable>() {
 			@Override
 			public void onResourceReady(Drawable p1, Transition<? super Drawable> p2) {
-				MyApplication.getMyApplication().imageMap.put(bean.username, ((BitmapDrawable)p1).getBitmap());
+				try{
+					MyApplication.getMyApplication().imageMap.put(bean.username, ((BitmapDrawable)p1).getBitmap());
+				}
+				catch(java.lang.ClassCastException e) {}
 				head.setImageDrawable(p1);
 			}
 		};

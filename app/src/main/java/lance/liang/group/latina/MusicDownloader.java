@@ -33,6 +33,7 @@ import android.view.View.OnClickListener;
 import io.reactivex.Observer;
 import android.support.v4.media.session.*;
 import android.text.style.*;
+import android.renderscript.*;
 
 public class MusicDownloader extends AppCompatActivity
 {
@@ -171,6 +172,7 @@ public class MusicDownloader extends AppCompatActivity
 					
 					list.setAdapter(padp);
 					padp.list_data.clear();
+					padp.list_data.add(data.playlist.tracks.get(0));
 					for (Track s: data.playlist.tracks)
 						padp.list_data.add(s);
 					padp.notifyDataSetChanged();
@@ -407,7 +409,7 @@ public class MusicDownloader extends AppCompatActivity
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch(item.getItemId()) {
                 case R.id.select_all:
-                    for(int i = 0; i < padp.getCount(); i++) {
+                    for(int i = 0; i <= padp.getCount(); i++) {
                         list.setItemChecked(i, true);
                     }
                     updateSelectedCount();
@@ -420,8 +422,8 @@ public class MusicDownloader extends AppCompatActivity
                     break;
 				case R.id.select_download:
 					for (int i=0; i<padp.list_data.size(); i++) {
-						if (!list.isItemChecked(i + 1)) continue;
-						final Track bean = padp.list_data.get(i + 1);
+						if (!list.isItemChecked(i)) continue;
+						final Track bean = padp.list_data.get(i);
 						NetEaseAPI.download(MusicDownloader.this, bean.id, Track.getFilename(bean));
 					}
 					list.setItemChecked(0, false);
@@ -554,7 +556,7 @@ class Song {
 		public String name;
 	}
 	public String name;
-	public int id;
+	public long id;
 	public List<Artist> artists;
 	public Album album;
 	static public String getFilename(Song s) {
@@ -598,15 +600,15 @@ class NetEasePlaylistData {
 
 class Track {
 	static public class Ar {
-		public int id;
+		public long id;
 		public String name;
 	}
 	static public class Al {
 		public String name, picUrl;
-		public int id;
+		public long id;
 	}
 	public String name;
-	public int id;
+	public long id;
 	public List<Ar> ar;
 	public Al al;
 	static public String getFilename(Track s) {
@@ -627,7 +629,7 @@ class NetEasePlaylistContentData {
 		}
 		public Creator creator;
 		public String coverImgUrl, description, name;
-		public int id;
+		public long id;
 		public List<Track> tracks;
 	}
 	public Playlist playlist;
@@ -668,7 +670,7 @@ class NetEaseAPI {
 			.execute(callback);
 	}
 	
-	static public void download(final Activity context, int id, final String filename) {
+	static public void download(final Activity context, long id, final String filename) {
 		StringCallback callback = new StringCallback() {
 			@Override
 			public void onSuccess(Response<String> p1) {
@@ -686,6 +688,10 @@ class NetEaseAPI {
 							@Override
 							public void onNext(Boolean aBoolean) {
 								DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+								if (data.data.get(0).url == null) {
+									Toast.makeText(MyApplication.getMyApplication(), "Download Failed", Toast.LENGTH_LONG);
+									return;
+								}
 								Uri uri = Uri.parse(data.data.get(0).url);
 								DownloadManager.Request request = new DownloadManager.Request(uri);
 								request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);
@@ -700,7 +706,7 @@ class NetEaseAPI {
 			.execute(callback);		
 	}
 	
-	static public void lisentOnline(Context context, int id, StringCallback callback) {
+	static public void lisentOnline(Context context, long id, StringCallback callback) {
 		OkGo.<String>get(url_download + id)
 			.execute(callback);		
 	}
