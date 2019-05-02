@@ -303,6 +303,8 @@ public class MainActivity extends AppCompatActivity {
 		LinearLayout photo_bg = (LinearLayout) index.findViewById(R.id.indexpagea_photo_bg);
 		int bgColor = Utils.getPrimaryColor(MainActivity.this);
 		photo_bg.setBackgroundColor(bgColor & 0x00FFFFFF + 0x50000000);
+		//photo_bg.setBackgroundColor(0x50000000);
+		
 
 		/*
 		//Bitmap bitmap1 = Bitmap.createBitmap(new int[] {Utils.getPrimaryColor(this), },
@@ -350,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
 				hitokoto_bg.animate().alpha(1);
 				int hitokoto_count = (MyApplication.getMyApplication().getObject("hitokoto_click"));
 				if (hitokoto_count > 20) {
-					new AlertDialog.Builder(MainActivity.this).setMessage("so kawayi kodo~").show();
+					new AlertDialog.Builder(MainActivity.this).setMessage("可愛いですね ~").show();
 				}
 				hitokoto_count = hitokoto_count + 1;
 				MyApplication.getMyApplication().putObject("hitokoto_click", hitokoto_count);

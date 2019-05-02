@@ -141,7 +141,10 @@ public class MusicDownloader extends AppCompatActivity
 						text_creator = (TextView) inview.findViewById(R.id.playlistheadTextView_creator);
 					ImageView image = (ImageView) inview.findViewById(R.id.playlistheadImageView_image);
 					//final ImageView bg = (ImageView) inview.findViewById(R.id.playlistheadImageView_bg);
-					
+					RelativeLayout layout_bg = (RelativeLayout) inview.findViewById(R.id.playlistheadRelativeLayout_bg);
+					int colorbg = Utils.getPrimaryColor(MusicDownloader.this);
+					layout_bg.setBackgroundColor(colorbg & 0x00FFFFFF + 0x50000000);
+
 					text_name.setText(data.playlist.name);
 					text_id.setText("" + data.playlist.id);
 					text_creator.setText(data.playlist.creator.nickname);

@@ -12,7 +12,6 @@
 		<ImageView
 			android:layout_height="match_parent"
 			android:layout_width="match_parent"
-			android:src="@drawable/image_background_1"
 			android:scaleType="centerCrop"
 			android:id="@+id/playlistheadImageView_bg"/>
 
@@ -20,7 +19,8 @@
 			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
 			android:padding="30dp"
-			android:background="#60FFFFFF">
+			android:background="#60FFFFFF"
+			android:id="@+id/playlistheadRelativeLayout_bg">
 
 			<ImageView
 				android:layout_height="70dp"
