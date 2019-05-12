@@ -648,9 +648,9 @@ class NetEaseMusicDownloadData {
 
 class NetEaseAPI {
 	static String SONG = "SONG", PLAYLIST = "PLAYLIST",
-		url_search = "https://v1.hitokoto.cn/nm/search/", 
-		url_playlist = "https://v1.hitokoto.cn/nm/playlist/", 
-		url_download = "https://v1.hitokoto.cn/nm/url/";
+	url_search = "https://api.a632079.me/nm/search/", 
+	url_playlist = "https://api.a632079.me/nm/playlist/", 
+	url_download = "https://api.a632079.me/nm/url/";
 	
 	static public void getSongs(Context context, String key, int offset, StringCallback callback) {
 		OkGo.<String>get(url_search + key)
@@ -691,6 +691,7 @@ class NetEaseAPI {
 							@Override
 							public void onNext(Boolean aBoolean) {
 								DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+								
 								if (data.data.get(0).url == null) {
 									Toast.makeText(MyApplication.getMyApplication(), "Download Failed", Toast.LENGTH_LONG);
 									return;
